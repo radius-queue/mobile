@@ -3,9 +3,9 @@ import {
   ImageBackground,
   StyleSheet,
   View,
-  Button,
   Image,
   Text,
+  TouchableOpacity,
 } from "react-native";
 
 function LandingPage() {
@@ -21,19 +21,21 @@ function LandingPage() {
         />
         <Text style={styles.logoText}>The Waiting Room Reimagined.</Text>
       </View>
-      <View style={styles.login}>
-        <Button
-          title="Login"
-          color={"white"}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.login}
           onPress={() => console.log("login pressed")}
-        />
+        >
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
       </View>
-      <View style={styles.register}>
-        <Button
-          title="Register"
-          color={"white"}
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.register}
           onPress={() => console.log("register pressed")}
-        />
+        >
+          <Text style={styles.buttonText}>Register</Text>
+        </TouchableOpacity>
       </View>
     </ImageBackground>
   );
@@ -42,15 +44,24 @@ function LandingPage() {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    height: "80%",
+    //height: "80%",
     justifyContent: "flex-end",
     alignItems: "center",
   },
 
-  login: {
+  buttonContainer: {
     width: "100%",
-    height: "10%",
+  },
+
+  buttonText: {
+    color: "white",
+    fontSize: 24,
+  },
+
+  login: {
     backgroundColor: "#b99c6b",
+    alignItems: "center",
+    padding: 25,
   },
 
   logo: {
@@ -60,19 +71,20 @@ const styles = StyleSheet.create({
 
   logoContainer: {
     position: "absolute",
-    top: 70,
+    top: 20,
     alignItems: "center",
   },
 
   logoText: {
     color: "white",
     fontSize: 24,
+    top: -5,
   },
 
   register: {
-    width: "100%",
-    height: "10%",
     backgroundColor: "#613318",
+    alignItems: "center",
+    padding: 25,
   },
 });
 
