@@ -7,8 +7,12 @@ import {
   Text,
 } from 'react-native';
 import {Card, Layout} from '@ui-kitten/components';
+import {useNavigation} from '@react-navigation/native';
 
 const BusinessInfo = () => {
+
+  const navigation = useNavigation();
+
   return (
     <ScrollView contentContainerStyle={styles.scroll}>
       <View style={styles.map}>
