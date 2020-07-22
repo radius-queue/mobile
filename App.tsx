@@ -4,7 +4,6 @@ import { StyleSheet, Text, View, Dimensions } from "react-native";
 import LandingPage from "./LandingPage";
 
 export default function App() {
-  console.log(Dimensions.get("screen"));
   return <LandingPage />;
 }
 

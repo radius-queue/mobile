@@ -3,17 +3,24 @@ import {
   ImageBackground,
   StyleSheet,
   View,
-  TouchableOpacity,
-  SafeAreaView,
   Button,
+  Image,
+  Text,
 } from "react-native";
 
-function LandingPage(this: any, props) {
+function LandingPage() {
   return (
     <ImageBackground
       style={styles.background}
-      source={require("./assets/radius-logo.png")}
+      source={require("./assets/landing.jpg")}
     >
+      <View style={styles.logoContainer}>
+        <Image
+          style={styles.logo}
+          source={require("./assets/radius-logo.png")}
+        />
+        <Text style={styles.logoText}>The Waiting Room Reimagined.</Text>
+      </View>
       <View style={styles.login}>
         <Button
           title="Login"
@@ -37,18 +44,35 @@ const styles = StyleSheet.create({
     flex: 1,
     height: "80%",
     justifyContent: "flex-end",
+    alignItems: "center",
   },
 
   login: {
     width: "100%",
-    height: "9.5%",
-    backgroundColor: "#cab9f1",
+    height: "10%",
+    backgroundColor: "#b99c6b",
+  },
+
+  logo: {
+    width: 200,
+    height: 200,
+  },
+
+  logoContainer: {
+    position: "absolute",
+    top: 70,
+    alignItems: "center",
+  },
+
+  logoText: {
+    color: "white",
+    fontSize: 24,
   },
 
   register: {
     width: "100%",
-    height: "9.5%",
-    backgroundColor: "#8c65d3",
+    height: "10%",
+    backgroundColor: "#613318",
   },
 });
 
