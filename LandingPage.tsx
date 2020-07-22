@@ -7,8 +7,11 @@ import {
   Text,
   TouchableOpacity,
 } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 function LandingPage() {
+  const navigation = useNavigation();
+
   return (
     <ImageBackground
       style={styles.background}
@@ -21,18 +24,20 @@ function LandingPage() {
         />
         <Text style={styles.logoText}>The Waiting Room Reimagined.</Text>
       </View>
+
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.login}
-          onPress={() => console.log("login pressed")}
+          onPress={() => navigation.navigate("Login")}
         >
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
       </View>
+
       <View style={styles.buttonContainer}>
         <TouchableOpacity
           style={styles.register}
-          onPress={() => console.log("register pressed")}
+          onPress={() => navigation.navigate("Register")}
         >
           <Text style={styles.buttonText}>Register</Text>
         </TouchableOpacity>
