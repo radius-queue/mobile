@@ -73,6 +73,7 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     color: "white",
     padding: 5,
+    top: -30,
   },
 
   submit: {
@@ -95,6 +96,7 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
     paddingBottom: 15,
     paddingTop: 15,
+    top: -30,
   },
 });
 
