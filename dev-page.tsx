@@ -14,6 +14,7 @@ const DevPage = () => {
       />
       <Button title={"Register"} onPress={() => nav.navigate("Register")} />
       <Button title={"Login"} onPress={() => nav.navigate("Login")} />
+      <Button title={"Feed"} onPress={() => nav.navigate("Feed")} />
     </SafeAreaView>
   );
 };
