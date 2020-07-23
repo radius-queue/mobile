@@ -1,16 +1,26 @@
 import React from "react";
-import { View, Text, StyleSheet, ImageBackground } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ImageBackground,
+  TouchableOpacity,
+} from "react-native";
 import { TextInput } from "react-native-gesture-handler";
+import { useNavigation } from "@react-navigation/native";
 
 function Login() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+
+  const navigation = useNavigation();
 
   return (
     <ImageBackground
       style={styles.background}
       source={require("./assets/brown.jpg")}
     >
+      <Text style={styles.header}>Sign in with Radius.</Text>
       <Text style={styles.text}>Email:</Text>
       <TextInput
         style={styles.input}
@@ -31,6 +41,12 @@ function Login() {
         placeholderTextColor={"white"}
         selectionColor={"white"}
       />
+      <TouchableOpacity
+        style={styles.submit}
+        onPress={() => navigation.navigate("Business")}
+      >
+        <Text style={styles.submitText}>Submit</Text>
+      </TouchableOpacity>
     </ImageBackground>
   );
 }
@@ -41,6 +57,15 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
+  header: {
+    fontSize: 24,
+    color: "white",
+    alignSelf: "center",
+    fontWeight: "bold",
+    position: "absolute",
+    top: 100,
+  },
+
   input: {
     height: 50,
     width: "100%",
@@ -48,6 +73,20 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     color: "white",
     padding: 5,
+  },
+
+  submit: {
+    backgroundColor: "#f5cb5c",
+    alignItems: "center",
+    padding: 15,
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+  },
+
+  submitText: {
+    color: "white",
+    fontSize: 18,
   },
 
   text: {
