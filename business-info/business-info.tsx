@@ -88,14 +88,23 @@ const BusinessInfoScreen : FunctionComponent<BusinessInfoProps>= ({business} : B
           </Layout>
           <Layout level='2' style={styles.layout}>
               <Text style={[defaultStyles.text, styles.name]}>Current Queue</Text>
-              <View>
-                <Text>Status</Text>
+              <View style={styles.queueInfoTextContainer}>
+                <Text style={defaultStyles.text}>Status:</Text>
+                <Text style={defaultStyles.text}>{business.queues[0].open ? 'Open' : 'Closed'}</Text>
               </View>
-              <Button style={styles.join} disabled={!business.queues[0].open} status='success' onPress={joinQueue}>Join Queue</Button>
+              <View style={styles.queueInfoTextContainer}>
+                <Text style={defaultStyles.text}>Line Length:</Text>
+                <Text style={defaultStyles.text}>{business.queues[0].length} parties</Text>
+              </View>
+              <View style={styles.queueInfoTextContainer}>
+                <Text style={defaultStyles.text}>Most Recent Wait Time:</Text>
+                <Text style={defaultStyles.text}>{business.queues[0].firstWaitTime} minutes</Text>
+              </View>
+              <Button style={styles.joinButton} disabled={!business.queues[0].open} status='success' onPress={joinQueue}>Join Queue</Button>
           </Layout>
           <Layout style={styles.layout} level='2'>
             <Text style={[defaultStyles.text, styles.name]}>Hours</Text>
-            <View style={{...styles.layout, flexDirection: 'row', marginVertical: 0}}>
+            <View style={styles.hoursContainer}>
               <View>
                 {DAYS.map(val => <Text style={[defaultStyles.text, styles.dayText]} key={val}>{val}</Text>)}
               </View>
@@ -133,15 +142,22 @@ const styles = StyleSheet.create({
     fontWeight: '400',
     marginVertical: 5,
   },
-  join: {
-    marginVertical: 5,
+  hoursContainer: {
+    flexDirection: 'row',
+    marginVertical: 0,
+    padding: 0,
+    width: '100%',
+    justifyContent: 'space-between',
+  },
+  joinButton: {
+    marginVertical: 10,
     width: '100%',
     alignSelf: 'center',
   },
   layout: {
     width: '100%',
     padding: 15,
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     alignItems: 'flex-start',
     borderRadius: 20,
     marginVertical: 10,
@@ -157,6 +173,12 @@ const styles = StyleSheet.create({
   phone: {
     textDecorationLine: 'underline',
   },
+  queueInfoTextContainer: {
+    flexDirection: 'row',
+    marginVertical: 5,
+    width: '100%',
+    justifyContent: 'space-between',
+  },
   scroll: {
     backgroundColor: 'white',
     display: 'flex',
@@ -168,13 +190,13 @@ const styles = StyleSheet.create({
 });
 
 const DAYS : string[] = [
-  'Sun.',
-  'Mon.',
-  'Tues',
-  'Wed.',
-  'Thurs.',
-  'Fri.',
-  'Sat.',
+  'Sunday',
+  'Monday',
+  'Tuesday',
+  'Wednesday',
+  'Thursday',
+  'Friday',
+  'Saturday',
 ];
 
 

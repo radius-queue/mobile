@@ -1,5 +1,7 @@
 import React from 'react';
-import { SafeAreaView, StyleSheet, StatusBar } from 'react-native';
+import { StatusBar } from 'react-native';
+
+import Screen from '../components/screen';
 import QueueList from './queue-list';
 
 /**
@@ -9,17 +11,10 @@ import QueueList from './queue-list';
  */
 const QueuePage = () => {
   return (
-    <SafeAreaView  style={styles.page}>
+    <Screen>
       <QueueList />
-    </SafeAreaView>
+    </Screen>
   );
-}
-
-const styles = StyleSheet.create({
-  page: {
-    flex: 1,
-    marginTop: StatusBar.currentHeight || 0,
-  },
-});
+};
 
 export default QueuePage;

@@ -24,11 +24,11 @@ export class BusinessInfo {
 };
 
 class QueueStatus {
-  constructor(readonly open: boolean, readonly length: number, firstWaitTime: number) {
+  constructor(readonly open: boolean, readonly length: number, readonly firstWaitTime: number) {
 
   };
 
   static sample() {
-    return new QueueStatus(true, 5, 35);
+    return new QueueStatus(true, 5, 15);
   }
 }
