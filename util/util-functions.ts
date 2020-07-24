@@ -29,3 +29,28 @@ export function parseShortName(firstName: string, lastName: String) : string {
   return firstName.substring(0, 1).toUpperCase() + ' ' +
       lastName.substring(0, 1).toUpperCase();
 }
+
+/**
+ * Parses a date object to get just the hours and minutes
+ * portion.
+ * @param {Date} date date object to be parsed
+ * @return {string} the final parsed string
+ */
+export function parseTimeString(date: Date) {
+  return date.toTimeString().slice(0, 8);
+};
+
+/**
+ * Converts a military time string to a normal time string.
+ * 
+ * @param militaryTime string in the form HH:mm:ss
+ * @return string in from of h:mm:ss
+ */
+export function toStandardTime(militaryTime) {
+  militaryTime = militaryTime.split(':');
+  if (militaryTime[0].charAt(0) == 1 && militaryTime[0].charAt(1) > 2) {
+    return (militaryTime[0] - 12) + ':' + militaryTime[1] + ':' + militaryTime[2] + ' pm ';
+  } else {
+    return militaryTime.join(':') + ' am ';
+  }
+}

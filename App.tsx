@@ -5,7 +5,8 @@ import { StyleSheet, Text, View, Dimensions } from "react-native";
 import LandingPage from "./LandingPage";
 import Login from "./Login";
 import Register from "./Register";
-import BusinessInfo from './business-info';
+import BusinessInfoScreen from './business-info/business-info';
+import { BusinessInfo } from './business-info/data';
 import DevPage from './dev-page';
 import QueuePage from './queue-view/queue-page';
 
@@ -29,7 +30,9 @@ export default function App() {
           <Screen name="Home" component={LandingPage} />
           <Screen name="Register" component={Register} />
           <Screen name="Login" component={Login} />
-          <Screen name='Business' component={BusinessInfo}/>
+          <Screen name='Business'>
+            {() => <BusinessInfoScreen business={BusinessInfo.sample()}/>}
+          </Screen>
           <Screen name='Feed' component={BusinessListScreen}/>
           <Screen name='Queue' component={QueuePage} />
         </Navigator>
