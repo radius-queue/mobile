@@ -4,13 +4,17 @@ import { List, Text } from '@ui-kitten/components';
 import { BusinessCard } from './business-overview-card';
 import { BusinessCardInfo } from './data';
 
-const businesses: BusinessCardInfo[] = [
+export const businesses: BusinessCardInfo[][] = [
+  [],
+  [],
+  [
   BusinessCardInfo.sample(),
   BusinessCardInfo.sample(),
   BusinessCardInfo.sample(),
+  ],
 ];
 
-export const BusinessListScreen = (): React.ReactElement => {
+export const BusinessListScreen = (businesses: BusinessCardInfo[][]): React.ReactElement => {
 
   const renderHeader = (): React.ReactElement => (
     <React.Fragment>
@@ -23,7 +27,7 @@ export const BusinessListScreen = (): React.ReactElement => {
         contentContainerStyle={styles.horizontalList}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
-        data={businesses}
+        data={businesses[2]}
         renderItem={renderHorizontalTrainingItem}
       />
     </React.Fragment>
@@ -46,7 +50,7 @@ export const BusinessListScreen = (): React.ReactElement => {
   return (
     <List
       contentContainerStyle={styles.list}
-      data={businesses}
+      data={businesses[2]}
       renderItem={renderVerticalTrainingItem}
       ListHeaderComponent={renderHeader}
     />
