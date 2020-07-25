@@ -1,13 +1,7 @@
 import React from "react";
-import {
-  ImageBackground,
-  StyleSheet,
-  View,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, View, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Card, Layout, Button, Text } from "@ui-kitten/components";
+import { Layout, Button, Text } from "@ui-kitten/components";
 
 function Me() {
   const navigation = useNavigation();
