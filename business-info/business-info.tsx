@@ -142,7 +142,6 @@ const animatedStyles = {
     transform: [{
       translateY: scrollA,
     }],
-
   }),
 }
 
@@ -153,6 +152,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 0,
     borderBottomLeftRadius: 0,
     borderWidth: 0,
+    marginTop: -10,
   },
   circle: {
     opacity: .5,
@@ -195,7 +195,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   scroll: {
-    backgroundColor: '#222b45',
+    backgroundColor: eva.dark['color-basic-800'],
     display: 'flex',
   },
   subtitle: {
