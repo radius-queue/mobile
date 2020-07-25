@@ -43,9 +43,9 @@ function Login() {
       />
       <TouchableOpacity
         style={styles.submit}
-        onPress={() => navigation.navigate("Business")}
+        onPress={() => navigation.navigate("Feed")}
       >
-        <Text style={styles.submitText}>Submit</Text>
+        <Text style={styles.submitText}>SIGN IN</Text>
       </TouchableOpacity>
     </ImageBackground>
   );
