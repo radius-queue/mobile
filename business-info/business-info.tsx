@@ -1,10 +1,10 @@
-import React, {useState, FunctionComponent} from 'react';
+import React, {useState, useRef, FunctionComponent} from 'react';
 import {
   View,
-  ScrollView,
   StyleSheet,
-  SafeAreaView,
+  Animated,
   Text,
+  TouchableOpacity,
 } from 'react-native';
 import call from 'react-native-phone-call';
 import {Card, Layout, Button} from '@ui-kitten/components';
@@ -13,8 +13,8 @@ import Screen from '../components/screen';
 import type { BusinessInfo } from './data';
 import MapView, { Marker, Circle } from 'react-native-maps'
 import {parseTimeString, toStandardTime} from '../util/util-functions';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import defaultStyles from '../config/styles';
+import * as eva from '@eva-design/eva';
 
 interface BusinessInfoProps {
   business: BusinessInfo,
@@ -24,6 +24,8 @@ const DEGREES_PER_HUNDRED_METER = .001;
 
 const BusinessInfoScreen : FunctionComponent<BusinessInfoProps>= ({business} : BusinessInfoProps) => {
   const [editMap, setEditMap] = useState<boolean>(false);
+  const scrollA = useRef(new Animated.Value(0)).current;
+  
   const navigation = useNavigation();
 
   const calculateDelta = (radius: number) => {
@@ -44,40 +46,48 @@ const BusinessInfoScreen : FunctionComponent<BusinessInfoProps>= ({business} : B
   }
 
   return (
-    <Screen>
-      <ScrollView style={styles.scroll} scrollEnabled={true}>
-        <MapView
-          style={styles.map}
-          region={{
-            latitude: business.coordinates[0],
-            longitude: business.coordinates[1],
-            latitudeDelta: calculateDelta(business.radius),
-            longitudeDelta: calculateDelta(business.radius),
-          }}
-          onPress={() => setEditMap(!editMap)}
-          scrollEnabled={editMap}
-          zoomEnabled={editMap}
-          rotateEnabled={editMap}
-          pitchEnabled={editMap}
+      <Animated.ScrollView style={styles.scroll}
+        scrollEnabled={true}
+        onScroll={Animated.event([
+          {nativeEvent: {contentOffset: {y: scrollA}}}
+        ], {useNativeDriver: true})}
+        scrollEventThrottle={16}>
+        <Animated.View
+          style={animatedStyles.map(scrollA)}
         >
-          <Marker
-            title={business.name}
-            coordinate={{
+          <MapView
+            region={{
               latitude: business.coordinates[0],
               longitude: business.coordinates[1],
+              latitudeDelta: calculateDelta(business.radius),
+              longitudeDelta: calculateDelta(business.radius),
             }}
-          />
-          <Circle 
-            center={{
-              latitude: business.coordinates[0],
-              longitude: business.coordinates[1],
-            }}
-            radius={business.radius}
-            strokeWidth={1}
-            strokeColor={'#ff0000'}
-            style={styles.circle}
-          />
-        </MapView>
+            onPress={() => setEditMap(!editMap)}
+            scrollEnabled={editMap}
+            zoomEnabled={editMap}
+            rotateEnabled={editMap}
+            pitchEnabled={editMap}
+            style={{width: '100%', height: '100%'}}
+          >
+            <Marker
+              title={business.name}
+              coordinate={{
+                latitude: business.coordinates[0],
+                longitude: business.coordinates[1],
+              }}
+            />
+            <Circle 
+              center={{
+                latitude: business.coordinates[0],
+                longitude: business.coordinates[1],
+              }}
+              radius={business.radius}
+              strokeWidth={1}
+              strokeColor={'#ff0000'}
+              style={styles.circle}
+            />
+          </MapView>
+        </Animated.View>
         <Card style={styles.businessCard}>
           <Layout style={styles.layout} level='2'>
             <Text style={[defaultStyles.text, styles.name]}>{business.name}</Text>
@@ -122,10 +132,18 @@ const BusinessInfoScreen : FunctionComponent<BusinessInfoProps>= ({business} : B
             </View>
           </Layout>
         </Card>
-      </ScrollView>
-    </Screen>
+      </Animated.ScrollView>
   );
 };
+
+const animatedStyles = {
+  map: (scrollA : Animated.Value) => ({
+    height: 350,
+    transform: [{
+      translateY: scrollA,
+    }]
+  }),
+}
 
 const styles = StyleSheet.create({
   businessCard: {
@@ -134,6 +152,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 0,
     borderBottomLeftRadius: 0,
     marginTop: -5,
+    borderWidth: 0,
   },
   circle: {
     opacity: .5,
@@ -162,10 +181,6 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginVertical: 10,
   },
-  map: {
-    backgroundColor: 'black',
-    height: 350,
-  },
   name: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -180,7 +195,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   scroll: {
-    backgroundColor: 'white',
+    backgroundColor: '#222b45',
     display: 'flex',
   },
   subtitle: {
@@ -199,5 +214,7 @@ const DAYS : string[] = [
   'Saturday',
 ];
 
+/*
+*/
 
 export default BusinessInfoScreen;
