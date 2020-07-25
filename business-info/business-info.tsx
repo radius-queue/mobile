@@ -138,10 +138,11 @@ const BusinessInfoScreen : FunctionComponent<BusinessInfoProps>= ({business} : B
 
 const animatedStyles = {
   map: (scrollA : Animated.Value) => ({
-    height: 350,
+    height: 400,
     transform: [{
       translateY: scrollA,
-    }]
+    }],
+
   }),
 }
 
@@ -151,7 +152,6 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 10,
     borderBottomRightRadius: 0,
     borderBottomLeftRadius: 0,
-    marginTop: -5,
     borderWidth: 0,
   },
   circle: {
