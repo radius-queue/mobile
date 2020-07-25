@@ -18,7 +18,7 @@ function Login() {
   return (
     <ImageBackground
       style={styles.background}
-      source={require("./assets/brown.jpg")}
+      source={require("../assets/brown.jpg")}
     >
       <Text style={styles.header}>Sign in with Radius.</Text>
       <Text style={styles.text}>Email:</Text>
