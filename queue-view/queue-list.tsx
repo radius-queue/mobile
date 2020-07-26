@@ -50,6 +50,20 @@ const QueueList = () => {
       size: 8,
       checkIn: hardCodedDate,
     },
+    {
+      id: "klweiofjvna",
+      firstName: "Fourth",
+      lastName: "Item",
+      size: 8,
+      checkIn: hardCodedDate,
+    },
+    {
+      id: "klweiafjvna",
+      firstName: "Fifth",
+      lastName: "Item",
+      size: 8,
+      checkIn: hardCodedDate,
+    },
   ];
 
   /**
@@ -107,15 +121,11 @@ const QueueList = () => {
     <FlatList
       data={parties}
       renderItem={renderItem}
-      style={styles.list}
     />
   );
 }
 
 const styles = StyleSheet.create({
-  list: {
-    marginVertical: 6,
-  },
   party: {
     flexDirection: "row",
     justifyContent: "space-between",
