@@ -51,9 +51,11 @@ const BusinessInfoScreen : FunctionComponent<BusinessInfoProps>= ({business} : B
         onScroll={Animated.event([
           {nativeEvent: {contentOffset: {y: scrollA}}}
         ], {useNativeDriver: true})}
-        scrollEventThrottle={16}>
+        scrollEventThrottle={16}
+      >
+        
         <Animated.View
-          style={animatedStyles.map(scrollA)}
+          style={animatedStyles.mapContainer(scrollA)}
         >
           <MapView
             region={{
@@ -67,7 +69,7 @@ const BusinessInfoScreen : FunctionComponent<BusinessInfoProps>= ({business} : B
             zoomEnabled={editMap}
             rotateEnabled={editMap}
             pitchEnabled={editMap}
-            style={{width: '100%', height: '100%'}}
+            style={styles.map}
           >
             <Marker
               title={business.name}
@@ -137,11 +139,14 @@ const BusinessInfoScreen : FunctionComponent<BusinessInfoProps>= ({business} : B
 };
 
 const animatedStyles = {
-  map: (scrollA : Animated.Value) => ({
-    height: 400,
+  mapContainer: (scrollA : Animated.Value) => ({
+    height: 350,
     transform: [{
       translateY: scrollA,
     }],
+    borderBottomRightRadius: 10,
+    borderBottomLeftRadius: 10,
+    overflow: 'hidden',
   }),
 }
 
@@ -152,7 +157,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 0,
     borderBottomLeftRadius: 0,
     borderWidth: 0,
-    marginTop: -10,
+    flex: 1,
   },
   circle: {
     opacity: .5,
@@ -180,6 +185,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     borderRadius: 20,
     marginVertical: 10,
+  },
+  map: {
+    flex: 1,
   },
   name: {
     fontSize: 24,
