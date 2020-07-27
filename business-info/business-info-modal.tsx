@@ -56,9 +56,10 @@ const BusinessModal = ({show, addToQ, hide, user} : ModalProps) => {
               onChangeText={next => setPhone(next)}
               caption={'Phone Number'}
               style={styles.input}
+              keyboardType='numeric'
               returnKeyType={'done'}
             />
-             <Input
+            <Input
               value={partySize}
               onChangeText={next => setParty(next)}
               caption={'Party Size'}
@@ -67,7 +68,7 @@ const BusinessModal = ({show, addToQ, hide, user} : ModalProps) => {
               returnKeyType={'done'}
             />
           </View>
-          <View style={styles.buttonGroup}>
+          <View>
             <Button style={styles.button} onPress={addToQ} status='success'>Join</Button>
             <Button style={styles.button} onPress={onHide} status='danger'>Back</Button>
           </View>
@@ -96,10 +97,6 @@ const styles = StyleSheet.create({
   button: {
     width: '100%',
     marginVertical: 5,
-  },
-  buttonGroup: {
-    flex: 1,
-    justifyContent: 'flex-end',
   },
   container: {
     padding: 15,
