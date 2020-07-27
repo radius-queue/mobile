@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, StyleSheet, Text, View } from "react-native";
+import { FlatList, StyleSheet, Text, View, SafeAreaView } from "react-native";
 
 interface Party {
   id: string,
@@ -25,10 +25,7 @@ const timeDiffInMinutes = (t1: Date, t2: Date) => {
  * @return {View} The list representing the queue.
  */
 const QueueList = () => {
-
-
   const currentUserId = "alsdkjfalkf";
-
   const hardCodedDate = new Date("2020-07-21");
 
   const parties = [
@@ -53,6 +50,20 @@ const QueueList = () => {
       size: 8,
       checkIn: hardCodedDate,
     },
+    {
+      id: "klweiofjvna",
+      firstName: "Fourth",
+      lastName: "Item",
+      size: 8,
+      checkIn: hardCodedDate,
+    },
+    {
+      id: "klweiafjvna",
+      firstName: "Fifth",
+      lastName: "Item",
+      size: 8,
+      checkIn: hardCodedDate,
+    },
   ];
 
   /**
@@ -63,22 +74,23 @@ const QueueList = () => {
     spot: number,
     item: Party,
     backgroundColor: object,
+    color: object,
     fontWeight: object,
     currentUser: boolean
-  }> = ({ spot, item, backgroundColor, fontWeight, currentUser }) => (
+  }> = ({ spot, item, backgroundColor, color, fontWeight, currentUser }) => (
     <View style={[styles.party, backgroundColor]}>
-      <Text style={styles.partyIndex}>
+      <Text style={[styles.partyIndex, color]}>
         {spot + 1}
       </Text>
       <View style={styles.partyNameAndWait}>
-        <Text style={[styles.partyName, fontWeight]}>
+        <Text style={[styles.partyName, fontWeight, color]}>
           {item.firstName[0]}. {item.lastName[0]}. {currentUser ? '(You)' : ''}
         </Text>
-        <Text style={styles.partyWait}>
+        <Text style={[styles.partyWait, color]}>
           Waited: {timeDiffInMinutes(new Date(), item.checkIn)} min.
         </Text>
       </View>
-      <Text style={styles.partySize}>
+      <Text style={[styles.partySize, color]}>
         Party: {item.size}
       </Text>
     </View>
@@ -90,43 +102,43 @@ const QueueList = () => {
    */
   const renderItem: React.FC<{item: Party, index: number}> = ({ item, index }) => {
     let currentUser: boolean = item.id === currentUserId;
-    let backgroundColor: string = currentUser ? '#d17069' : '#dbdbdb';
+    let backgroundColor: string = currentUser ? '#00B383' : '#EDF1F7';
+    let color: string = currentUser ? '#FFFFFF' : '#101426';
     let fontWeight: string = currentUser ? 'bold' : 'normal';
     return (
       <PartyItem
         spot={index}
         item={item}
         backgroundColor={{backgroundColor}}
+        color={{color}}
         fontWeight={{fontWeight}}
         currentUser={currentUser}
       />
     );
-    };
+  };
   
   return (
-    <View>
-      <Text style={styles.title}>Your Current Line</Text>
-      <FlatList
-        data={parties}
-        renderItem={renderItem}
-      />
-    </View>
+    <FlatList
+      data={parties}
+      renderItem={renderItem}
+    />
   );
 }
 
 const styles = StyleSheet.create({
   party: {
-    flex: 2,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingHorizontal: 18,
-    paddingVertical: 18,
-    marginHorizontal: 12,
-    borderRadius: 5,
+    paddingVertical: 8,
+    marginHorizontal: 6,
+    marginVertical: 1,
+    borderRadius: 8,
   },
   partyIndex: {
-    fontSize: 24,
+    fontSize: 20,
+    width: '8%',
     marginRight: 10,
     textAlign: "left",
     fontWeight: "bold",
@@ -134,23 +146,17 @@ const styles = StyleSheet.create({
   partyName: {
     fontSize: 18,
     textAlign: "left",
-    marginBottom: 8,
+    marginBottom: 4,
   },
   partyNameAndWait: {
-    width: 150,
+    width: '60%',
   },
   partySize: {
-    width: 100,
+    width: '20%',
     textAlign: "right"
   },
   partyWait: {
     textAlign: "left",
-  },
-  title: {
-    fontSize: 32,
-    textAlign: 'center',
-    marginBottom: 10,
-    fontWeight: 'bold',
   },
 });
 

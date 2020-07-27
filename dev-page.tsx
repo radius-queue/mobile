@@ -7,7 +7,7 @@ const DevPage = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Button title={"Home"} onPress={() => nav.navigate("Home")} />
+      <Button title={"Me"} onPress={() => nav.navigate("Me")} />
       <Button
         title={"Business Info"}
         onPress={() => nav.navigate("Business")}

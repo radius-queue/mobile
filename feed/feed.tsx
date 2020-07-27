@@ -5,12 +5,20 @@ import { BusinessCard } from './business-overview-card';
 import { BusinessCardInfo } from './data';
 
 export const businesses: BusinessCardInfo[][] = [
-  [],
-  [],
   [
-  BusinessCardInfo.sample(),
-  BusinessCardInfo.sample(),
-  BusinessCardInfo.sample(),
+    BusinessCardInfo.sample(),
+    BusinessCardInfo.sample(),
+    BusinessCardInfo.sample(),
+  ],
+  [
+    BusinessCardInfo.sample(),
+    BusinessCardInfo.sample(),
+    BusinessCardInfo.sample(),
+  ],
+  [
+    BusinessCardInfo.sample(),
+    BusinessCardInfo.sample(),
+    BusinessCardInfo.sample(),
   ],
 ];
 
@@ -18,17 +26,57 @@ export const BusinessListScreen = (businesses: BusinessCardInfo[][]): React.Reac
 
   const renderHeader = (): React.ReactElement => (
     <React.Fragment>
+      {(businesses[0].length > 0) ? renderFav() : <React.Fragment/>}
+      {(businesses[1].length > 0) ? renderRecent() : <React.Fragment/>}
       <Text
         style={styles.headerTitle}
         appearance='hint'>
-        FAVORITES
+        Explore
+      </Text>
+    </React.Fragment>
+  );
+
+  const renderFav = (): React.ReactElement => (
+    <React.Fragment>
+      <Text
+        style={styles.headerTitle}
+        appearance='hint'>
+        Favorites
       </Text>
       <List
         contentContainerStyle={styles.horizontalList}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
-        data={businesses[2]}
+        data={businesses[0]}
         renderItem={renderHorizontalTrainingItem}
+      />
+    </React.Fragment>
+  );
+
+  const renderRecent = (): React.ReactElement => (
+    <React.Fragment>
+      <Text
+        style={styles.headerTitle}
+        appearance='hint'>
+        Recents
+      </Text>
+      <List
+        contentContainerStyle={styles.horizontalList}
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+        data={businesses[1]}
+        renderItem={renderHorizontalTrainingItem}
+      />
+    </React.Fragment>
+  );
+
+  const renderAll = (): React.ReactElement => (
+    <React.Fragment>
+      <List
+        contentContainerStyle={styles.verticalItem}
+        data={businesses[2]}
+        renderItem={renderVerticalTrainingItem}
+        ListHeaderComponent={renderHeader}
       />
     </React.Fragment>
   );
@@ -48,12 +96,9 @@ export const BusinessListScreen = (businesses: BusinessCardInfo[][]): React.Reac
   );
 
   return (
-    <List
-      contentContainerStyle={styles.list}
-      data={businesses[2]}
-      renderItem={renderVerticalTrainingItem}
-      ListHeaderComponent={renderHeader}
-    />
+    <React.Fragment>
+      {renderAll()}
+    </React.Fragment>
   );
 };
 
