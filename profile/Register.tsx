@@ -23,16 +23,6 @@ type FormData = {
   password: string;
 };
 
-const [secureTextEntry, setSecureTextEntry] = React.useState(true);
-const toggleSecureEntry = () => {
-  setSecureTextEntry(!secureTextEntry);
-};
-const renderInputIcon = (props) => (
-  <TouchableWithoutFeedback onPress={toggleSecureEntry}>
-    <Icon name={!secureTextEntry ? "eye" : "eye-off"} {...props} />
-  </TouchableWithoutFeedback>
-);
-
 function Register() {
   const navigation = useNavigation();
 
@@ -43,6 +33,16 @@ function Register() {
     console.log(firstName, lastName, email, password);
     navigation.navigate("Feed");
   });
+
+  const [secureTextEntry, setSecureTextEntry] = React.useState(true);
+  const toggleSecureEntry = () => {
+    setSecureTextEntry(!secureTextEntry);
+  };
+  const renderInputIcon = () => (
+    <TouchableWithoutFeedback onPress={toggleSecureEntry}>
+      <Icon name={!secureTextEntry ? "eye" : "eye-off"} />
+    </TouchableWithoutFeedback>
+  );
 
   return (
     <Layout style={styles.background} level="3">
