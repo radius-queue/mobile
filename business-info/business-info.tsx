@@ -9,8 +9,8 @@ import {
 import call from 'react-native-phone-call';
 import {Card, Layout, Button} from '@ui-kitten/components';
 import {useNavigation} from '@react-navigation/native';
-import Screen from '../components/screen';
-import type { BusinessInfo } from './data';
+import BusinessModal from './business-info-modal';
+import type { BusinessInfo, User } from './data';
 import MapView, { Marker, Circle } from 'react-native-maps'
 import {parseTimeString, toStandardTime} from '../util/util-functions';
 import defaultStyles from '../config/styles';
@@ -18,12 +18,15 @@ import * as eva from '@eva-design/eva';
 
 interface BusinessInfoProps {
   business: BusinessInfo,
+  user: User | undefined,
 }
 
 const DEGREES_PER_HUNDRED_METER = .001;
 
-const BusinessInfoScreen : FunctionComponent<BusinessInfoProps>= ({business} : BusinessInfoProps) => {
+const BusinessInfoScreen : FunctionComponent<BusinessInfoProps>= ({business, user} : BusinessInfoProps) => {
   const [editMap, setEditMap] = useState<boolean>(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
+
   const scrollA = useRef(new Animated.Value(0)).current;
   
   const navigation = useNavigation();
@@ -41,11 +44,8 @@ const BusinessInfoScreen : FunctionComponent<BusinessInfoProps>= ({business} : B
     call(args);
   };
 
-  const joinQueue = () => {
-    console.log('queue joined');
-  }
-
   return (
+    <>
       <Animated.ScrollView style={styles.scroll}
         scrollEnabled={true}
         onScroll={Animated.event([
@@ -90,7 +90,7 @@ const BusinessInfoScreen : FunctionComponent<BusinessInfoProps>= ({business} : B
             />
           </MapView>
         </Animated.View>
-        <Card style={styles.businessCard}>
+        <Card disabled={true} style={styles.businessCard}>
           <Layout style={styles.layout} level='2'>
             <Text style={[defaultStyles.text, styles.name]}>{business.name}</Text>
             <Text style={[defaultStyles.text, styles.subtitle]}>{business.address}</Text>
@@ -112,7 +112,14 @@ const BusinessInfoScreen : FunctionComponent<BusinessInfoProps>= ({business} : B
                 <Text style={defaultStyles.text}>Most Recent Wait Time:</Text>
                 <Text style={defaultStyles.text}>{business.queues[0].firstWaitTime} minutes</Text>
               </View>
-              <Button style={styles.joinButton} disabled={!business.queues[0].open} status='success' onPress={joinQueue}>Join Queue</Button>
+              <Button
+                style={styles.joinButton}
+                disabled={!business.queues[0].open}
+                status='success'
+                onPress={() => setShowModal(true)}
+              >
+                Join Queue
+              </Button>
           </Layout>
           <Layout style={styles.layout} level='2'>
             <Text style={[defaultStyles.text, styles.name]}>Hours</Text>
@@ -135,6 +142,13 @@ const BusinessInfoScreen : FunctionComponent<BusinessInfoProps>= ({business} : B
           </Layout>
         </Card>
       </Animated.ScrollView>
+      <BusinessModal
+        show={showModal}
+        addToQ={() => console.log('added')}
+        hide={() => setShowModal(false)}
+        user={user}
+      />
+    </>
   );
 };
 
@@ -182,7 +196,6 @@ const styles = StyleSheet.create({
     width: '100%',
     padding: 15,
     justifyContent: 'space-between',
-    alignItems: 'flex-start',
     borderRadius: 20,
     marginVertical: 10,
   },

@@ -32,3 +32,13 @@ class QueueStatus {
     return new QueueStatus(true, 5, 15);
   }
 }
+
+export class User {
+  constructor(readonly firstName: string, readonly lastName: string, readonly phoneNumber: string) {
+
+  };
+
+  static sample() {
+    return new User('Samuel', 'Berensohn', '281-732-5876');
+  }
+}

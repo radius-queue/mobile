@@ -6,7 +6,7 @@ import Me from "./profile/Me";
 import Login from "./profile/Login";
 import Register from "./profile/Register";
 import BusinessInfoScreen from "./business-info/business-info";
-import { BusinessInfo } from "./business-info/data";
+import { BusinessInfo, User } from "./business-info/data";
 import DevPage from "./dev-page";
 import QueuePage from "./queue-view/queue-page";
 
@@ -31,7 +31,7 @@ export default function App() {
           <Screen name="Register" component={Register} />
           <Screen name="Login" component={Login} />
           <Screen name="Business">
-            {() => <BusinessInfoScreen business={BusinessInfo.sample()} />}
+            {() => <BusinessInfoScreen user={User.sample()} business={BusinessInfo.sample()} />}
           </Screen>
           <Screen name="Feed">
             {() => <BusinessListScreen {...businesses} />}
