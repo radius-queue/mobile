@@ -1,7 +1,19 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  ImageProps,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Layout, Button, Text, Input } from "@ui-kitten/components";
+import {
+  Layout,
+  Button,
+  Text,
+  Input,
+  Icon,
+  IconRegistry,
+} from "@ui-kitten/components";
 import { useForm, Controller } from "react-hook-form";
 
 type FormData = {
@@ -10,6 +22,16 @@ type FormData = {
   email: string;
   password: string;
 };
+
+const [secureTextEntry, setSecureTextEntry] = React.useState(true);
+const toggleSecureEntry = () => {
+  setSecureTextEntry(!secureTextEntry);
+};
+const renderInputIcon = (props) => (
+  <TouchableWithoutFeedback onPress={toggleSecureEntry}>
+    <Icon name={!secureTextEntry ? "eye" : "eye-off"} {...props} />
+  </TouchableWithoutFeedback>
+);
 
 function Register() {
   const navigation = useNavigation();
@@ -114,6 +136,8 @@ function Register() {
               value={value}
               placeholder="Password"
               size="large"
+              secureTextEntry={secureTextEntry}
+              accessoryRight={renderInputIcon}
             />
           )}
           name="password"
@@ -138,11 +162,45 @@ function Register() {
           Register
         </Button>
       </View>
+      <View style={styles.altContainer}>
+        <Button
+          style={styles.altGoogle}
+          status="success"
+          onPress={() => {
+            console.log("Google sign in");
+          }}
+        >
+          Sign in with Google
+        </Button>
+        <Button
+          style={styles.altFacebook}
+          status="info"
+          onPress={() => {
+            console.log("Facebook sign in");
+          }}
+        >
+          Sign in with Facebook
+        </Button>
+      </View>
     </Layout>
   );
 }
 
 const styles = StyleSheet.create({
+  altContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+    margin: 10,
+  },
+
+  altGoogle: {
+    marginBottom: 10,
+  },
+
+  altFacebook: {
+    marginBottom: 10,
+  },
+
   background: {
     flex: 1,
     flexDirection: "column",
