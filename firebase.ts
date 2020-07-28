@@ -4,13 +4,14 @@ import '@firebase/auth';
 import '@firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: 'YOUR_KEY_HERE_AIzaSyAOWH',
-  authDomain: 'your-auth-domain-b1234.firebaseapp.com',
-  databaseURL: 'https://your-database-name.firebaseio.com',
-  projectId: 'your-project-id-1234',
-  storageBucket: 'your-project-id-1234.appspot.com',
-  messagingSenderId: '12345-insert-yourse',
-  appId: 'insert yours: 1:1234:web:ee873bd1234c0deb7eba61ce',
+  apiKey: "AIzaSyDLKa3MCGky3T98RZrP8DZZWffCnz6tnV8",
+  authDomain: "ahead-9d906.firebaseapp.com",
+  databaseURL: "https://ahead-9d906.firebaseio.com",
+  projectId: "ahead-9d906",
+  storageBucket: "ahead-9d906.appspot.com",
+  messagingSenderId: "580604661554",
+  appId: "1:580604661554:web:7b0223746bc9f873da912b",
+  measurementId: "G-C73S6LEMS5"
 };
 
 if (!firebase.apps.length) {
