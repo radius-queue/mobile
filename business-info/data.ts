@@ -16,7 +16,7 @@ export class BusinessInfo {
       [1, 2, 3, 4, 5, 6, 7].map(() => [new Date(), new Date()]),
       '281-732-5876',
       [QueueStatus.sample()],
-      [47.569887, -122.055252],
+      [47.54027932102029, -122.059414123455],
       50,
       '21289 SE 42nd Pl, Issaquah, WA 98029, USA'
     );
