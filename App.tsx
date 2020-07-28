@@ -12,13 +12,15 @@ import QueuePage from "./queue-view/queue-page";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import { ApplicationProvider } from "@ui-kitten/components";
+import { ApplicationProvider, IconRegistry } from "@ui-kitten/components";
+import { EvaIconsPack } from "@ui-kitten/eva-icons";
 import * as eva from "@eva-design/eva";
 import { BusinessListScreen, businesses } from "./feed/feed";
 
 const { Navigator, Screen } = createStackNavigator();
 
 export default function App() {
+  <IconRegistry icons={EvaIconsPack} />;
   return (
     <ApplicationProvider {...eva} theme={eva.dark}>
       <NavigationContainer>
@@ -28,7 +30,7 @@ export default function App() {
         >
           <Screen name="DevPage" component={DevPage} />
           <Screen name="Me" component={Me} />
-          <Screen name="Register" component={Register} />
+          <Screen name="Register" component={Register} {...IconRegistry} />
           <Screen name="Login" component={Login} />
           <Screen name="Business">
             {() => <BusinessInfoScreen user={User.sample()} business={BusinessInfo.sample()} />}

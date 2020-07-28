@@ -23,13 +23,13 @@ function Me() {
           status="basic"
           onPress={() => navigation.navigate("Login")}
         >
-          Login
+          Log In
         </Button>
         <Button
           style={styles.button}
           onPress={() => navigation.navigate("Register")}
         >
-          Register
+          Sign Up
         </Button>
       </View>
     </Layout>

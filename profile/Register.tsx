@@ -1,8 +1,15 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import {
+  View,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  ImageProps,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Layout, Button, Text, Input } from "@ui-kitten/components";
+import { Layout, Button, Text, Input, Icon } from "@ui-kitten/components";
 import { useForm, Controller } from "react-hook-form";
+import { Feather } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 
 type FormData = {
   firstName: string;
@@ -21,6 +28,27 @@ function Register() {
     console.log(firstName, lastName, email, password);
     navigation.navigate("Feed");
   });
+
+  const eyeOff = <Feather name="eye-off" size={24} color="white" />;
+  const eye = <Feather name="eye" size={24} color="white" />;
+  const google = <AntDesign name="google" size={24} color="white" />;
+  const facebook = <AntDesign name="facebook-square" size={24} color="white" />;
+
+  const [secureTextEntry, setSecureTextEntry] = React.useState(true);
+  const toggleSecureEntry = () => {
+    setSecureTextEntry(!secureTextEntry);
+  };
+  const renderInputIcon = () => (
+    <TouchableWithoutFeedback onPress={toggleSecureEntry}>
+      {!secureTextEntry ? eye : eyeOff}
+    </TouchableWithoutFeedback>
+  );
+  const googleIcon = () => (
+    <TouchableWithoutFeedback>{google}</TouchableWithoutFeedback>
+  );
+  const facebookIcon = () => (
+    <TouchableWithoutFeedback>{facebook}</TouchableWithoutFeedback>
+  );
 
   return (
     <Layout style={styles.background} level="3">
@@ -114,6 +142,8 @@ function Register() {
               value={value}
               placeholder="Password"
               size="large"
+              secureTextEntry={secureTextEntry}
+              accessoryRight={renderInputIcon}
             />
           )}
           name="password"
@@ -138,11 +168,47 @@ function Register() {
           Register
         </Button>
       </View>
+      <View style={styles.altContainer}>
+        <Button
+          style={styles.altGoogle}
+          status="success"
+          accessoryRight={googleIcon}
+          onPress={() => {
+            console.log("Google sign in");
+          }}
+        >
+          Sign in with Google
+        </Button>
+        <Button
+          style={styles.altFacebook}
+          status="info"
+          accessoryRight={facebookIcon}
+          onPress={() => {
+            console.log("Facebook sign in");
+          }}
+        >
+          Sign in with Facebook
+        </Button>
+      </View>
     </Layout>
   );
 }
 
 const styles = StyleSheet.create({
+  altContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+    margin: 10,
+  },
+
+  altGoogle: {
+    marginBottom: 10,
+  },
+
+  altFacebook: {
+    marginBottom: 10,
+  },
+
   background: {
     flex: 1,
     flexDirection: "column",
