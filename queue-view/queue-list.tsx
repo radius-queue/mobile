@@ -64,6 +64,13 @@ const QueueList = () => {
       size: 8,
       checkIn: hardCodedDate,
     },
+    {
+      id: "klssiafjvna",
+      firstName: "Sixth",
+      lastName: "Item",
+      size: 8,
+      checkIn: hardCodedDate,
+    },
   ];
 
   /**
