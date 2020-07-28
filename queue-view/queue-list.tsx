@@ -1,5 +1,5 @@
 import React from 'react';
-import { FlatList, StyleSheet, Text, View, SafeAreaView } from "react-native";
+import { FlatList, StyleSheet, Text, View } from "react-native";
 
 interface Party {
   id: string,
