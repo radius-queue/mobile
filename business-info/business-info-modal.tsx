@@ -41,7 +41,7 @@ const BusinessModal = ({show, addToQ, hide, user, coords, radius} : ModalProps) 
     setParty('');
   }
 
-  const checkDistance : () => Promise<[number, boolean | undefined]> = async () => {
+  const checkDistance : () => Promise<[number | undefined, boolean]> = async () => {
     const permission: Location.PermissionResponse = await Location.requestPermissionsAsync();
 
     if (permission.granted) {
@@ -94,11 +94,11 @@ const BusinessModal = ({show, addToQ, hide, user, coords, radius} : ModalProps) 
   };
 
   const onSubmit = async () => {
-    const shouldAdd : [number, boolean | undefined] = await checkDistance();
-    console.log(shouldAdd);
+    const shouldAdd : [number | undefined, boolean] = await checkDistance();
+
     if (shouldAdd[1]) {
       addToQ(User.sample());
-    } else if (shouldAdd[1] !== undefined) { // they are not inside the radius
+    } else if (shouldAdd[0] !== undefined) { // they are not inside the radius
       Alert.alert(
         "You're Outside the Radius",
         `You are approximately ${shouldAdd[0] - radius} meters away from the edge of the radius.` + 
