@@ -3,6 +3,7 @@ import { ListRenderItemInfo, StyleSheet } from 'react-native';
 import { List, Text } from '@ui-kitten/components';
 import { BusinessCard } from './business-overview-card';
 import { BusinessCardInfo } from './data';
+import Screen from '../components/screen';
 
 export const businesses: BusinessCardInfo[][] = [
   [
@@ -73,7 +74,7 @@ export const BusinessListScreen = (businesses: BusinessCardInfo[][]): React.Reac
   const renderAll = (): React.ReactElement => (
     <React.Fragment>
       <List
-        contentContainerStyle={styles.verticalItem}
+        contentContainerStyle={styles.list}
         data={businesses[2]}
         renderItem={renderVerticalTrainingItem}
         ListHeaderComponent={renderHeader}
@@ -96,9 +97,9 @@ export const BusinessListScreen = (businesses: BusinessCardInfo[][]): React.Reac
   );
 
   return (
-    <React.Fragment>
+    <Screen>
       {renderAll()}
-    </React.Fragment>
+    </Screen>
   );
 };
 

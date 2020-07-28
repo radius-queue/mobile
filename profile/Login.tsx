@@ -1,13 +1,24 @@
 import React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, TouchableWithoutFeedback } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Layout, Button, Text, Input } from "@ui-kitten/components";
+import { AntDesign } from "@expo/vector-icons";
 
 function Login() {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
 
   const navigation = useNavigation();
+
+  const google = <AntDesign name="google" size={24} color="white" />;
+  const facebook = <AntDesign name="facebook-square" size={24} color="white" />;
+
+  const googleIcon = () => (
+    <TouchableWithoutFeedback>{google}</TouchableWithoutFeedback>
+  );
+  const facebookIcon = () => (
+    <TouchableWithoutFeedback>{facebook}</TouchableWithoutFeedback>
+  );
 
   return (
     <Layout style={styles.background} level="3">
@@ -28,6 +39,28 @@ function Login() {
       <Button style={styles.button} onPress={() => navigation.navigate("Feed")}>
         Login with Email
       </Button>
+      <View style={styles.altContainer}>
+        <Button
+          style={styles.altGoogle}
+          status="success"
+          accessoryRight={googleIcon}
+          onPress={() => {
+            console.log("Google sign in");
+          }}
+        >
+          Sign in with Google
+        </Button>
+        <Button
+          style={styles.altFacebook}
+          status="info"
+          accessoryRight={facebookIcon}
+          onPress={() => {
+            console.log("Facebook sign in");
+          }}
+        >
+          Sign in with Facebook
+        </Button>
+      </View>
       <View style={styles.registerContainer}>
         <Text>Don't have a Radius Account?</Text>
         <Button
@@ -43,6 +76,21 @@ function Login() {
 }
 
 const styles = StyleSheet.create({
+  altContainer: {
+    flex: 1,
+    justifyContent: "flex-start",
+    width: "100%",
+    paddingTop: 25,
+  },
+
+  altGoogle: {
+    marginBottom: 10,
+  },
+
+  altFacebook: {
+    marginBottom: 10,
+  },
+
   background: {
     flex: 1,
     flexDirection: "column",
