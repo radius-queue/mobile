@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "580604661554",
+    "firebase_url": "https://ahead-9d906.firebaseio.com",
+    "project_id": "ahead-9d906",
+    "storage_bucket": "ahead-9d906.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:580604661554:android:0334900acb8f99b0da912b",
+        "android_client_info": {
+          "package_name": "com.radius_android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "580604661554-ogb94mm9gfi5kcnca13onrmbfa0agk11.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgv7gwdICeSljdc8S4lR-ORqh5CdRDcdA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "580604661554-ogb94mm9gfi5kcnca13onrmbfa0agk11.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "580604661554-n3kuuatginuc94ufcabm70eb60fq4jan.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.radius-ios"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

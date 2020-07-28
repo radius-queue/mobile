@@ -21,10 +21,14 @@
         "googleMaps": {
           "apiKey": ""
         }
-      }
+      },
+      "package": "com.radius_android",
+      "googleServicesFile": "./google-services.json"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.radius-ios",
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "web": {
       "favicon": "./assets/favicon.png"
