@@ -23,6 +23,7 @@
     "expo-intent-launcher": "^8.2.1",
     "expo-location": "~8.2.1",
     "expo-status-bar": "^1.0.2",
+    "firebase": "7.9.0",
     "haversine-geolocation": "^1.5.0",
     "react": "~16.11.0",
     "react-dom": "~16.11.0",
