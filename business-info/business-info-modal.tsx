@@ -20,7 +20,7 @@ const RADIUS_BUFFER_METERS = 10;
 
 interface ModalProps {
   show: boolean,
-  addToQ: (user: User) => void,
+  addToQ: () => void,
   hide: () => void,
   user: User | undefined,
   coords: [number, number],
@@ -32,6 +32,7 @@ const BusinessModal = ({show, addToQ, hide, user, coords, radius} : ModalProps) 
   const [lastName, setLast] = useState<string>(user ? user.lastName : '');
   const [phoneNumber, setPhone] = useState<string>(user ? user.phoneNumber : '');
   const [partySize, setParty] = useState<string>('');
+  const [submitted, setSubmitted] = useState<boolean>(false);
 
   const onHide = () => {
     hide();
@@ -39,6 +40,7 @@ const BusinessModal = ({show, addToQ, hide, user, coords, radius} : ModalProps) 
     setLast(user ? user.lastName : '');
     setPhone(user ? user.phoneNumber : '');
     setParty('');
+    setSubmitted(false);
   }
 
   const checkDistance : () => Promise<[number | undefined, boolean]> = async () => {
@@ -57,10 +59,8 @@ const BusinessModal = ({show, addToQ, hide, user, coords, radius} : ModalProps) 
         }, 'm'
       );
       if(distance <= radius + RADIUS_BUFFER_METERS) {
-        console.log('INSIDE w/ DIST: ' + distance);
         return [distance, true];
       } else {
-        console.log('OUTSIDE W/ DIST: ' + distance);
         return [distance, false];
       }
     } else {
@@ -93,24 +93,35 @@ const BusinessModal = ({show, addToQ, hide, user, coords, radius} : ModalProps) 
     }
   };
 
-  const onSubmit = async () => {
-    const shouldAdd : [number | undefined, boolean] = await checkDistance();
+  const validateForm = () => {
+    const nameValid = firstName.length > 0 && lastName.length > 0;
+    const phoneValid = phoneNumber.length === 10;
+    const partySizeValid = partySize.length > 0;
+    return nameValid && phoneValid && partySizeValid;
+  }
 
-    if (shouldAdd[1]) {
-      addToQ(User.sample());
-    } else if (shouldAdd[0] !== undefined) { // they are not inside the radius
-      Alert.alert(
-        "You're Outside the Radius",
-        `You are approximately ${shouldAdd[0] - radius} meters away from the edge of the radius.` + 
-        ' Please move closer to the business before joining the queue.',
-        [
-          {
-            text: 'OK',
-            style: 'cancel',
-          }
-        ],
-        {cancelable: false},
-      )
+  const onSubmit = async () => {
+    setSubmitted(true);
+    if (validateForm()) {
+      const shouldAdd : [number | undefined, boolean] = await checkDistance();
+
+      if (shouldAdd[1]) {
+        onHide();
+        addToQ();
+      } else if (shouldAdd[0] !== undefined) { // they are not inside the radius
+        Alert.alert(
+          "You're Outside the Radius",
+          `You are approximately ${shouldAdd[0] - radius} meters away from the edge of the radius.` + 
+          ' Please move closer to the business before joining the queue.',
+          [
+            {
+              text: 'OK',
+              style: 'cancel',
+            }
+          ],
+          {cancelable: false},
+        )
+      }
     }
   }
 
@@ -128,28 +139,32 @@ const BusinessModal = ({show, addToQ, hide, user, coords, radius} : ModalProps) 
               value={firstName}
               onChangeText={next => setFirst(next)}
               style={styles.input}
-              caption={'First Name'}
+              caption={submitted && firstName.length === 0 ? 'Please Enter a First Name' : 'First Name'}
+              status={submitted && firstName.length === 0 ? 'danger' : 'basic'}
               returnKeyType={'done'}
             />
             <Input
               value={lastName}
               onChangeText={next => setLast(next)}
               style={styles.input}
-              caption={'Last Name'}
+              caption={submitted && lastName.length === 0 ? 'Please Enter a Last Name' : 'Last Name'}
+              status={(submitted && lastName.length === 0) ?  'danger' : 'basic' }
               returnKeyType={'done'}
             />
             <Input
               value={phoneNumber}
               onChangeText={next => setPhone(next)}
-              caption={'Phone Number'}
               style={styles.input}
+              caption={submitted && phoneNumber.length !== 10 ? 'Enter a 10-Digit Phone Number' : 'Phone Number'}
+              status={submitted && phoneNumber.length !== 10 ?  'danger' : 'basic' }
               keyboardType='numeric'
               returnKeyType={'done'}
             />
             <Input
               value={partySize}
               onChangeText={next => setParty(next)}
-              caption={'Party Size'}
+              caption={submitted && partySize.length === 0 ? 'Please Enter a Party Size' : 'Party Size'}
+              status={(submitted && partySize.length === 0) ?  'danger' : 'basic' }
               style={styles.input}
               keyboardType='numeric'
               returnKeyType={'done'}

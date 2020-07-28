@@ -50,7 +50,9 @@ const BusinessInfoScreen : FunctionComponent<BusinessInfoProps>= ({business, use
     call(args);
   };
 
-
+  const addToQ = () => {
+    navigation.navigate('Queue');
+  }
 
   return (
     <>
@@ -152,7 +154,7 @@ const BusinessInfoScreen : FunctionComponent<BusinessInfoProps>= ({business, use
       </Animated.ScrollView>
       <BusinessModal
         show={showJoin}
-        addToQ={() => console.log('hey')}
+        addToQ={addToQ}
         coords={business.coordinates}
         radius={business.radius}
         hide={() => setJoin(false)}

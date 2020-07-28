@@ -24,6 +24,7 @@ function Register() {
   const { control, register, setValue, handleSubmit, errors } = useForm<
     FormData
   >();
+  
   const onSubmit = handleSubmit(({ firstName, lastName, email, password }) => {
     console.log(firstName, lastName, email, password);
     navigation.navigate("Feed");
