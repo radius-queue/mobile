@@ -12,11 +12,11 @@ function Me() {
         <Text style={styles.headerText}>
           Log in using your email address and password.
         </Text>
-        <Image
-          style={styles.headerLogo}
-          source={require("../assets/radius-logo.png")}
-        ></Image>
       </View>
+      <Image
+          style={styles.headerLogo}
+          source={require("../assets/log-in-art.png")}
+      />
       <View style={styles.buttonGroup}>
         <Button
           style={styles.button}
@@ -63,14 +63,18 @@ const styles = StyleSheet.create({
   },
 
   headerLogo: {
-    width: 200,
-    height: 200,
+    width: 256,
+    height: 320,
+    marginTop: '67%',
     alignSelf: "center",
     top: 10,
   },
 
   headerText: {
-    margin: 2,
+    margin: 3,
+    marginTop: '15%',
+    fontSize: 25,
+    textAlign: 'center',
   },
 });
 
