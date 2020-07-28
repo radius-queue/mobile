@@ -12,11 +12,11 @@ function Me() {
         <Text style={styles.headerText}>
           Log in using your email address and password.
         </Text>
-      </View>
-      <Image
+        <Image
           style={styles.headerLogo}
           source={require("../assets/log-in-art.png")}
-      />
+        />
+      </View>
       <View style={styles.buttonGroup}>
         <Button
           style={styles.button}
@@ -65,16 +65,15 @@ const styles = StyleSheet.create({
   headerLogo: {
     width: 256,
     height: 320,
-    marginTop: '67%',
     alignSelf: "center",
     top: 10,
   },
 
   headerText: {
     margin: 3,
-    marginTop: '15%',
+    marginTop: "15%",
     fontSize: 25,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });
 
