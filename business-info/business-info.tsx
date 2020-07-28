@@ -5,6 +5,9 @@ import {
   Animated,
   Text,
   TouchableOpacity,
+  Alert,
+  Platform,
+  Linking,
 } from 'react-native';
 import call from 'react-native-phone-call';
 import {Card, Layout, Button} from '@ui-kitten/components';
@@ -15,6 +18,9 @@ import MapView, { Marker, Circle } from 'react-native-maps'
 import {parseTimeString, toStandardTime} from '../util/util-functions';
 import defaultStyles from '../config/styles';
 import * as eva from '@eva-design/eva';
+import * as Location from 'expo-location';
+import * as IntentLauncherAndroid from 'expo-intent-launcher';
+import HaversineGeolocation from 'haversine-geolocation';
 
 interface BusinessInfoProps {
   business: BusinessInfo,
@@ -25,7 +31,7 @@ const DEGREES_PER_HUNDRED_METER = .001;
 
 const BusinessInfoScreen : FunctionComponent<BusinessInfoProps>= ({business, user} : BusinessInfoProps) => {
   const [editMap, setEditMap] = useState<boolean>(false);
-  const [showModal, setShowModal] = useState<boolean>(false);
+  const [showJoin, setJoin] = useState<boolean>(false);
 
   const scrollA = useRef(new Animated.Value(0)).current;
   
@@ -43,6 +49,8 @@ const BusinessInfoScreen : FunctionComponent<BusinessInfoProps>= ({business, use
 
     call(args);
   };
+
+
 
   return (
     <>
@@ -116,7 +124,7 @@ const BusinessInfoScreen : FunctionComponent<BusinessInfoProps>= ({business, use
                 style={styles.joinButton}
                 disabled={!business.queues[0].open}
                 status='success'
-                onPress={() => setShowModal(true)}
+                onPress={() => setJoin(true)}
               >
                 Join Queue
               </Button>
@@ -143,9 +151,11 @@ const BusinessInfoScreen : FunctionComponent<BusinessInfoProps>= ({business, use
         </Card>
       </Animated.ScrollView>
       <BusinessModal
-        show={showModal}
-        addToQ={() => console.log('added')}
-        hide={() => setShowModal(false)}
+        show={showJoin}
+        addToQ={() => console.log('hey')}
+        coords={business.coordinates}
+        radius={business.radius}
+        hide={() => setJoin(false)}
         user={user}
       />
     </>
