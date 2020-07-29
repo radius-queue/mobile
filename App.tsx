@@ -9,6 +9,7 @@ import BusinessInfoScreen from "./business-info/business-info";
 import { BusinessInfo, User } from "./business-info/data";
 import DevPage from "./dev-page";
 import QueuePage from "./queue-view/queue-page";
+import ProfilePage from "./profile/profile-page";
 
 import { NavigationContainer, RouteProp } from "@react-navigation/native";
 import {
@@ -65,6 +66,13 @@ const TabNavigator = () => (
       options={{
         tabBarLabel: "QUEUE",
         tabBarIcon: ({ color, size }) => queueIcon,
+      }}
+    />
+    <Tab.Screen
+      name="Profile"
+      component={ProfilePage}
+      options={{
+        tabBarLabel: "PROF",
       }}
     />
   </Tab.Navigator>
