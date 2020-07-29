@@ -3,6 +3,10 @@ import { StyleSheet, View, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Layout, Button, Text } from "@ui-kitten/components";
 
+import { createStackNavigator } from "@react-navigation/stack";
+
+const navigator = createStackNavigator();
+
 function Me() {
   const navigation = useNavigation();
 
