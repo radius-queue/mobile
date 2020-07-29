@@ -8,6 +8,7 @@ import {
 import { useNavigation } from "@react-navigation/native";
 import { Layout, Button, Text, Input, Icon } from "@ui-kitten/components";
 import { useForm, Controller } from "react-hook-form";
+
 import { Feather } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 
@@ -24,7 +25,7 @@ function Register() {
   const { control, register, setValue, handleSubmit, errors } = useForm<
     FormData
   >();
-  
+
   const onSubmit = handleSubmit(({ firstName, lastName, email, password }) => {
     console.log(firstName, lastName, email, password);
     navigation.navigate("Feed");

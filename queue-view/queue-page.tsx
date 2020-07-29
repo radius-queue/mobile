@@ -81,7 +81,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     backgroundColor: eva.dark['color-basic-800'],
     height: '100%',
-    paddingVertical: '10%',
+    paddingTop: '10%',
+    paddingBottom: '1%',
   },
   emoji: {
     fontSize: 35,
