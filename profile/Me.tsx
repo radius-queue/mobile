@@ -4,10 +4,22 @@ import { useNavigation } from "@react-navigation/native";
 import { Layout, Button, Text } from "@ui-kitten/components";
 
 import { createStackNavigator } from "@react-navigation/stack";
+import Login from "./Login";
+import Register from "./Register";
 
-const navigator = createStackNavigator();
+const Stack = createStackNavigator();
 
-function Me() {
+function MyStack() {
+  return (
+    <Stack.Navigator headerMode="none">
+      <Stack.Screen name="Me" component={MeContent} />
+      <Stack.Screen name="Login" component={Login} />
+      <Stack.Screen name="Register" component={Register} />
+    </Stack.Navigator>
+  );
+}
+
+function MeContent() {
   const navigation = useNavigation();
 
   return (
@@ -38,6 +50,10 @@ function Me() {
       </View>
     </Layout>
   );
+}
+
+function Me() {
+  return <MyStack />;
 }
 
 const styles = StyleSheet.create({

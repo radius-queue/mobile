@@ -35,7 +35,7 @@ const meIcon = <MaterialIcons name="person" size={30} color="black" />;
 const queueIcon = <Fontisto name="list-1" size={22} color="black" />;
 
 const TabNavigator = () => (
-  <Tab.Navigator initialRouteName="DevPage">
+  <Tab.Navigator initialRouteName="Me">
     <Tab.Screen
       name="Dev"
       component={DevPage}
@@ -72,7 +72,7 @@ const TabNavigator = () => (
       name="Profile"
       component={ProfilePage}
       options={{
-        tabBarLabel: "PROF",
+        tabBarLabel: "PROFILE",
       }}
     />
   </Tab.Navigator>
