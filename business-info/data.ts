@@ -29,16 +29,16 @@ class QueueStatus {
   };
 
   static sample() {
-    return new QueueStatus(true, 5, 15);
+    return new QueueStatus(true, 5, 15, [], []);
   }
 }
 
 export class User {
-  constructor(readonly firstName: string, readonly lastName: string, readonly phoneNumber: string) {
+  constructor(readonly firstName: string, readonly lastName: string, readonly phoneNumber: string, readonly recents: string[], readonly favs: string[]) {
 
   };
 
   static sample() {
-    return new User('Samuel', 'Berensohn', '281-732-5876');
+    return new User('Samuel', 'Berensohn', '2817325876', [], []);
   }
 }

@@ -21,6 +21,7 @@ import * as eva from "@eva-design/eva";
 import * as Location from "expo-location";
 import * as IntentLauncherAndroid from "expo-intent-launcher";
 import HaversineGeolocation from "haversine-geolocation";
+import {Fontisto, SimpleLineIcons} from '@expo/vector-icons';
 
 interface BusinessInfoProps {
   business: BusinessInfo;
@@ -35,6 +36,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
 }: BusinessInfoProps) => {
   const [editMap, setEditMap] = useState<boolean>(false);
   const [showJoin, setJoin] = useState<boolean>(false);
+  const [isFav, setIsFav] = useState<boolean>(false);
 
   const scrollA = useRef(new Animated.Value(0)).current;
 
@@ -103,17 +105,25 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
           </MapView>
         </Animated.View>
         <Card disabled={true} style={styles.businessCard}>
-          <Layout style={styles.layout} level="2">
-            <Text style={[defaultStyles.text, styles.name]}>
-              {business.name}
-            </Text>
-            <Text style={[defaultStyles.text, styles.subtitle]}>
-              {business.address}
-            </Text>
-            <TouchableOpacity onPress={callHandler}>
-              <Text style={[defaultStyles.text, styles.subtitle, styles.phone]}>
-                {business.phone}
+          <Layout style={[styles.layout, {flexDirection: 'row'}]} level="2">
+            <View>
+              <Text style={[defaultStyles.text, styles.name]}>
+                {business.name}
               </Text>
+              <Text style={[defaultStyles.text, styles.subtitle]}>
+                {business.address}
+              </Text>
+              <TouchableOpacity onPress={callHandler}>
+                <Text style={[defaultStyles.text, styles.subtitle, styles.phone]}>
+                  {business.phone}
+                </Text>
+              </TouchableOpacity>
+            </View>
+            <TouchableOpacity disabled={!!!user} onPress={() => setIsFav(!isFav)}>
+              {!isFav
+                ? <SimpleLineIcons name="star" size={24} color="yellow" />
+                : <Fontisto name='star'size={24} color='yellow'/>
+              }
             </TouchableOpacity>
           </Layout>
           <Layout level="2" style={styles.layout}>
