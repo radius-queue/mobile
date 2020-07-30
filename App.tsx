@@ -27,27 +27,39 @@ import { BusinessListScreen, businesses } from "./feed/feed";
 import { Entypo } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Fontisto } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator();
 
-const feedIcon = <Entypo name="news" size={24} color="black" />;
-const meIcon = <MaterialIcons name="person" size={30} color="black" />;
-const queueIcon = <Fontisto name="list-1" size={22} color="black" />;
+const feedIcon = <Entypo name="news" size={24} color="white" />;
+const meIcon = <MaterialIcons name="person" size={30} color="white" />;
+const queueIcon = <Fontisto name="list-1" size={22} color="white" />;
+const devIcon = <MaterialIcons name="developer-mode" size={24} color="white" />;
+const profileIcon = <AntDesign name="tags" size={30} color="white" />;
 
 const TabNavigator = () => (
-  <Tab.Navigator initialRouteName="Me">
+  <Tab.Navigator
+    initialRouteName="Me"
+    tabBarOptions={{
+      activeTintColor: "#DB8B00",
+      inactiveTintColor: "white",
+      activeBackgroundColor: "#091C7A",
+      inactiveBackgroundColor: "#091C7A",
+    }}
+  >
     <Tab.Screen
       name="Dev"
       component={DevPage}
       options={{
         tabBarLabel: "DEV",
+        tabBarIcon: () => devIcon,
       }}
     />
     <Tab.Screen
       name="Feed"
       options={{
         tabBarLabel: "FEED",
-        tabBarIcon: ({ color, size }) => feedIcon,
+        tabBarIcon: () => feedIcon,
       }}
     >
       {() => <BusinessListScreen {...businesses} />}
@@ -57,7 +69,7 @@ const TabNavigator = () => (
       component={Me}
       options={{
         tabBarLabel: "ME",
-        tabBarIcon: ({ color, size }) => meIcon,
+        tabBarIcon: () => meIcon,
       }}
     />
     <Tab.Screen
@@ -65,7 +77,7 @@ const TabNavigator = () => (
       component={QueuePage}
       options={{
         tabBarLabel: "QUEUE",
-        tabBarIcon: ({ color, size }) => queueIcon,
+        tabBarIcon: () => queueIcon,
       }}
     />
     <Tab.Screen
@@ -73,6 +85,7 @@ const TabNavigator = () => (
       component={ProfilePage}
       options={{
         tabBarLabel: "PROFILE",
+        tabBarIcon: () => profileIcon,
       }}
     />
   </Tab.Navigator>
