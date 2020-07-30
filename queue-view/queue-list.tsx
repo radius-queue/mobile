@@ -7,7 +7,7 @@ interface Party {
   lastName: string,
   size: number,
   checkIn: Date,
-}
+};
 
 /**
 * Calculates the time difference in minutes betweeen two Date objects.

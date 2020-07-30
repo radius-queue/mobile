@@ -24,6 +24,8 @@ import {
 import * as eva from "@eva-design/eva";
 import { BusinessListScreen, businesses } from "./feed/feed";
 
+import {sampleUserInfo} from "./profile/profile-page"
+
 import { Entypo } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Fontisto } from "@expo/vector-icons";
@@ -82,12 +84,13 @@ const TabNavigator = () => (
     />
     <Tab.Screen
       name="Profile"
-      component={ProfilePage}
       options={{
         tabBarLabel: "PROFILE",
         tabBarIcon: () => profileIcon,
       }}
-    />
+    >
+      {() => <ProfilePage {...sampleUserInfo} />}
+    </Tab.Screen>
   </Tab.Navigator>
 );
 
