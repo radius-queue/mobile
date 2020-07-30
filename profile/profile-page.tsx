@@ -12,7 +12,7 @@ interface userInfo {
 };
 
 export const sampleUserInfo: userInfo = {
-  email: 'profileSample@uw.edu',
+  email: 'grantmwilliams38@gmail.com',
   firstName: 'Harry',
   lastName: 'Husky',
   phoneNumber: '(206)876-4432'
@@ -24,12 +24,12 @@ const ProfilePage = (curUserInfo: userInfo): React.ReactElement => {
       <View style={[styles.card, styles.headerCard]}>
         <Text style={styles.pageTitle}>Your Radius Profile</Text>
       </View>
-      <View style={styles.card}>
+      <View style={[styles.card, styles.infoCard]}>
         <Text style={styles.cardHeader}>📇 Basic Info</Text>
         <View style={styles.cardContent}>
-          <Text style={styles.contentLabel}>Name: <Text style={styles.contentInfo}>{curUserInfo.firstName} {curUserInfo.lastName}</Text></Text>
-          <Text style={styles.contentLabel}>Phone: <Text style={styles.contentInfo}>{curUserInfo.phoneNumber}</Text></Text>
-          <Text style={styles.contentLabel}>Email: <Text style={styles.contentInfo}>{curUserInfo.email}</Text></Text>
+          <Text style={styles.contentLabel}>Name: {'\t'}<Text style={styles.contentInfo}>{curUserInfo.firstName} {curUserInfo.lastName}</Text></Text>
+          <Text style={styles.contentLabel}>Phone: {'\t'}<Text style={styles.contentInfo}>{curUserInfo.phoneNumber}</Text></Text>
+          <Text style={styles.contentLabel}>Email: {'\t'}<Text style={styles.contentInfo}>{curUserInfo.email}</Text></Text>
         </View>
         <Button style={styles.cardButton} status='danger'>Log Out</Button>
       </View>
@@ -45,7 +45,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginHorizontal: '2%',
     display: 'flex',
-    marginTop: '3%'
   },
   cardButton: {
     marginTop: 'auto',
@@ -54,7 +53,7 @@ const styles = StyleSheet.create({
     marginTop: 'auto',
     backgroundColor: eva.dark['color-basic-800'],
     paddingHorizontal: 4,
-    paddingVertical: '20%',
+    paddingVertical: '15%',
     marginVertical: '5%',
     borderRadius: 6,
   },
@@ -69,7 +68,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   contentInfo: {
-    fontSize: 18,
+    fontSize: 16,
   },
   contentLabel: {
     fontWeight: 'bold',
@@ -80,6 +79,9 @@ const styles = StyleSheet.create({
     height: '15%',
     display: 'flex',
     justifyContent: 'center',
+  },
+  infoCard: {
+    marginTop: '3%',
   },
   pageTitle: {
     fontSize: 24,
