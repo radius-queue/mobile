@@ -24,12 +24,14 @@ import {
 import * as eva from "@eva-design/eva";
 import { BusinessListScreen, businesses } from "./feed/feed";
 
-import {sampleUserInfo} from "./profile/profile-page"
+import { sampleUserInfo } from "./profile/profile-page";
 
 import { Entypo } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { Fontisto } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
+
+import { default as theme } from "./custom-theme.json";
 
 const Tab = createBottomTabNavigator();
 
@@ -96,7 +98,7 @@ const TabNavigator = () => (
 
 export default function App() {
   return (
-    <ApplicationProvider {...eva} theme={eva.dark}>
+    <ApplicationProvider {...eva} theme={{ ...eva.dark, ...theme }}>
       <NavigationContainer>
         <TabNavigator />
       </NavigationContainer>
