@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text, Button} from '@ui-kitten/components';
-import {StyleSheet, View, SafeAreaView} from "react-native";
+import {StyleSheet, View} from "react-native";
 import * as eva from '@eva-design/eva';
 import Screen from './../components/screen';
 
