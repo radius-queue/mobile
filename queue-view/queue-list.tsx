@@ -1,5 +1,6 @@
 import React from 'react';
 import { FlatList, StyleSheet, Text, View } from "react-native";
+import { default as theme } from "../custom-theme.json";
 
 interface Party {
   id: string,
@@ -109,8 +110,8 @@ const QueueList = () => {
    */
   const renderItem: React.FC<{item: Party, index: number}> = ({ item, index }) => {
     let currentUser: boolean = item.id === currentUserId;
-    let backgroundColor: string = currentUser ? '#00B383' : '#EDF1F7';
-    let color: string = currentUser ? '#FFFFFF' : '#101426';
+    let backgroundColor: string = currentUser ? theme['color-primary-600'] : theme['color-basic-100'];
+    let color: string = currentUser ? theme['color-basic-300'] : theme['color-basic-900'];
     let fontWeight: string = currentUser ? 'bold' : 'normal';
     return (
       <PartyItem

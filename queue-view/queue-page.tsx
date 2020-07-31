@@ -3,8 +3,8 @@ import {Text, Button} from '@ui-kitten/components';
 import {StyleSheet, View} from "react-native";
 import QueueList from './queue-list';
 import QueueMessages from './queue-messages'
-import * as eva from '@eva-design/eva';
 import LeaveModal from './leave-modal';
+import { default as theme } from "../custom-theme.json";
 
 /**
  * The page displaying relevant information regarding the user's
@@ -25,7 +25,7 @@ const QueuePage = () => {
       <View style={styles.container}>
         <View style={[styles.card, styles.headerCard]}>
           <Text style={styles.pageTitle}>You're 
-            <Text style={[styles.pageTitle, {color: '#00B383'}]}> 3rd </Text>
+            <Text style={[styles.pageTitle, {color: theme['color-primary-400']}]}> 3rd </Text>
             in line at:
           </Text>
           <Text style={styles.pageTitle}>Alladin's Gyro-Cery and Deli</Text>
@@ -66,7 +66,7 @@ const QueuePage = () => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: eva.dark['color-basic-900'],
+    backgroundColor: theme['color-basic-900'],
     paddingHorizontal: '3%',
     paddingVertical: '2%',
     borderRadius: 10,
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   container: {
     display: 'flex',
     justifyContent: "space-evenly",
-    backgroundColor: eva.dark['color-basic-800'],
+    backgroundColor: theme['color-basic-800'],
     height: '100%',
     paddingTop: '10%',
     paddingBottom: '1%',

@@ -1,7 +1,7 @@
 import React from 'react';
 import {Text, Button} from '@ui-kitten/components';
 import {StyleSheet, View} from "react-native";
-import * as eva from '@eva-design/eva';
+import { default as theme } from "../custom-theme.json";
 import Screen from './../components/screen';
 
 interface userInfo {
@@ -39,7 +39,7 @@ const ProfilePage = (curUserInfo: userInfo): React.ReactElement => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: eva.dark['color-basic-900'],
+    backgroundColor: theme['color-basic-900'],
     paddingHorizontal: '3%',
     paddingVertical: '2%',
     borderRadius: 10,
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     marginTop: 'auto',
-    backgroundColor: eva.dark['color-basic-800'],
+    backgroundColor: theme['color-basic-800'],
     paddingHorizontal: 4,
     paddingVertical: '15%',
     marginVertical: '5%',
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
   },
   container: {
     display: 'flex',
-    backgroundColor: eva.dark['color-basic-800'],
+    backgroundColor: theme['color-basic-800'],
     height: '100%',
   },
   contentInfo: {
