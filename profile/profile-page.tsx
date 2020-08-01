@@ -12,7 +12,7 @@ interface userInfo {
 };
 
 export const sampleUserInfo: userInfo = {
-  email: 'grantmwilliams38@gmail.com',
+  email: 'harryhusky123@gmail.com',
   firstName: 'Harry',
   lastName: 'Husky',
   phoneNumber: '(206)876-4432'
