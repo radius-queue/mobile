@@ -19,20 +19,16 @@ import {
 } from "@ui-kitten/components";
 import * as eva from "@eva-design/eva";
 import { default as theme } from "./custom-theme.json";
-import { EvaIconsPack } from '@ui-kitten/eva-icons';
+import { EvaIconsPack } from "@ui-kitten/eva-icons";
 
 const Tab = createBottomTabNavigator();
 
-const FeedIcon = (props: any) => (
-  <Icon {...props} name='browser-outline'/>
-);
-
-const MeIcon = (props: any) => (
-  <Icon {...props} name='person-outline'/>
-);
-
-const QueueIcon = (props: any) => (
-  <Icon {...props} name='list-outline'/>
+const DevIcon = (props: any) => <Icon {...props} name="code-outline" />;
+const FeedIcon = (props: any) => <Icon {...props} name="browser-outline" />;
+const MeIcon = (props: any) => <Icon {...props} name="person-outline" />;
+const QueueIcon = (props: any) => <Icon {...props} name="list-outline" />;
+const ProfileIcon = (props: any) => (
+  <Icon {...props} name="smiling-face-outline" />
 );
 
 const BottomTabBar = (Navigator: {
@@ -46,11 +42,11 @@ const BottomTabBar = (Navigator: {
       Navigator.navigation.navigate(Navigator.state.routeNames[index])
     }
   >
-    <BottomNavigationTab title="DEV" />
+    <BottomNavigationTab icon={DevIcon} title="DEV" />
     <BottomNavigationTab icon={FeedIcon} title="FEED" />
     <BottomNavigationTab icon={MeIcon} title="ME" />
     <BottomNavigationTab icon={QueueIcon} title="QUEUE" />
-    <BottomNavigationTab title="PROFILE" />
+    <BottomNavigationTab icon={ProfileIcon} title="PROFILE" />
   </BottomNavigation>
 );
 
@@ -83,9 +79,8 @@ export default function App() {
 
 const styles = StyleSheet.create({
   bottomNavigation: {
-    height: 85,
-    display: 'flex',
-    alignItems: 'flex-start',
+    display: "flex",
+    alignItems: "flex-start",
   },
 });
 
