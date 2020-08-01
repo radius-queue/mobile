@@ -5,6 +5,8 @@ import Me from "./profile/Me";
 import DevPage from "./dev-page";
 import QueuePage from "./queue-view/queue-page";
 import ProfilePage from "./profile/profile-page";
+import { BusinessListScreen, businesses } from "./feed/feed";
+import { sampleUserInfo } from "./profile/profile-page";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -12,19 +14,26 @@ import {
   ApplicationProvider,
   BottomNavigation,
   BottomNavigationTab,
-  IconRegistry,
   Icon,
+  IconRegistry,
 } from "@ui-kitten/components";
 import * as eva from "@eva-design/eva";
-import { BusinessListScreen, businesses } from "./feed/feed";
-
 import { default as theme } from "./custom-theme.json";
-import { EvaIconsPack } from "@ui-kitten/eva-icons";
+import { EvaIconsPack } from '@ui-kitten/eva-icons';
 
 const Tab = createBottomTabNavigator();
 
-<IconRegistry icons={EvaIconsPack} />;
-const devIcon = (props) => <Icon {...props} name="code-outline" />;
+const FeedIcon = (props: any) => (
+  <Icon {...props} name='browser-outline'/>
+);
+
+const MeIcon = (props: any) => (
+  <Icon {...props} name='person-outline'/>
+);
+
+const QueueIcon = (props: any) => (
+  <Icon {...props} name='list-outline'/>
+);
 
 const BottomTabBar = (Navigator: {
   state: { index: number | undefined; routeNames: any[] };
@@ -32,14 +41,15 @@ const BottomTabBar = (Navigator: {
 }) => (
   <BottomNavigation
     selectedIndex={Navigator.state.index}
+    style={styles.bottomNavigation}
     onSelect={(index) =>
       Navigator.navigation.navigate(Navigator.state.routeNames[index])
     }
   >
     <BottomNavigationTab title="DEV" />
-    <BottomNavigationTab title="FEED" />
-    <BottomNavigationTab title="ME" />
-    <BottomNavigationTab title="QUEUE" />
+    <BottomNavigationTab icon={FeedIcon} title="FEED" />
+    <BottomNavigationTab icon={MeIcon} title="ME" />
+    <BottomNavigationTab icon={QueueIcon} title="QUEUE" />
     <BottomNavigationTab title="PROFILE" />
   </BottomNavigation>
 );
@@ -52,27 +62,30 @@ const TabNavigator = () => (
     </Tab.Screen>
     <Tab.Screen name="Me" component={Me} />
     <Tab.Screen name="Queue" component={QueuePage} />
-    <Tab.Screen name="Profile" component={ProfilePage} />
+    <Tab.Screen name="Profile">
+      {() => <ProfilePage {...sampleUserInfo} />}
+    </Tab.Screen>
   </Tab.Navigator>
 );
 
 export default function App() {
-  <IconRegistry icons={EvaIconsPack} />;
   return (
-    <ApplicationProvider {...eva} theme={{ ...eva.dark, ...theme }}>
-      <NavigationContainer>
-        <TabNavigator />
-      </NavigationContainer>
-    </ApplicationProvider>
+    <>
+      <IconRegistry icons={EvaIconsPack} />
+      <ApplicationProvider {...eva} theme={{ ...eva.dark, ...theme }}>
+        <NavigationContainer>
+          <TabNavigator />
+        </NavigationContainer>
+      </ApplicationProvider>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+  bottomNavigation: {
+    height: 85,
+    display: 'flex',
+    alignItems: 'flex-start',
   },
 });
 
