@@ -6,6 +6,9 @@ import { Layout, Button, Text } from "@ui-kitten/components";
 import { createStackNavigator } from "@react-navigation/stack";
 import Login from "./Login";
 import Register from "./Register";
+import Screen from "../components/screen";
+
+import { default as theme } from "../custom-theme.json";
 
 const Stack = createStackNavigator();
 
@@ -23,32 +26,34 @@ function MeContent() {
   const navigation = useNavigation();
 
   return (
-    <Layout style={styles.background} level="3">
-      <View style={styles.header}>
-        <Text style={styles.headerText}>
-          Log in using your email address and password.
-        </Text>
-        <Image
-          style={styles.headerLogo}
-          source={require("../assets/log-in-art.png")}
-        />
-      </View>
-      <View style={styles.buttonGroup}>
-        <Button
-          style={styles.button}
-          status="basic"
-          onPress={() => navigation.navigate("Login")}
-        >
-          Log In
-        </Button>
-        <Button
-          style={styles.button}
-          onPress={() => navigation.navigate("Register")}
-        >
-          Sign Up
-        </Button>
-      </View>
-    </Layout>
+    <Screen style={styles.container}>
+      <Layout style={styles.background} level="3">
+        <View style={styles.header}>
+          <Text style={styles.headerText}>
+            Log in using your email address and password.
+          </Text>
+          <Image
+            style={styles.headerLogo}
+            source={require("../assets/log-in-art.png")}
+          />
+        </View>
+        <View style={styles.buttonGroup}>
+          <Button
+            style={styles.button}
+            status="basic"
+            onPress={() => navigation.navigate("Login")}
+          >
+            Log In
+          </Button>
+          <Button
+            style={styles.button}
+            onPress={() => navigation.navigate("Register")}
+          >
+            Sign Up
+          </Button>
+        </View>
+      </Layout>
+    </Screen>
   );
 }
 
@@ -61,6 +66,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     alignItems: "center",
+    backgroundColor: theme['color-basic-900'],
   },
 
   button: {
@@ -76,9 +82,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
 
+  container: {
+    backgroundColor: theme['color-basic-900'],
+  },
+
   header: {
     position: "absolute",
-    top: 50,
+    top: 30,
     flex: 1,
   },
 
@@ -86,7 +96,7 @@ const styles = StyleSheet.create({
     width: 256,
     height: 320,
     alignSelf: "center",
-    top: 10,
+    top: 60,
   },
 
   headerText: {

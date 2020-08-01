@@ -2,7 +2,7 @@ import React from 'react';
 import {Text, Button} from '@ui-kitten/components';
 import {StyleSheet, View} from "react-native";
 import { default as theme } from "../custom-theme.json";
-import Screen from './../components/screen';
+import Screen from "../components/screen";
 
 interface userInfo {
   email: string,
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     marginTop: 'auto',
-    backgroundColor: theme['color-basic-800'],
+    backgroundColor: theme['color-basic-900'],
     paddingHorizontal: 4,
     paddingVertical: '15%',
     marginVertical: '5%',
@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     backgroundColor: theme['color-basic-800'],
     height: '100%',
+    paddingTop: '10%',
   },
   contentInfo: {
     fontSize: 16,

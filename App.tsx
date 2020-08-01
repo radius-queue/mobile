@@ -81,6 +81,8 @@ const styles = StyleSheet.create({
   bottomNavigation: {
     display: "flex",
     alignItems: "flex-start",
+    height: 70,
+    backgroundColor: theme['color-basic-1100'],
   },
 });
 

@@ -54,3 +54,18 @@ export function toStandardTime(militaryTime) {
     return militaryTime.join(':') + ' am ';
   }
 }
+
+/**
+ * Converts a Date object to string format suited for operation hours display.
+ * @param {Date} date date object to be converted to operation hours format
+ * @return string in form h:mm am/pm
+ */
+export function dateToOperationHours(date: Date) {
+  const hours = date.getHours();
+  const mins = date.getMinutes();
+  const hourDisplay = hours == 0 ? 12 : (hours < 12 ? hours : hours - 12);
+  const hourDisplayWithZero = hourDisplay < 10 ? '0' + hourDisplay : hourDisplay
+  const minsWithZero = mins < 10 ? '0' + mins : mins;
+  const amPm = hours < 12 ? 'am' : 'pm';
+  return `${hourDisplayWithZero}:` + `${minsWithZero}` + ` ${amPm}`;
+};

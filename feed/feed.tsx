@@ -4,6 +4,7 @@ import { List, Text } from '@ui-kitten/components';
 import { BusinessCard } from './business-overview-card';
 import { BusinessCardInfo } from './data';
 import Screen from '../components/screen';
+import { default as theme } from "../custom-theme.json";
 
 export const businesses: BusinessCardInfo[][] = [
   [
@@ -32,7 +33,7 @@ export const BusinessListScreen = (businesses: BusinessCardInfo[][]): React.Reac
       <Text
         style={styles.headerTitle}
         appearance='hint'>
-        Explore
+        🗺 Explore
       </Text>
     </React.Fragment>
   );
@@ -42,7 +43,7 @@ export const BusinessListScreen = (businesses: BusinessCardInfo[][]): React.Reac
       <Text
         style={styles.headerTitle}
         appearance='hint'>
-        Favorites
+        ⭐️ Favorites
       </Text>
       <List
         contentContainerStyle={styles.horizontalList}
@@ -59,7 +60,7 @@ export const BusinessListScreen = (businesses: BusinessCardInfo[][]): React.Reac
       <Text
         style={styles.headerTitle}
         appearance='hint'>
-        Recents
+        ⏰ Recents
       </Text>
       <List
         contentContainerStyle={styles.horizontalList}
@@ -97,21 +98,27 @@ export const BusinessListScreen = (businesses: BusinessCardInfo[][]): React.Reac
   );
 
   return (
-    <Screen>
+    <Screen style={styles.container}>
       {renderAll()}
     </Screen>
   );
 };
 
 const styles = StyleSheet.create({
+  container: {
+    backgroundColor: theme['color-basic-900'],
+  },
   list: {
-    paddingVertical: 24,
+
   },
   headerTitle: {
     marginHorizontal: 16,
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginTop: 8,
   },
   horizontalList: {
-    marginVertical: 16,
+    marginVertical: 8,
     paddingHorizontal: 8,
   },
   verticalItem: {

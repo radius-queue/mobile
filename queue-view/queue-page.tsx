@@ -5,6 +5,8 @@ import QueueList from './queue-list';
 import QueueMessages from './queue-messages'
 import LeaveModal from './leave-modal';
 import { default as theme } from "../custom-theme.json";
+import Screen from "../components/screen";
+
 
 /**
  * The page displaying relevant information regarding the user's
@@ -22,10 +24,10 @@ const QueuePage = () => {
 
   if (userInLine) {
     return (
-      <View style={styles.container}>
+      <Screen style={styles.container}>
         <View style={[styles.card, styles.headerCard]}>
           <Text style={styles.pageTitle}>You're 
-            <Text style={[styles.pageTitle, {color: theme['color-primary-400']}]}> 3rd </Text>
+            <Text style={[styles.pageTitle, {color: theme['color-primary-500']}]}> 3rd </Text>
             in line at:
           </Text>
           <Text style={styles.pageTitle}>Alladin's Gyro-Cery and Deli</Text>
@@ -50,16 +52,16 @@ const QueuePage = () => {
           hide={() => setLeaveModalVisible(false)}
           leave={leaveLine}
         />
-      </View>
+      </Screen>
     );
   } else {
     return (
-      <View style={styles.container}>
-        <View style={[styles.card, styles.headerCard]}>
+      <Screen style={styles.container}>
+        <View style={[styles.card, styles.headerCard, styles.noLineCard]}>
           <Text style={styles.pageTitle}>You are not in a line right now</Text>
           <Text style={styles.emoji}>😬</Text>
         </View>
-      </View>
+      </Screen>
     );
   }
 };
@@ -77,12 +79,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   container: {
-    display: 'flex',
-    justifyContent: "space-evenly",
     backgroundColor: theme['color-basic-800'],
     height: '100%',
-    paddingTop: '10%',
-    paddingBottom: '1%',
   },
   emoji: {
     fontSize: 35,
@@ -103,6 +101,7 @@ const styles = StyleSheet.create({
     height: '50%',
     display: 'flex',
     justifyContent: 'space-between',
+    marginTop: '3%',
   },
   lineCardContent: {
     height: '76%',
@@ -111,9 +110,13 @@ const styles = StyleSheet.create({
     height: '30%',
     display: 'flex',
     justifyContent: 'space-between',
+    marginTop: '3%',
   },
   messagesCardContent: {
     height: '84%',
+  },
+  noLineCard: {
+    marginTop: '70%',
   },
   pageTitle: {
     fontSize: 24,

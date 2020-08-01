@@ -10,12 +10,12 @@ import {
   Linking,
 } from "react-native";
 import call from "react-native-phone-call";
-import { Card, Layout, Button } from "@ui-kitten/components";
+import { Card, Layout, Button, Icon } from "@ui-kitten/components";
 import { useNavigation } from "@react-navigation/native";
 import BusinessModal from "./business-info-modal";
 import type { BusinessInfo, User } from "./data";
 import MapView, { Marker, Circle } from "react-native-maps";
-import { parseTimeString, toStandardTime } from "../util/util-functions";
+import { parseTimeString, toStandardTime, dateToOperationHours, parsePhoneNum } from "../util/util-functions";
 import defaultStyles from "../config/styles";
 import * as eva from "@eva-design/eva";
 import * as Location from "expo-location";
@@ -106,43 +106,47 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
           </MapView>
         </Animated.View>
         <Card disabled={true} style={styles.businessCard}>
+          <Layout style={styles.dragNotif}/>
           <Layout style={[styles.layout, {flexDirection: 'row'}]} level="2">
             <View>
-              <Text style={[defaultStyles.text, styles.name]}>
-                {business.name}
-              </Text>
-              <Text style={[defaultStyles.text, styles.subtitle]}>
+              <View style={styles.businessNameContainer}>
+                <Text style={[defaultStyles.text, styles.name, styles.businessName]}>
+                  {business.name}
+                </Text>
+                <TouchableOpacity disabled={!!!user} onPress={() => setIsFav(!isFav)}>
+                  {!isFav
+                    ? <SimpleLineIcons name="star" size={24} color="yellow" />
+                    : <Fontisto name='star'size={24} color='yellow'/>
+                  }
+                </TouchableOpacity>
+              </View>
+              <Text style={[defaultStyles.text]}>
                 {business.address}
               </Text>
-              <TouchableOpacity onPress={callHandler}>
-                <Text style={[defaultStyles.text, styles.subtitle, styles.phone]}>
-                  {business.phone}
+            <TouchableOpacity onPress={callHandler}>
+                <Text></Text>
+                <Text style={[defaultStyles.text, styles.phone]}>
+                  {parsePhoneNum(business.phone)}
                 </Text>
               </TouchableOpacity>
             </View>
-            <TouchableOpacity disabled={!!!user} onPress={() => setIsFav(!isFav)}>
-              {!isFav
-                ? <SimpleLineIcons name="star" size={24} color="yellow" />
-                : <Fontisto name='star'size={24} color='yellow'/>
-              }
-            </TouchableOpacity>
           </Layout>
           <Layout level="2" style={styles.layout}>
-            <Text style={[defaultStyles.text, styles.name]}>Current Queue</Text>
+            <Text style={[defaultStyles.text, styles.name]}>👯 Current Queue</Text>
             <View style={styles.queueInfoTextContainer}>
-              <Text style={defaultStyles.text}>Status:</Text>
+              <Text style={[defaultStyles.text, styles.contentLabel]}>Status:</Text>
               <Text style={defaultStyles.text}>
                 {business.queues[0].open ? "Open" : "Closed"}
               </Text>
             </View>
             <View style={styles.queueInfoTextContainer}>
-              <Text style={defaultStyles.text}>Line Length:</Text>
+              <Text style={[defaultStyles.text, styles.contentLabel]}>Line Length:</Text>
               <Text style={defaultStyles.text}>
                 {business.queues[0].length} parties
               </Text>
             </View>
             <View style={styles.queueInfoTextContainer}>
-              <Text style={defaultStyles.text}>Most Recent Wait Time:</Text>
+              <Text style={[defaultStyles.text, styles.contentLabel]}>Recent Wait Time:</Text>
               <Text style={defaultStyles.text}>
                 {business.queues[0].firstWaitTime} minutes
               </Text>
@@ -150,18 +154,17 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
             <Button
               style={styles.joinButton}
               disabled={!business.queues[0].open}
-              status="success"
               onPress={() => setJoin(true)}
             >
               Join Queue
             </Button>
           </Layout>
           <Layout style={styles.layout} level="2">
-            <Text style={[defaultStyles.text, styles.name]}>Hours</Text>
+            <Text style={[defaultStyles.text, styles.name]}>📅 Hours</Text>
             <View style={styles.hoursContainer}>
               <View>
                 {DAYS.map((val) => (
-                  <Text style={[defaultStyles.text, styles.dayText]} key={val}>
+                  <Text style={[defaultStyles.text, styles.dayText, styles.contentLabel]} key={val}>
                     {val}
                   </Text>
                 ))}
@@ -170,8 +173,8 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
                 {business.hours.map((val, idx) => (
                   <Text key={idx} style={[defaultStyles.text, styles.dayText]}>
                     {val[0]
-                      ? `${toStandardTime(parseTimeString(val[0]))} -` +
-                        `${toStandardTime(parseTimeString(val[1]!))}`
+                      ? dateToOperationHours(val[0]) + ` - ` +
+                        dateToOperationHours(val[1]!)
                       : "Closed"}
                   </Text>
                 ))}
@@ -208,19 +211,45 @@ const animatedStyles = {
 
 const styles = StyleSheet.create({
   businessCard: {
-    borderTopLeftRadius: 10,
-    borderTopRightRadius: 10,
+    borderTopLeftRadius: 13,
+    borderTopRightRadius: 13,
     borderBottomRightRadius: 0,
     borderBottomLeftRadius: 0,
     borderWidth: 0,
     flex: 1,
   },
+  businessName: {
+    fontSize: 28,
+    width: '90%',
+    marginBottom: 0,
+    color: theme['color-primary-500'],
+  },
+  businessNameContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingBottom: 16,
+    marginBottom: 28,
+    borderBottomWidth: 3,
+    borderBottomColor: theme['color-primary-500'],
+  },
   circle: {
     opacity: 0.5,
   },
+  contentLabel: {
+    fontWeight: 'bold',
+  },
   dayText: {
-    fontWeight: "400",
     marginVertical: 5,
+    fontWeight: '400',
+  },
+  dragNotif: {
+    height: 4,
+    backgroundColor: 'white',
+    width: 70,
+    alignSelf: "center",
+    marginBottom: 7,
+    borderRadius: 3,
   },
   hoursContainer: {
     flexDirection: "row",
@@ -230,16 +259,17 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   joinButton: {
-    marginVertical: 10,
+    marginTop: 10,
     width: "100%",
     alignSelf: "center",
   },
   layout: {
-    width: "100%",
+    width: "110%",
+    marginLeft: '-5%',
     padding: 15,
     justifyContent: "space-between",
-    borderRadius: 20,
-    marginVertical: 10,
+    borderRadius: 10,
+    marginVertical: 5,
   },
   map: {
     flex: 1,
@@ -247,6 +277,7 @@ const styles = StyleSheet.create({
   name: {
     fontSize: 24,
     fontWeight: "bold",
+    marginBottom: 8,
   },
   phone: {
     textDecorationLine: "underline",
@@ -258,7 +289,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   scroll: {
-    backgroundColor: theme["color-basic-800"],
+    backgroundColor: '#f9f5eb',
     display: "flex",
   },
   subtitle: {

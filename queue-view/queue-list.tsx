@@ -110,7 +110,7 @@ const QueueList = () => {
    */
   const renderItem: React.FC<{item: Party, index: number}> = ({ item, index }) => {
     let currentUser: boolean = item.id === currentUserId;
-    let backgroundColor: string = currentUser ? theme['color-primary-600'] : theme['color-basic-100'];
+    let backgroundColor: string = currentUser ? theme['color-primary-500'] : theme['color-basic-100'];
     let color: string = currentUser ? theme['color-basic-300'] : theme['color-basic-900'];
     let fontWeight: string = currentUser ? 'bold' : 'normal';
     return (
