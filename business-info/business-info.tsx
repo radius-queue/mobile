@@ -22,6 +22,7 @@ import * as Location from "expo-location";
 import * as IntentLauncherAndroid from "expo-intent-launcher";
 import HaversineGeolocation from "haversine-geolocation";
 import {Fontisto, SimpleLineIcons} from '@expo/vector-icons';
+import { default as theme } from "../custom-theme.json";
 
 interface BusinessInfoProps {
   business: BusinessInfo;
@@ -257,7 +258,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   scroll: {
-    backgroundColor: eva.dark["color-basic-800"],
+    backgroundColor: theme["color-basic-800"],
     display: "flex",
   },
   subtitle: {
