@@ -289,7 +289,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   scroll: {
-    backgroundColor: '#f9f5eb',
+    backgroundColor: theme['color-basic-900'],
+    // backgroundColor: '#f9f5eb',
     display: "flex",
   },
   subtitle: {
