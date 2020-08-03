@@ -261,7 +261,7 @@ export default BusinessModal;
 
 const styles = StyleSheet.create({
   avoidContainer: {
-    height: '105%',
+    height: '100%',
     marginTop: 'auto',
     marginBottom: 'auto',
   },
