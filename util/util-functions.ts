@@ -64,8 +64,8 @@ export function dateToOperationHours(date: Date) {
   const hours = date.getHours();
   const mins = date.getMinutes();
   const hourDisplay = hours == 0 ? 12 : (hours < 12 ? hours : hours - 12);
-  const hourDisplayWithZero = hourDisplay < 10 ? '0' + hourDisplay : hourDisplay
+  // const hourDisplayWithZero = hourDisplay < 10 ? '0' + hourDisplay : hourDisplay
   const minsWithZero = mins < 10 ? '0' + mins : mins;
   const amPm = hours < 12 ? 'am' : 'pm';
-  return `${hourDisplayWithZero}:` + `${minsWithZero}` + ` ${amPm}`;
+  return `${hourDisplay}:` + `${minsWithZero}` + ` ${amPm}`;
 };
