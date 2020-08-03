@@ -122,4 +122,13 @@ export const queueConverter = {
   },
 };
 
+/**
+ * This interface holds summary info for a queue
+ */
+export interface QueueInfo {
+  length: number;
+  longestWaitTime: number;
+  open: boolean;
+}
+
 

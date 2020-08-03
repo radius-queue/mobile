@@ -15,12 +15,8 @@ import { useNavigation } from "@react-navigation/native";
 import BusinessModal from "./business-info-modal";
 import type { BusinessInfo, User } from "./data";
 import MapView, { Marker, Circle } from "react-native-maps";
-import { parseTimeString, toStandardTime, dateToOperationHours, parsePhoneNum } from "../util/util-functions";
+import { dateToOperationHours, parsePhoneNum } from "../util/util-functions";
 import defaultStyles from "../config/styles";
-import * as eva from "@eva-design/eva";
-import * as Location from "expo-location";
-import * as IntentLauncherAndroid from "expo-intent-launcher";
-import HaversineGeolocation from "haversine-geolocation";
 import {Fontisto, SimpleLineIcons} from '@expo/vector-icons';
 import { default as theme } from "../custom-theme.json";
 
@@ -228,6 +224,7 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     paddingBottom: 16,
     marginBottom: 28,
     borderBottomWidth: 3,
@@ -290,7 +287,6 @@ const styles = StyleSheet.create({
   },
   scroll: {
     backgroundColor: theme['color-basic-900'],
-    // backgroundColor: '#f9f5eb',
     display: "flex",
   },
   subtitle: {
