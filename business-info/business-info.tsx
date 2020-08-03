@@ -61,7 +61,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   };
 
   return (
-    <>
+    <View>
       <Animated.ScrollView
         style={styles.scroll}
         scrollEnabled={true}
@@ -191,7 +191,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
         hide={() => setJoin(false)}
         user={user}
       />
-    </>
+    </View>
   );
 };
 

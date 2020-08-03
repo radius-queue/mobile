@@ -44,7 +44,7 @@ const LeaveModal = ({show, hide, leave}: LeaveModalProps) => {
 
 const styles = StyleSheet.create({
   backdrop: {
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
   },
   cardHeader: {
     fontSize: 20,

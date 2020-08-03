@@ -1,10 +1,12 @@
+export const allNumbers: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+
 /**
  * Parser for displaying phone numbers
  * @param {string} phoneNum
  * @return {string} parsed phone number
  */
 export function parsePhoneNum(phoneNum : string) : string {
-  if (phoneNum.length < 3) {
+  if (phoneNum.length <= 3) {
     return phoneNum;
   } else {
     phoneNum = '(' + phoneNum.substring(0, 3) + ')' + phoneNum.substring(3);
@@ -14,7 +16,7 @@ export function parsePhoneNum(phoneNum : string) : string {
     phoneNum = phoneNum.substring(0, 8) + '-' + phoneNum.substring(8);
   }
   return phoneNum;
-}
+};
 
 /**
  * Parses Name for customer side display
@@ -28,7 +30,7 @@ export function parseShortName(firstName: string, lastName: String) : string {
   }
   return firstName.substring(0, 1).toUpperCase() + ' ' +
       lastName.substring(0, 1).toUpperCase();
-}
+};
 
 /**
  * Parses a date object to get just the hours and minutes
