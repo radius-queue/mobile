@@ -27,16 +27,14 @@ function MeContent() {
 
   return (
     <Screen style={styles.container}>
-      <Layout style={styles.background} level="3">
-        <View style={styles.header}>
-          <Text style={styles.headerText}>
-            Log in using your email address and password.
-          </Text>
-          <Image
-            style={styles.headerLogo}
-            source={require("../assets/log-in-art.png")}
-          />
-        </View>
+      <View style={styles.background}>
+        <Text style={styles.headerText}>
+          Log in using your email address and password.
+        </Text>
+        <Image
+          style={styles.headerLogo}
+          source={require("../assets/log-in-art.png")}
+        />
         <View style={styles.buttonGroup}>
           <Button
             style={styles.button}
@@ -52,7 +50,7 @@ function MeContent() {
             Sign Up
           </Button>
         </View>
-      </Layout>
+      </View>
     </Screen>
   );
 }
@@ -63,47 +61,41 @@ function Me() {
 
 const styles = StyleSheet.create({
   background: {
-    flex: 1,
+    display: 'flex',
+    height: '100%',
+    paddingVertical: '5%',
     flexDirection: "column",
     alignItems: "center",
+    justifyContent: 'space-between',
     backgroundColor: theme['color-basic-900'],
   },
 
   button: {
-    margin: 5,
-    width: "50%",
+    width: "48%",
   },
 
   buttonGroup: {
-    flex: 1,
     flexDirection: "row",
-    alignItems: "flex-end",
-    paddingBottom: 25,
-    paddingHorizontal: 20,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '90%',
   },
 
   container: {
     backgroundColor: theme['color-basic-900'],
   },
 
-  header: {
-    position: "absolute",
-    top: 30,
-    flex: 1,
-  },
-
   headerLogo: {
     width: 256,
     height: 320,
-    alignSelf: "center",
-    top: 60,
+    marginBottom: 40,
   },
 
   headerText: {
     margin: 3,
-    marginTop: "15%",
     fontSize: 25,
     textAlign: "center",
+    marginTop: '5%',
   },
 });
 
