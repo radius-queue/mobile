@@ -170,7 +170,6 @@ const BusinessModal = ({show, addToQ, hide, user, coords, radius} : ModalProps) 
   return (
     <Modal
       isVisible={show}
-      animationIn='slideInUp'
       onSwipeComplete={onHide}
       swipeDirection={['down']}
     >

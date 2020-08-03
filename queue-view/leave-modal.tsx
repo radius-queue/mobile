@@ -1,6 +1,9 @@
 import React from 'react';
-import { Modal, Card, Button, Text } from '@ui-kitten/components';
+import Modal from 'react-native-modal';
+import { Button, Text } from '@ui-kitten/components';
 import {StyleSheet, View} from 'react-native';
+import { default as theme } from "../custom-theme.json";
+import { AntDesign } from '@expo/vector-icons';
 
 interface LeaveModalProps {
   show: boolean,
@@ -15,53 +18,55 @@ interface LeaveModalProps {
  * the user leaves the line.
  */
 const LeaveModal = ({show, hide, leave}: LeaveModalProps) => {
-
-  const FooterButtons = () => {
-    return (
-      <View style={styles.footerContainer}>
-        <Button onPress={() => hide()} style={styles.footerControl}>
-          Stay in line
-        </Button>
-        <Button onPress={() => leave()} status='danger' style={styles.footerControl}>
-          Leave the line
-        </Button>
-      </View>
-    );
-  }
-
   return(
     <Modal 
-      visible={show}
-      backdropStyle={styles.backdrop}
-      onBackdropPress={() => hide()}
+      isVisible={show}
+      onSwipeComplete={hide}
+      swipeDirection={['down']}
     >
-      <Card disabled={true} style={styles.leaveModal} footer={FooterButtons}>
+      <View style={styles.container}>
+        <AntDesign style={styles.closeIcon} name="close" size={24} onPress={hide}/>
         <Text style={styles.cardHeader}>Are you sure you want to leave the line?</Text>
-      </Card>
+        <View style={styles.buttonGroup}>
+          <Button onPress={() => leave()} status='danger' style={styles.button}>
+            Leave the line
+          </Button>
+        </View>
+      </View>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
-  backdrop: {
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+  button: {
+    width: '100%',
+  },
+  buttonGroup: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 40,
+  },
+  container: {
+    backgroundColor: theme['color-basic-100'],
+    display: "flex",
+    justifyContent: "space-evenly",
+    padding: 10,
+    borderColor: theme['color-basic-100'],
+    borderWidth: 3,
+    borderRadius: 10,
   },
   cardHeader: {
     fontSize: 20,
     fontWeight: 'bold',
+    color: theme['color-basic-1100'],
+    marginTop: 15,
   },
-  footerContainer: {
-    padding: 10,
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-  },
-  footerControl: {
-    marginHorizontal: 2,
-  },
-  leaveModal: {
-    padding: 2,
-    flex: 1,
-    margin: 2,
+  closeIcon: {
+    color: theme['color-basic-1100'],
+    marginTop: -6,
+    marginRight: -6,
+    marginLeft: 'auto',
   },
 });
 
