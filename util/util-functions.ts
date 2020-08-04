@@ -1,4 +1,4 @@
-export const allNumbers: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+export const allNumbers: string[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
 /**
  * Parser for displaying phone numbers
@@ -55,7 +55,7 @@ export function toStandardTime(militaryTime) {
   } else {
     return militaryTime.join(':') + ' am ';
   }
-}
+};
 
 /**
  * Converts a Date object to string format suited for operation hours display.
