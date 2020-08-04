@@ -47,11 +47,15 @@ export const getAllBusinessLocations = async () : Promise<BusinessLocation[]> =>
   return value;
 }
 
+/**
+ *]This function retreives the business locations that are specified in the
+ * given array.
+ * @param locations a string of business uids to be retreived, must be 10 items or less
+ * @return the list of BusinessLocation objects
+ * @throws {Error} if there is a connection problem with Firestore. 
+ */
 export const getBusinessLocationsFromArray = async (locations : string[]) : Promise<BusinessLocation[]> => {
-  const response = await fetch(`${ROOT_URL}/api/businesses/locations`, {
-    method: 'GET',
-    body: JSON.stringify({locations})
-  });
+  const response = await fetch(`${ROOT_URL}/api/businesses/locations?locations=${JSON.stringify(locations)}`);
 
   if (response.status === 400) {
     throw new Error('Malformed Request');
