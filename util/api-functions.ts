@@ -14,7 +14,7 @@ const ROOT_URL : string = 'https://us-central1-ahead-9d906.cloudfunctions.net/wi
  * an empty string, or if the business does not exist.
  */
 export const getBusinessLocation = async (uid: string) : Promise<BusinessLocation> => {
-  const response = await fetch(`${ROOT_URL}/api/businesses/locations?uid=${uid}`);
+  const response = await fetch(`${ROOT_URL}/api/businesses/${uid}/location`);
   if (response.status === 500) {
     throw new Error('Problem Connecting to Firestore');
   }
@@ -27,6 +27,41 @@ export const getBusinessLocation = async (uid: string) : Promise<BusinessLocatio
   const value = await response.json();
   value.hours = value.hours.map((val: [string | null, string | null]) => hoursFromAPI(val));
   return value;
+}
+
+/**
+ * This function retreives all businesses using Radius service for the 
+ * explore portion of the feed.
+ * 
+ * @return {BusinessLocation[]} list of BusinessLocation objects representing each business using
+ * the service.
+ * @throws {Error} if the connection with Firestore is severed, in which the user
+ * should be asked to refresh the app. 
+ */
+export const getAllBusinessLocations = async () : Promise<BusinessLocation[]> => {
+  const response = await fetch(`${ROOT_URL}/api/businesses/locations/all`);
+  if (response.status === 500) {
+    throw new Error('Problem Connecting to Firestore');
+  }
+  const value = await response.json();
+  return value;
+}
+
+export const getBusinessLocationsFromArray = async (locations : string[]) : Promise<BusinessLocation[]> => {
+  const response = await fetch(`${ROOT_URL}/api/businesses/locations`, {
+    method: 'GET',
+    body: JSON.stringify({locations})
+  });
+
+  if (response.status === 400) {
+    throw new Error('Malformed Request');
+  }
+
+  if (response.status === 500) {
+    throw new Error('Problem Connecting to Firestore')
+  }
+
+  return await response.json();
 }
 
 /**

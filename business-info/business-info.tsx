@@ -25,13 +25,12 @@ interface BusinessInfoProps {
   user: User | undefined;
 }
 
-const DEGREES_PER_HUNDRED_METER = 0.001;
+const DEGREES_PER_HUNDRED_METERS = 0.001;
 
 const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   business,
   user,
 }: BusinessInfoProps) => {
-  const [editMap, setEditMap] = useState<boolean>(false);
   const [showJoin, setJoin] = useState<boolean>(false);
   const [isFav, setIsFav] = useState<boolean>(false);
 
@@ -40,7 +39,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   const navigation = useNavigation();
 
   const calculateDelta = (radius: number) => {
-    return ((radius * 4) / 100) * DEGREES_PER_HUNDRED_METER;
+    return ((radius * 4) / 100) * DEGREES_PER_HUNDRED_METERS;
   };
 
   const callHandler = () => {
@@ -75,11 +74,6 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
               latitudeDelta: calculateDelta(business.radius),
               longitudeDelta: calculateDelta(business.radius),
             }}
-            onPress={() => setEditMap(!editMap)}
-            scrollEnabled={editMap}
-            zoomEnabled={editMap}
-            rotateEnabled={editMap}
-            pitchEnabled={editMap}
             style={styles.map}
           >
             <Marker
