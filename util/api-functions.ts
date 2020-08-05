@@ -1,6 +1,7 @@
 import { BusinessLocation } from "./business";
 import { Customer } from "./customer";
 import {Queue, Party, QueueInfo} from './queue';
+import {auth} from '../firebase';
 
 const ROOT_URL : string = 'https://us-central1-ahead-9d906.cloudfunctions.net/widgets';
 
@@ -14,7 +15,16 @@ const ROOT_URL : string = 'https://us-central1-ahead-9d906.cloudfunctions.net/wi
  * an empty string, or if the business does not exist.
  */
 export const getBusinessLocation = async (uid: string) : Promise<BusinessLocation> => {
-  const response = await fetch(`${ROOT_URL}/api/businesses/${uid}/location`);
+  const token : string = await auth.currentUser!.getIdToken();
+
+  const response = await fetch(
+    `${ROOT_URL}/api/businesses/${uid}/location`,
+    fetchOptions('GET', token)
+  );
+
+  if (response.status === 403) {
+    throw new Error('Unauthorized');
+  }
   if (response.status === 500) {
     throw new Error('Problem Connecting to Firestore');
   }
@@ -24,6 +34,7 @@ export const getBusinessLocation = async (uid: string) : Promise<BusinessLocatio
   if (response.status === 404) {
     throw new Error('Business Not Found, this should not happen on mobile app (bug in your code)');
   }
+
   const value = await response.json();
   value.hours = value.hours.map((val: [string | null, string | null]) => hoursFromAPI(val));
   return value;
@@ -39,24 +50,40 @@ export const getBusinessLocation = async (uid: string) : Promise<BusinessLocatio
  * should be asked to refresh the app. 
  */
 export const getAllBusinessLocations = async () : Promise<BusinessLocation[]> => {
-  const response = await fetch(`${ROOT_URL}/api/businesses/locations/all`);
+  const token : string = await auth.currentUser!.getIdToken();
+
+  const response = await fetch(`${ROOT_URL}/api/businesses/locations/all`, fetchOptions('GET', token));
+
+  if (response.status === 403) {
+    throw new Error('Unauthorized');
+  }
   if (response.status === 500) {
     throw new Error('Problem Connecting to Firestore');
   }
+
   const value = await response.json();
   return value;
 }
 
 /**
- *]This function retreives the business locations that are specified in the
+ * This function retreives the business locations that are specified in the
  * given array.
+ * 
  * @param locations a string of business uids to be retreived, must be 10 items or less
  * @return the list of BusinessLocation objects
  * @throws {Error} if there is a connection problem with Firestore. 
  */
 export const getBusinessLocationsFromArray = async (locations : string[]) : Promise<BusinessLocation[]> => {
-  const response = await fetch(`${ROOT_URL}/api/businesses/locations?locations=${JSON.stringify(locations)}`);
+  const token : string = await auth.currentUser!.getIdToken();
 
+  const response = await fetch(
+    `${ROOT_URL}/api/businesses/locations?locations=${JSON.stringify(locations)}`,
+    fetchOptions('GET', token),
+  );
+
+  if (response.status === 403) {
+    throw new Error('Unauthorized');
+  }
   if (response.status === 400) {
     throw new Error('Malformed Request');
   }
@@ -78,7 +105,13 @@ export const getBusinessLocationsFromArray = async (locations : string[]) : Prom
  * an empty string, or if the business does not exist
  */
 export const getCustomer = async (uid: string) : Promise<Customer> => {
-  const response = await fetch(`${ROOT_URL}/api/customers?uid=${uid}`);
+  const token : string = await auth.currentUser!.getIdToken();
+
+  const response = await fetch(`${ROOT_URL}/api/customers?uid=${uid}`, fetchOptions('GET', token));
+
+  if (response.status === 403) {
+    throw new Error('Unauthorized');
+  }
   if (response.status === 400) {
     throw new Error('Malformed Request');
   }
@@ -88,6 +121,7 @@ export const getCustomer = async (uid: string) : Promise<Customer> => {
   if (response.status === 404) {
     throw new Error('Customer Not Found, this should not happen on mobile app (bug in your code)');
   }
+
   const value = await response.json();
   return value;
 }
@@ -100,8 +134,16 @@ export const getCustomer = async (uid: string) : Promise<Customer> => {
  * the request is malformed.
  */
 export const postCustomer = async (customer: Customer) => {
-  const body = {customer};
-  const response = await fetch(`${ROOT_URL}/api/customers`, postOptions(body));
+  const token : string = await auth.currentUser!.getIdToken();
+
+  const options : any = fetchOptions('POST', token);
+  options.body = JSON.stringify({customer});
+
+  const response = await fetch(`${ROOT_URL}/api/customers`, options);
+
+  if (response.status === 403) {
+    throw new Error('Unauthorized');
+  }
   if (response.status === 400) {
     throw new Error('Malformed Request');
   }
@@ -127,8 +169,16 @@ export const postCustomer = async (customer: Customer) => {
  * or if there was a problem connecting to firestore.
  */
 export const newCustomer = async (customer : any) : Promise<Customer> => {
-  const body = {customer};
-  const response = await fetch(`${ROOT_URL}/api/customers/new`, postOptions(body));
+  const token : string = await auth.currentUser!.getIdToken();
+
+  const options : any = fetchOptions('POST', token);
+  options.body = JSON.stringify({customer});
+
+  const response = await fetch(`${ROOT_URL}/api/customers/new`, options);
+
+  if (response.status === 403) {
+    throw new Error('Unauthorized');
+  }
   if (response.status === 400) {
     throw new Error('Malformed Request');
   }
@@ -144,7 +194,13 @@ export const newCustomer = async (customer : any) : Promise<Customer> => {
  * @param uid the id of the business' queue you are retreiving
  */
 export const getQueueInfo = async (uid: string) : Promise<QueueInfo> => {
-  const response = await fetch(`${ROOT_URL}/api/queues/info?uid=${uid}`);
+  const token : string = await auth.currentUser!.getIdToken();
+
+  const response = await fetch(`${ROOT_URL}/api/queues/info?uid=${uid}`, fetchOptions('GET', token));
+
+  if (response.status === 403) {
+    throw new Error('Unauthorized');
+  }
   if (response.status === 400) {
     throw new Error('Malformed Reqest');
   }
@@ -171,8 +227,16 @@ export const getQueueInfo = async (uid: string) : Promise<QueueInfo> => {
  * queue doesn't exist.
  */
 export const addToQueue = async (uid: string, party: Party): Promise<Queue> => {
-  const body = { party };
-  const response = await fetch(`${ROOT_URL}/api/queues/${uid}`, postOptions(body));
+  const token : string = await auth.currentUser!.getIdToken();
+
+  const options : any = fetchOptions('POST', token);
+  options.body = JSON.stringify({party});
+
+  const response = await fetch(`${ROOT_URL}/api/queues/${uid}`, options);
+
+  if (response.status === 403) {
+    throw new Error('Unauthorized');
+  }
   if (response.status === 500) { // error on server (status === 500)
     // This would be a very big problem, will want the user
     // to refresh the page
@@ -181,18 +245,20 @@ export const addToQueue = async (uid: string, party: Party): Promise<Queue> => {
   if (response.status === 404) { // queue doesn't exist, shouldn't happen
     throw new Error('Queue Not Found, this should not happen on mobile (bug in code)');
   }
+
   const value = await response.json();
   value.parties = value.parties.map((val : any) => partyFromAPI(val));
+
   return value;
 };
 
-const postOptions = (body: any) => (
+const fetchOptions = (method: string, idToken :string) => (
   {
-    method: 'POST',
+    method: method,
     headers: {
       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${idToken}`,
     },
-    body: JSON.stringify(body),
   }
 );
 
