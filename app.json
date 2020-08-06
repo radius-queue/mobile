@@ -16,6 +16,9 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "facebookAppId": "647671979177221",
+    "facebookScheme": "fb647671979177221",
+    "facebookDisplayName": "Radius-Mobile",
     "android": {
       "config": {
         "googleMaps": {

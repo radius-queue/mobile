@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "580604661554-f84vcatu7ar3qadfk1kpeljpu1oo71np.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.radius_android",
+            "certificate_hash": "9eb7e87786c7becbe5a76cd09cb73b3fcc9f1268"
+          }
+        },
+        {
           "client_id": "580604661554-ogb94mm9gfi5kcnca13onrmbfa0agk11.apps.googleusercontent.com",
           "client_type": 3
         }

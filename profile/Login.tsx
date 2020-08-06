@@ -1,8 +1,10 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { View, StyleSheet, TouchableWithoutFeedback } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Layout, Button, Text, Input } from "@ui-kitten/components";
 import { AntDesign } from "@expo/vector-icons";
+import * as Facebook from 'expo-facebook';
+import {firebase, FACEBOOK_APP_ID, auth} from '../firebase';
 
 function Login() {
   const [email, setEmail] = React.useState("");
@@ -19,6 +21,36 @@ function Login() {
   const facebookIcon = () => (
     <TouchableWithoutFeedback>{facebook}</TouchableWithoutFeedback>
   );
+
+  useEffect(() => {
+    const unsub = firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        console.log(user);
+      }
+    });
+
+    return unsub;
+  }, []);
+
+  const facebookSignIn = async () => {
+    try {
+      await Facebook.initializeAsync();
+      const result = await Facebook.logInWithReadPermissionsAsync({
+        permissions: ['public_profile'],
+      });
+      if (result.type === 'success') {
+        const credential = firebase.auth.FacebookAuthProvider.credential(result.token);
+        auth.signInWithCredential(credential).catch((error) => {
+          console.log(error);
+        });
+      } else {
+        // type === 'cancel'
+        console.log('Did not work');
+      }
+    } catch ({ message }) {
+      alert(`Facebook Login Error: ${message}`);
+    }
+  }
 
   return (
     <Layout style={styles.background} level="3">
@@ -54,9 +86,7 @@ function Login() {
           style={styles.altFacebook}
           status="info"
           accessoryRight={facebookIcon}
-          onPress={() => {
-            console.log("Facebook sign in");
-          }}
+          onPress={facebookSignIn}
         >
           Sign in with Facebook
         </Button>
