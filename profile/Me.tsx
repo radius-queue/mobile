@@ -12,15 +12,15 @@ import { default as theme } from "../custom-theme.json";
 
 const Stack = createStackNavigator();
 
-function MyStack({setSignedIn} : MeProps) {
+function MyStack() {
   return (
     <Stack.Navigator headerMode="none">
       <Stack.Screen name="Me" component={MeContent} />
       <Stack.Screen name="Login">
-        {() => <Login setSignedIn={setSignedIn}/>}  
+        {() => <Login />}  
       </Stack.Screen>
       <Stack.Screen name="Register">
-        {() => <Register setSignedIn={setSignedIn}/>}
+        {() => <Register />}
       </Stack.Screen>
     </Stack.Navigator>
   );
@@ -59,12 +59,8 @@ function MeContent() {
   );
 }
 
-interface MeProps {
-  setSignedIn: (b:boolean) => void,
-}
-
-function Me({setSignedIn} : MeProps) {
-  return <MyStack setSignedIn={setSignedIn}/>;
+function Me() {
+  return <MyStack/>;
 }
 
 const styles = StyleSheet.create({

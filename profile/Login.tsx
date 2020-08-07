@@ -14,11 +14,7 @@ interface FormData {
   password: string;
 }
 
-interface LoginProps {
-  setSignedIn: (b: boolean) => void,
-}
-
-function Login({setSignedIn} : LoginProps) {
+function Login() {
 
   const { control, setError, handleSubmit, errors, reset } = useForm<
     FormData

@@ -7,7 +7,7 @@ import ProfilePage from "./profile/profile-page";
 import { BusinessListScreen, businesses } from "./feed/feed";
 import { sampleUserInfo } from "./profile/profile-page";
 
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
   ApplicationProvider,
@@ -19,10 +19,9 @@ import {
 import * as eva from "@eva-design/eva";
 import { default as theme } from "./custom-theme.json";
 import { EvaIconsPack } from "@ui-kitten/eva-icons";
-import { auth} from './firebase';
 import {Customer} from "./util/customer"
-import firebase from "firebase";
 import {getCustomer} from "./util/api-functions";
+import { auth} from './firebase';
 
 const Tab = createBottomTabNavigator();
 
@@ -48,81 +47,45 @@ const BottomTabBar = (Navigator: {
   </BottomNavigation>
 );
 
-const ProfileWrapper = ({signedIn, setSignedIn} : TabProps) => (
-  signedIn ? <ProfilePage {...sampleUserInfo} /> : <Me setSignedIn={setSignedIn}/>
-);
-
 interface TabProps {
   signedIn : boolean,
   setSignedIn: (b: boolean) => void,
 }
 
-const TabNavigator = (user: Customer) => (
+const TabNavigator = ({signedIn} : TabProps) => (
   <Tab.Navigator tabBar={(props) => <BottomTabBar {...props} />}>
     <Tab.Screen name="Feed">
       {() => <BusinessListScreen {...businesses} />}
     </Tab.Screen>
-    <Tab.Screen name="Me" component={Me} />
-    <Tab.Screen name="Queue" component={QueuePage} />
-    <Tab.Screen name="Profile">
-      {() => <ProfilePage {...user} />}
+    <Tab.Screen name="Me">
+      {() => <ProfileWrapper signedIn={signedIn}/>}
     </Tab.Screen>
+    <Tab.Screen name="Queue" component={QueuePage} />
   </Tab.Navigator>
 );
 
-const loggedInUser = firebase.auth().currentUser;
-let user: Customer;
-if (loggedInUser) {
-  console.log("yes");
-  getCustomer(loggedInUser.uid).then(function(userInfo) {
-    user = new Customer(
-      userInfo.firstName,
-      userInfo.lastName,
-      userInfo.email,
-      userInfo.phoneNumber,
-      userInfo.uid,
-      userInfo.currentQueue,
-      userInfo.favorites,
-      userInfo.recents,
-    );
-  }).catch(function(error) {
-    console.log("Unable to load user info:" + error);
-  });
-} else {
-  console.log("no");
-  user = new Customer(
-    '',
-    '',
-    '',
-    '',
-    '',
-  );
-}
+const ProfileWrapper = ({signedIn}: {signedIn : boolean}) => (
+  signedIn ? <ProfilePage {...sampleUserInfo} /> : <Me />
+);
 
 export default function App() {
   const [signedIn, setSignedIn] = useState<boolean>(false);
-
-  const TabNavigator = ({signedIn, setSignedIn} : TabProps) => (
-    <Tab.Navigator tabBar={(props) => <BottomTabBar {...props} />}>
-      <Tab.Screen name="Feed">
-        {() => <BusinessListScreen {...businesses} />}
-      </Tab.Screen>
-      <Tab.Screen name="Me">
-        {() => <ProfileWrapper setSignedIn={setSignedIn} signedIn={signedIn}/>}
-      </Tab.Screen>
-      <Tab.Screen name="Queue" component={QueuePage} />
-    </Tab.Navigator>
-  );
+  const currUser = useRef<Customer>();
 
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(async (user) => {
       if (user) {
         const customer = await getCustomer(user.uid);
         setSignedIn(true);
+        currUser.current = customer;
+        console.log(currUser.current);
       } else {
+        currUser.current = new Customer('', '', '', '', '', '', [], []);
+        console.log(currUser.current);
         setSignedIn(false);
       }
     });
+  
     return unsub;
   }, []);
 
@@ -131,8 +94,8 @@ export default function App() {
       <IconRegistry icons={EvaIconsPack} />
       <ApplicationProvider {...eva} theme={{ ...eva.dark, ...theme }}>
         <NavigationContainer>
-          <TabNavigator {...user} signedIn={signedIn} setSignedIn={setSignedIn}/>
-]        </NavigationContainer>
+          <TabNavigator signedIn={signedIn} setSignedIn={setSignedIn}/>
+]       </NavigationContainer>
       </ApplicationProvider>
     </>
   );

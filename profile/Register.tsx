@@ -14,7 +14,6 @@ import {newCustomer} from '../util/api-functions';
 
 import { Feather } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
-import { registerVersion } from "firebase";
 
 type FormData = {
   firstName: string;
@@ -23,11 +22,8 @@ type FormData = {
   password: string;
 };
 
-interface RegisterProps {
-  setSignedIn: (b: boolean) => void,
-}
 
-function Register({setSignedIn} : RegisterProps) {
+function Register() {
   const navigation = useNavigation();
 
   const { control, setError, handleSubmit, errors, reset } = useForm<
