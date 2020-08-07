@@ -40,6 +40,7 @@ function Register() {
           }).catch((error) => {
             setError('email', {
               type: 'manual',
+              message: error.message,
             });
             console.log('Didnt Go Through');
             return false;
@@ -154,9 +155,8 @@ function Register() {
             </Text>
           )}
           {errors.email?.type === "manual" && (
-            <Text style={styles.errorText}>This email is already in use.</Text>
+            <Text style={styles.errorText}>{errors.email?.message}</Text>
           )}
-
           <Controller
             control={control}
             render={({ onChange, onBlur, value }) => (
