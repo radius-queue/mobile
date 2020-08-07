@@ -23,7 +23,11 @@ type FormData = {
   password: string;
 };
 
-function Register() {
+interface RegisterProps {
+  setSignedIn: (b: boolean) => void,
+}
+
+function Register({setSignedIn} : RegisterProps) {
   const navigation = useNavigation();
 
   const { control, setError, handleSubmit, errors, reset } = useForm<
@@ -35,20 +39,13 @@ function Register() {
           .then(async (val: firebase.auth.UserCredential) => {
             const uid = val.user!.uid;
             const customer = await newCustomer({firstName, lastName, email, uid, phoneNumber: '2817325876'});
-            console.log(customer);
-            return true;
+            reset({firstName: '', lastName: '', email: '', password: ''});
           }).catch((error) => {
             setError('email', {
               type: 'manual',
               message: error.message,
             });
-            console.log('Didnt Go Through');
-            return false;
           });
-    if (shouldGo) {
-      reset();
-      navigation.navigate("Feed");
-    }
   });
 
   const eyeOff = <Feather name="eye-off" size={24} color="white" />;

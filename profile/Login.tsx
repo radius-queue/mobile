@@ -14,7 +14,11 @@ interface FormData {
   password: string;
 }
 
-function Login() {
+interface LoginProps {
+  setSignedIn: (b: boolean) => void,
+}
+
+function Login({setSignedIn} : LoginProps) {
 
   const { control, setError, handleSubmit, errors, reset } = useForm<
     FormData
@@ -32,23 +36,14 @@ function Login() {
   );
 
   const onSubmit = handleSubmit(async ({email, password}) => {
-    const shouldGo = await auth.signInWithEmailAndPassword(email, password)
-      .then(async (val : firebase.auth.UserCredential) => {
-        const uid = val.user!.uid;
-        const customer = await getCustomer(uid);
-        return true;
-      })
+    await auth.signInWithEmailAndPassword(email, password)
+      .then(() => reset({email: '', password: ''}))
       .catch((error) => {
         setError('email', {
           type: 'firebase',
           message: error.message,
         });
-        return false;
       });
-    if (shouldGo) {
-      navigation.navigate("Feed");
-      reset();
-    }
   });
 
 

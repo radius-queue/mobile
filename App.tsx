@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import { StyleSheet } from "react-native";
 
 import Me from "./profile/Me";
@@ -7,7 +7,7 @@ import ProfilePage from "./profile/profile-page";
 import { BusinessListScreen, businesses } from "./feed/feed";
 import { sampleUserInfo } from "./profile/profile-page";
 
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
   ApplicationProvider,
@@ -19,16 +19,15 @@ import {
 import * as eva from "@eva-design/eva";
 import { default as theme } from "./custom-theme.json";
 import { EvaIconsPack } from "@ui-kitten/eva-icons";
-import {firebase} from './firebase';
+import { auth} from './firebase';
+import { getCustomer } from "./util/api-functions";
 
 const Tab = createBottomTabNavigator();
 
 const FeedIcon = (props: any) => <Icon {...props} name="browser-outline" />;
 const MeIcon = (props: any) => <Icon {...props} name="person-outline" />;
 const QueueIcon = (props: any) => <Icon {...props} name="list-outline" />;
-const ProfileIcon = (props: any) => (
-  <Icon {...props} name="smiling-face-outline" />
-);
+
 
 const BottomTabBar = (Navigator: {
   state: { index: number | undefined; routeNames: any[] };
@@ -42,35 +41,44 @@ const BottomTabBar = (Navigator: {
     }
   >
     <BottomNavigationTab icon={FeedIcon} title="FEED" />
-    <BottomNavigationTab icon={MeIcon} title="ME" />
+    <BottomNavigationTab icon={MeIcon} title="Me" />
     <BottomNavigationTab icon={QueueIcon} title="QUEUE" />
-    <BottomNavigationTab icon={ProfileIcon} title="PROFILE" />
   </BottomNavigation>
 );
 
-const TabNavigator = () => (
-  <Tab.Navigator tabBar={(props) => <BottomTabBar {...props} />}>
-    <Tab.Screen name="Feed">
-      {() => <BusinessListScreen {...businesses} />}
-    </Tab.Screen>
-    <Tab.Screen name="Me" component={Me} />
-    <Tab.Screen name="Queue" component={QueuePage} />
-    <Tab.Screen name="Profile">
-      {() => <ProfilePage {...sampleUserInfo} />}
-    </Tab.Screen>
-  </Tab.Navigator>
+const ProfileWrapper = ({signedIn, setSignedIn} : TabProps) => (
+  signedIn ? <ProfilePage {...sampleUserInfo} /> : <Me setSignedIn={setSignedIn}/>
 );
 
+interface TabProps {
+  signedIn : boolean,
+  setSignedIn: (b: boolean) => void,
+}
+
 export default function App() {
+  const [signedIn, setSignedIn] = useState<boolean>(false);
+
+  const TabNavigator = ({signedIn, setSignedIn} : TabProps) => (
+    <Tab.Navigator tabBar={(props) => <BottomTabBar {...props} />}>
+      <Tab.Screen name="Feed">
+        {() => <BusinessListScreen {...businesses} />}
+      </Tab.Screen>
+      <Tab.Screen name="Me">
+        {() => <ProfileWrapper setSignedIn={setSignedIn} signedIn={signedIn}/>}
+      </Tab.Screen>
+      <Tab.Screen name="Queue" component={QueuePage} />
+    </Tab.Navigator>
+  );
+
   useEffect(() => {
-    const unsub = firebase.auth().onAuthStateChanged((user) => {
+    const unsub = auth.onAuthStateChanged(async (user) => {
       if (user) {
-        console.log(user);
+        const customer = await getCustomer(user.uid);
+        setSignedIn(true);
       } else {
-        console.log('logged out');
+        setSignedIn(false);
       }
     });
-
     return unsub;
   }, []);
 
@@ -79,7 +87,7 @@ export default function App() {
       <IconRegistry icons={EvaIconsPack} />
       <ApplicationProvider {...eva} theme={{ ...eva.dark, ...theme }}>
         <NavigationContainer>
-          <TabNavigator />
+          <TabNavigator signedIn={signedIn} setSignedIn={setSignedIn}/>
         </NavigationContainer>
       </ApplicationProvider>
     </>
