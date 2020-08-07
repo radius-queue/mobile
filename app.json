@@ -31,7 +31,12 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.radius-ios",
-      "googleServicesFile": "./GoogleService-Info.plist"
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "config": {
+        "googleSignIn": {
+          "reservedClientId": "com.googleusercontent.apps.580604661554-n3kuuatginuc94ufcabm70eb60fq4jan"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"

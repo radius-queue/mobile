@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { StyleSheet } from "react-native";
 
 import Me from "./profile/Me";
-import DevPage from "./dev-page";
 import QueuePage from "./queue-view/queue-page";
 import ProfilePage from "./profile/profile-page";
 import { BusinessListScreen, businesses } from "./feed/feed";
@@ -26,7 +25,6 @@ import {getCustomer} from "./util/api-functions";
 
 const Tab = createBottomTabNavigator();
 
-const DevIcon = (props: any) => <Icon {...props} name="code-outline" />;
 const FeedIcon = (props: any) => <Icon {...props} name="browser-outline" />;
 const MeIcon = (props: any) => <Icon {...props} name="person-outline" />;
 const QueueIcon = (props: any) => <Icon {...props} name="list-outline" />;
@@ -45,7 +43,6 @@ const BottomTabBar = (Navigator: {
       Navigator.navigation.navigate(Navigator.state.routeNames[index])
     }
   >
-    <BottomNavigationTab icon={DevIcon} title="DEV" />
     <BottomNavigationTab icon={FeedIcon} title="FEED" />
     <BottomNavigationTab icon={MeIcon} title="ME" />
     <BottomNavigationTab icon={QueueIcon} title="QUEUE" />
@@ -55,7 +52,6 @@ const BottomTabBar = (Navigator: {
 
 const TabNavigator = (user: Customer) => (
   <Tab.Navigator tabBar={(props) => <BottomTabBar {...props} />}>
-    <Tab.Screen name="Dev" component={DevPage} />
     <Tab.Screen name="Feed">
       {() => <BusinessListScreen {...businesses} />}
     </Tab.Screen>
@@ -97,6 +93,18 @@ if (loggedInUser) {
 }
 
 export default function App() {
+  useEffect(() => {
+    const unsub = firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        console.log(user);
+      } else {
+        console.log('logged out');
+      }
+    });
+
+    return unsub;
+  }, []);
+
   return (
     <>
       <IconRegistry icons={EvaIconsPack} />

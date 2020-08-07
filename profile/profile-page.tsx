@@ -3,6 +3,7 @@ import {Text, Button} from '@ui-kitten/components';
 import {StyleSheet, View} from "react-native";
 import { default as theme } from "../custom-theme.json";
 import Screen from "../components/screen";
+import {auth} from '../firebase';
 
 interface userInfo {
   email: string,
@@ -31,7 +32,7 @@ const ProfilePage = (curUserInfo: userInfo): React.ReactElement => {
           <Text style={styles.contentLabel}>Phone: {'\t'}<Text style={styles.contentInfo}>{curUserInfo.phoneNumber}</Text></Text>
           <Text style={styles.contentLabel}>Email: {'\t'}<Text style={styles.contentInfo}>{curUserInfo.email}</Text></Text>
         </View>
-        <Button style={styles.cardButton} status='danger'>Log Out</Button>
+        <Button style={styles.cardButton} status='danger' onPress={() => auth.signOut()}>Log Out</Button>
       </View>
     </Screen>
   );
