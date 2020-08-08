@@ -33,14 +33,16 @@ function Login({setUser, currUser}: RenderProps) {
 
   const onSubmit = handleSubmit(async ({email, password}) => {
     await auth.signInWithEmailAndPassword(email, password)
+      .then(() => {
+        reset({email: '', password: ''});
+        navigation.navigate("Feed");
+      })
       .catch((error) => {
         setError('email', {
           type: 'firebase',
           message: error.message,
         });
       });
-    reset({email: '', password: ''});
-    navigation.navigate("Feed");
   });
 
   const facebookSignIn = async () => {
