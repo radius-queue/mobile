@@ -82,13 +82,23 @@ export default function App() {
   const [rerenderApp, setRerenderApp] = useState<number>(0);
 
   useEffect(() => {
-    auth.onAuthStateChanged(function(user) {
+    auth.onAuthStateChanged(async function(user) {
       if (user) {
         if (currUser.email !== 'register') {
-          getCustomer(user.uid).then((retrievedCustomer) => {
+          await getCustomer(user.uid).then((retrievedCustomer) => {
             currUser = retrievedCustomer;
             console.log(`App.tsx (101) - Auth changed: ${currUser.email}`);
             setRerenderApp(rerenderApp + 1);
+          })
+        } else {
+          let a: string = 'register';
+          while (a !== 'register') {
+            a = currUser.email;
+          }
+          await getCustomer(user.uid).then((retrievedCustomer) => {
+            currUser = retrievedCustomer;
+            console.log(`App.tsx (101) - Auth changed: ${currUser.email}`);
+            setRerenderApp(rerenderApp + 99);
           })
         }
       } else {
