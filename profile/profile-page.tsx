@@ -4,6 +4,10 @@ import {StyleSheet, View} from "react-native";
 import { default as theme } from "../custom-theme.json";
 import Screen from "../components/screen";
 import {auth} from '../firebase';
+import { parsePhoneNum } from '../util/util-functions';
+import { Customer } from '../util/customer';
+import { RenderProps } from '../App';
+import { useNavigation } from "@react-navigation/native";
 
 interface userInfo {
   email: string,
@@ -19,7 +23,17 @@ export const sampleUserInfo: userInfo = {
   phoneNumber: '(206)876-4432'
 };
 
-const ProfilePage = (curUserInfo: userInfo): React.ReactElement => {
+const ProfilePage = ({rerenderApp, setRerenderApp, currUser}: RenderProps): React.ReactElement => {
+  const navigation = useNavigation();
+  const signOut = async () => {
+    console.log('profile-page.tsx (28) - Logging out ' + currUser.email);
+    currUser = new Customer('', '', '', '', '',);
+    await auth.signOut();
+    console.log('profile-page.tsx (31) - Logged out');
+    setRerenderApp(rerenderApp+1);
+    navigation.navigate("Feed");
+  }
+
   return (
     <Screen style={styles.container}>
       <View style={[styles.card, styles.headerCard]}>
@@ -28,11 +42,11 @@ const ProfilePage = (curUserInfo: userInfo): React.ReactElement => {
       <View style={[styles.card, styles.infoCard]}>
         <Text style={styles.cardHeader}>📇 Basic Info</Text>
         <View style={styles.cardContent}>
-          <Text style={styles.contentLabel}>Name: {'\t'}<Text style={styles.contentInfo}>{curUserInfo.firstName} {curUserInfo.lastName}</Text></Text>
-          <Text style={styles.contentLabel}>Phone: {'\t'}<Text style={styles.contentInfo}>{curUserInfo.phoneNumber}</Text></Text>
-          <Text style={styles.contentLabel}>Email: {'\t'}<Text style={styles.contentInfo}>{curUserInfo.email}</Text></Text>
+          <Text style={styles.contentLabel}>Name: {'\t'}<Text style={styles.contentInfo}>{currUser.firstName} {currUser.lastName}</Text></Text>
+          <Text style={styles.contentLabel}>Phone: {'\t'}<Text style={styles.contentInfo}>{parsePhoneNum(currUser.phoneNumber)}</Text></Text>
+          <Text style={styles.contentLabel}>Email: {'\t'}<Text style={styles.contentInfo}>{currUser.email}</Text></Text>
         </View>
-        <Button style={styles.cardButton} status='danger' onPress={() => auth.signOut()}>Log Out</Button>
+        <Button style={styles.cardButton} status='danger' onPress={signOut}>Log Out</Button>
       </View>
     </Screen>
   );

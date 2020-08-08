@@ -9,18 +9,19 @@ import Register from "./Register";
 import Screen from "../components/screen";
 
 import { default as theme } from "../custom-theme.json";
+import { RenderProps } from "../App";
 
 const Stack = createStackNavigator();
 
-function MyStack() {
+function MyStack({rerenderApp, setRerenderApp, currUser}: RenderProps) {
   return (
     <Stack.Navigator headerMode="none">
       <Stack.Screen name="Me" component={MeContent} />
       <Stack.Screen name="Login">
-        {() => <Login />}  
+        {() => <Login rerenderApp={rerenderApp} setRerenderApp={setRerenderApp} currUser={currUser}/>}  
       </Stack.Screen>
       <Stack.Screen name="Register">
-        {() => <Register />}
+        {() => <Register rerenderApp={rerenderApp} setRerenderApp={setRerenderApp} currUser={currUser}/>}
       </Stack.Screen>
     </Stack.Navigator>
   );
@@ -59,8 +60,8 @@ function MeContent() {
   );
 }
 
-function Me() {
-  return <MyStack/>;
+function Me({rerenderApp, setRerenderApp, currUser}: RenderProps) {
+  return <MyStack rerenderApp={rerenderApp} setRerenderApp={setRerenderApp} currUser={currUser} />;
 }
 
 const styles = StyleSheet.create({

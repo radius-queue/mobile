@@ -14,6 +14,7 @@ import {newCustomer} from '../util/api-functions';
 
 import { Feather } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
+import { RenderProps } from "../App";
 
 type FormData = {
   firstName: string;
@@ -23,7 +24,7 @@ type FormData = {
 };
 
 
-function Register() {
+function Register({rerenderApp, setRerenderApp, currUser}: RenderProps) {
   const navigation = useNavigation();
 
   const { control, setError, handleSubmit, errors, reset } = useForm<
@@ -31,10 +32,14 @@ function Register() {
   >();
 
   const onSubmit =  handleSubmit(async ({ firstName, lastName, email, password }) => {
+    currUser.email='register';
+    console.log('register.tsx (36) - registration begins ' + currUser.email);
     const shouldGo = await auth.createUserWithEmailAndPassword(email, password)
           .then(async (val: firebase.auth.UserCredential) => {
             const uid = val.user!.uid;
-            const customer = await newCustomer({firstName, lastName, email, uid, phoneNumber: '2817325876'});
+            currUser = await newCustomer({firstName, lastName, email, uid, phoneNumber: '2817325876'});
+            setRerenderApp(rerenderApp+1);
+            navigation.navigate('Feed');
             reset({firstName: '', lastName: '', email: '', password: ''});
           }).catch((error) => {
             setError('email', {

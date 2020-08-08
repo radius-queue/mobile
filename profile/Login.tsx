@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { View, StyleSheet, TouchableWithoutFeedback, Keyboard } from "react-native";
 import {useForm, Controller} from 'react-hook-form';
 import { useNavigation } from "@react-navigation/native";
@@ -7,14 +7,14 @@ import { AntDesign } from "@expo/vector-icons";
 import * as Facebook from 'expo-facebook';
 import * as Google from 'expo-google-sign-in';
 import {firebase, auth} from '../firebase';
-import { getCustomer } from "../util/api-functions";
+import { RenderProps } from "../App";
 
 interface FormData {
   email: string;
   password: string;
 }
 
-function Login() {
+function Login({rerenderApp, setRerenderApp, currUser}: RenderProps) {
 
   const { control, setError, handleSubmit, errors, reset } = useForm<
     FormData
@@ -33,15 +33,15 @@ function Login() {
 
   const onSubmit = handleSubmit(async ({email, password}) => {
     await auth.signInWithEmailAndPassword(email, password)
-      .then(() => reset({email: '', password: ''}))
       .catch((error) => {
         setError('email', {
           type: 'firebase',
           message: error.message,
         });
       });
+    reset({email: '', password: ''});
+    navigation.navigate("Feed");
   });
-
 
   const facebookSignIn = async () => {
     try {
@@ -126,7 +126,7 @@ function Login() {
         {errors.email?.type === 'firebase' && (
           <Text style={styles.errorText}>{errors.email?.message}</Text>
         )}
-        <Button style={styles.button} onPress={() => onSubmit()}>
+        <Button style={styles.button} onPress={onSubmit}>
           Login with Email
         </Button>
         <View style={styles.altContainer}>

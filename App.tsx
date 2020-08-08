@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useRef} from "react";
+import React, {useEffect, useState, useRef, Dispatch, SetStateAction} from "react";
 import { StyleSheet } from "react-native";
 
 import Me from "./profile/Me";
@@ -22,6 +22,13 @@ import { EvaIconsPack } from "@ui-kitten/eva-icons";
 import {Customer} from "./util/customer"
 import {getCustomer} from "./util/api-functions";
 import { auth} from './firebase';
+import { watchPositionAsync } from "expo-location";
+
+let currUser = new Customer('', '' ,'', '', '',);
+
+export interface CurrUserProps {
+  currUser: Customer,
+}
 
 const Tab = createBottomTabNavigator();
 
@@ -39,6 +46,7 @@ const BottomTabBar = (Navigator: {
     style={styles.bottomNavigation}
     onSelect={(index) =>
       Navigator.navigation.navigate(Navigator.state.routeNames[index])
+      
     }
   >
     <BottomNavigationTab icon={FeedIcon} title="FEED" />
@@ -47,55 +55,59 @@ const BottomTabBar = (Navigator: {
   </BottomNavigation>
 );
 
-interface TabProps {
-  signedIn : boolean,
-  setSignedIn: (b: boolean) => void,
-}
-
-const TabNavigator = ({signedIn} : TabProps) => (
+const TabNavigator = ({rerenderApp, setRerenderApp, currUser}: RenderProps) => (
   <Tab.Navigator tabBar={(props) => <BottomTabBar {...props} />}>
     <Tab.Screen name="Feed">
       {() => <BusinessListScreen {...businesses} />}
     </Tab.Screen>
     <Tab.Screen name="Me">
-      {() => <ProfileWrapper signedIn={signedIn}/>}
+      {() => <ProfileWrapper rerenderApp={rerenderApp} setRerenderApp={setRerenderApp} currUser={currUser}/>}
     </Tab.Screen>
     <Tab.Screen name="Queue" component={QueuePage} />
   </Tab.Navigator>
 );
 
-const ProfileWrapper = ({signedIn}: {signedIn : boolean}) => (
-  signedIn ? <ProfilePage {...sampleUserInfo} /> : <Me />
+const ProfileWrapper = ({rerenderApp, setRerenderApp, currUser}: RenderProps) => (
+  currUser.email.length > 0 ? <ProfilePage rerenderApp={rerenderApp} setRerenderApp={setRerenderApp} currUser={currUser} /> : <Me rerenderApp={rerenderApp} setRerenderApp={setRerenderApp} currUser={currUser} />
 );
 
+export interface RenderProps {
+  rerenderApp: number,
+  setRerenderApp: React.Dispatch<React.SetStateAction<number>>,
+  currUser: Customer,
+}
+
 export default function App() {
-  const [signedIn, setSignedIn] = useState<boolean>(false);
-  const currUser = useRef<Customer>();
+
+  const [rerenderApp, setRerenderApp] = useState<number>(0);
 
   useEffect(() => {
-    const unsub = auth.onAuthStateChanged(async (user) => {
+    auth.onAuthStateChanged(function(user) {
       if (user) {
-        const customer = await getCustomer(user.uid);
-        setSignedIn(true);
-        currUser.current = customer;
-        console.log(currUser.current);
+        if (currUser.email !== 'register') {
+          getCustomer(user.uid).then((retrievedCustomer) => {
+            currUser = retrievedCustomer;
+            console.log(`App.tsx (101) - Auth changed: ${currUser.email}`);
+            setRerenderApp(rerenderApp + 1);
+          })
+        }
       } else {
-        currUser.current = new Customer('', '', '', '', '', '', [], []);
-        console.log(currUser.current);
-        setSignedIn(false);
+        currUser = new Customer('', '' ,'', '', '',);
       }
-    });
-  
-    return unsub;
+    }); 
   }, []);
+
+  console.log(`App.tsx (98) - Page rendered: ${currUser.email}`);
+  console.log(`App.tsx (99) - currUser at render:`);
+  console.log(currUser);
 
   return (
     <>
       <IconRegistry icons={EvaIconsPack} />
       <ApplicationProvider {...eva} theme={{ ...eva.dark, ...theme }}>
         <NavigationContainer>
-          <TabNavigator signedIn={signedIn} setSignedIn={setSignedIn}/>
-]       </NavigationContainer>
+          <TabNavigator rerenderApp={rerenderApp} setRerenderApp={setRerenderApp} currUser={currUser}/>
+        </NavigationContainer>
       </ApplicationProvider>
     </>
   );
