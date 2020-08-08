@@ -14,7 +14,7 @@ interface FormData {
   password: string;
 }
 
-function Login({rerenderApp, setRerenderApp, currUser}: RenderProps) {
+function Login({setUser, currUser}: RenderProps) {
 
   const { control, setError, handleSubmit, errors, reset } = useForm<
     FormData

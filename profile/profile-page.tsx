@@ -23,15 +23,15 @@ export const sampleUserInfo: userInfo = {
   phoneNumber: '(206)876-4432'
 };
 
-const ProfilePage = ({rerenderApp, setRerenderApp, currUser}: RenderProps): React.ReactElement => {
+const ProfilePage = ({setUser, currUser}: RenderProps): React.ReactElement => {
+  
   const navigation = useNavigation();
+
   const signOut = async () => {
-    console.log('profile-page.tsx (28) - Logging out ' + currUser.email);
-    currUser = new Customer('', '', '', '', '',);
-    await auth.signOut();
-    console.log('profile-page.tsx (31) - Logged out');
-    setRerenderApp(rerenderApp+1);
+    setUser(new Customer());
     navigation.navigate("Feed");
+    await auth.signOut();
+    //setRerenderApp(rerenderApp+1);
   }
 
   return (

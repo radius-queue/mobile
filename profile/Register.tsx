@@ -24,7 +24,7 @@ type FormData = {
 };
 
 
-function Register({rerenderApp, setRerenderApp, currUser}: RenderProps) {
+function Register({setUser, currUser}: RenderProps) {
   const navigation = useNavigation();
 
   const { control, setError, handleSubmit, errors, reset } = useForm<
@@ -32,13 +32,13 @@ function Register({rerenderApp, setRerenderApp, currUser}: RenderProps) {
   >();
 
   const onSubmit =  handleSubmit(async ({ firstName, lastName, email, password }) => {
-    currUser.email='register';
-    console.log('register.tsx (36) - registration begins ' + currUser.email);
+    // currUser.email='register';
     const shouldGo = await auth.createUserWithEmailAndPassword(email, password)
-          .then(async (val: firebase.auth.UserCredential) => {
-            const uid = val.user!.uid;
-            currUser = await newCustomer({firstName, lastName, email, uid, phoneNumber: '2817325876'});
-            setRerenderApp(rerenderApp+1);
+          .then(async (newUser: firebase.auth.UserCredential) => {
+            const uid = newUser.user!.uid;
+            const user = await newCustomer({firstName, lastName, email, uid, phoneNumber: '2817325876'});
+            setUser(user);
+            //setRerenderApp(rerenderApp+1);
             navigation.navigate('Feed');
             reset({firstName: '', lastName: '', email: '', password: ''});
           }).catch((error) => {

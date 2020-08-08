@@ -22,8 +22,8 @@ export class Customer {
    * @param {string[]} favorites List of favorite businesses' uid
    * @param {string[]} recents List of recently visited businesses'uid
    */
-  constructor(firstName: string, lastName: string, email: string,
-      phoneNumber: string, uid: string, currentQueue: string = '',
+  constructor(firstName : string = '', lastName: string = '', email: string = '',
+      phoneNumber: string = '', uid: string = '', currentQueue: string = '',
       favorites: string[] = [], recents: string[] = []) {
     this.firstName = firstName;
     this.lastName = lastName;

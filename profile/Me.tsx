@@ -13,15 +13,15 @@ import { RenderProps } from "../App";
 
 const Stack = createStackNavigator();
 
-function MyStack({rerenderApp, setRerenderApp, currUser}: RenderProps) {
+function MyStack({setUser, currUser}: RenderProps) {
   return (
     <Stack.Navigator headerMode="none">
       <Stack.Screen name="Me" component={MeContent} />
       <Stack.Screen name="Login">
-        {() => <Login rerenderApp={rerenderApp} setRerenderApp={setRerenderApp} currUser={currUser}/>}  
+        {() => <Login setUser={setUser} currUser={currUser}/>}  
       </Stack.Screen>
       <Stack.Screen name="Register">
-        {() => <Register rerenderApp={rerenderApp} setRerenderApp={setRerenderApp} currUser={currUser}/>}
+        {() => <Register setUser={setUser} currUser={currUser}/>}
       </Stack.Screen>
     </Stack.Navigator>
   );
@@ -60,8 +60,8 @@ function MeContent() {
   );
 }
 
-function Me({rerenderApp, setRerenderApp, currUser}: RenderProps) {
-  return <MyStack rerenderApp={rerenderApp} setRerenderApp={setRerenderApp} currUser={currUser} />;
+function Me({setUser, currUser}: RenderProps) {
+  return <MyStack setUser={setUser} currUser={currUser} />;
 }
 
 const styles = StyleSheet.create({

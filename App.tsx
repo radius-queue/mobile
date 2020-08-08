@@ -6,7 +6,7 @@ import QueuePage from "./queue-view/queue-page";
 import ProfilePage from "./profile/profile-page";
 import { BusinessListScreen, businesses } from "./feed/feed";
 import { sampleUserInfo } from "./profile/profile-page";
-
+import type { BusinessLocation } from "./util/business";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
@@ -20,15 +20,11 @@ import * as eva from "@eva-design/eva";
 import { default as theme } from "./custom-theme.json";
 import { EvaIconsPack } from "@ui-kitten/eva-icons";
 import {Customer} from "./util/customer"
-import {getCustomer} from "./util/api-functions";
+import {getCustomer, getAllBusinessLocations, getBusinessLocationsFromArray} from "./util/api-functions";
 import { auth} from './firebase';
-import { watchPositionAsync } from "expo-location";
+import { Business } from "./util/business";
 
-let currUser = new Customer('', '' ,'', '', '',);
-
-export interface CurrUserProps {
-  currUser: Customer,
-}
+const REGISTRATION_TIME_THRESHOLD : number = 3000;
 
 const Tab = createBottomTabNavigator();
 
@@ -55,68 +51,86 @@ const BottomTabBar = (Navigator: {
   </BottomNavigation>
 );
 
-const TabNavigator = ({rerenderApp, setRerenderApp, currUser}: RenderProps) => (
+interface TabProps {
+  setUser: (c: Customer) => void,
+  currUser: Customer,
+  setFavs: (b: BusinessLocation[]) => void,
+  setRecents: (b: BusinessLocation[]) => void,
+  feedLists: [BusinessLocation[], BusinessLocation[], BusinessLocation[]],
+}
+
+export interface RenderProps {
+  setUser: (c: Customer) => void,
+  currUser: Customer,
+}
+
+const TabNavigator = ({setUser, currUser, setFavs, setRecents, feedLists}: TabProps) => (
   <Tab.Navigator tabBar={(props) => <BottomTabBar {...props} />}>
     <Tab.Screen name="Feed">
       {() => <BusinessListScreen {...businesses} />}
     </Tab.Screen>
     <Tab.Screen name="Me">
-      {() => <ProfileWrapper rerenderApp={rerenderApp} setRerenderApp={setRerenderApp} currUser={currUser}/>}
+      {() => <ProfileWrapper setUser={setUser} currUser={currUser}/>}
     </Tab.Screen>
     <Tab.Screen name="Queue" component={QueuePage} />
   </Tab.Navigator>
 );
 
-const ProfileWrapper = ({rerenderApp, setRerenderApp, currUser}: RenderProps) => (
-  currUser.email.length > 0 ? <ProfilePage rerenderApp={rerenderApp} setRerenderApp={setRerenderApp} currUser={currUser} /> : <Me rerenderApp={rerenderApp} setRerenderApp={setRerenderApp} currUser={currUser} />
+const ProfileWrapper = ({setUser, currUser}: RenderProps) => (
+  currUser.email.length > 0 ? <ProfilePage setUser={setUser} currUser={currUser} /> : <Me setUser={setUser} currUser={currUser} />
 );
-
-export interface RenderProps {
-  rerenderApp: number,
-  setRerenderApp: React.Dispatch<React.SetStateAction<number>>,
-  currUser: Customer,
-}
 
 export default function App() {
 
-  const [rerenderApp, setRerenderApp] = useState<number>(0);
+  //const [rerenderApp, setRerenderApp] = useState<number>(0);
+  const [currUser, setUser] = useState<Customer>(new Customer());
+  const [recents, setRecents] = useState<BusinessLocation[]>([]);
+  const [favs, setFavs] = useState<BusinessLocation[]>([]);
+  const [businesses, setBusinesses] = useState<BusinessLocation[]>([]);
 
   useEffect(() => {
-    auth.onAuthStateChanged(async function(user) {
+    const unsub = auth.onAuthStateChanged(function(user) {
       if (user) {
-        if (currUser.email !== 'register') {
-          await getCustomer(user.uid).then((retrievedCustomer) => {
-            currUser = retrievedCustomer;
-            console.log(`App.tsx (101) - Auth changed: ${currUser.email}`);
-            setRerenderApp(rerenderApp + 1);
-          })
-        } else {
-          let a: string = 'register';
-          while (a !== 'register') {
-            a = currUser.email;
-          }
-          await getCustomer(user.uid).then((retrievedCustomer) => {
-            currUser = retrievedCustomer;
-            console.log(`App.tsx (101) - Auth changed: ${currUser.email}`);
-            setRerenderApp(rerenderApp + 99);
-          })
+        if (new Date().getTime() - new Date(user.metadata.creationTime!).getTime() > REGISTRATION_TIME_THRESHOLD) {
+          getCustomer(user.uid).then((retrievedCustomer) => {
+            setUser(retrievedCustomer);
+          });
         }
       } else {
-        currUser = new Customer('', '' ,'', '', '',);
+        setUser(new Customer());
       }
-    }); 
+    });
+
+    const getBizList = async () => {
+      setBusinesses(await getAllBusinessLocations());
+    }
+
+    const getFavsAndRecents = async () => {
+      const favs = await getBusinessLocationsFromArray(currUser.favorites);
+      const recents = await getBusinessLocationsFromArray(currUser.recents);
+      setFavs(favs);
+      setRecents(recents);
+    }
+
+
+    getBizList();
+    getFavsAndRecents();
+
+    return unsub;
   }, []);
-
-  console.log(`App.tsx (98) - Page rendered: ${currUser.email}`);
-  console.log(`App.tsx (99) - currUser at render:`);
-  console.log(currUser);
-
+  
   return (
     <>
       <IconRegistry icons={EvaIconsPack} />
       <ApplicationProvider {...eva} theme={{ ...eva.dark, ...theme }}>
         <NavigationContainer>
-          <TabNavigator rerenderApp={rerenderApp} setRerenderApp={setRerenderApp} currUser={currUser}/>
+          <TabNavigator
+            setUser={setUser}
+            feedLists={[favs, recents, businesses]}
+            currUser={currUser}
+            setFavs={setFavs}
+            setRecents={setRecents}
+          />
         </NavigationContainer>
       </ApplicationProvider>
     </>
