@@ -82,39 +82,33 @@ const ProfileWrapper = ({setUser, currUser}: RenderProps) => (
 
 export default function App() {
 
-  //const [rerenderApp, setRerenderApp] = useState<number>(0);
   const [currUser, setUser] = useState<Customer>(new Customer());
   const [recents, setRecents] = useState<BusinessLocation[]>([]);
   const [favs, setFavs] = useState<BusinessLocation[]>([]);
   const [businesses, setBusinesses] = useState<BusinessLocation[]>([]);
+  const [business, setBusiness] = useState<BusinessLocation | undefined>();
 
   useEffect(() => {
-    const unsub = auth.onAuthStateChanged(function(user) {
+    const unsub = auth.onAuthStateChanged(async function(user) {
       if (user) {
         if (new Date().getTime() - new Date(user.metadata.creationTime!).getTime() > REGISTRATION_TIME_THRESHOLD) {
           getCustomer(user.uid).then((retrievedCustomer) => {
             setUser(retrievedCustomer);
           });
         }
+        setBusinesses(await getAllBusinessLocations());
+        const favs = await getBusinessLocationsFromArray(currUser.favorites);
+        const recents = await getBusinessLocationsFromArray(currUser.recents);
+        setFavs(favs);
+        setRecents(recents);
       } else {
         setUser(new Customer());
+        setRecents([]);
+        setBusiness(undefined);
+        setFavs([]);
+        setBusinesses([]);
       }
     });
-
-    const getBizList = async () => {
-      setBusinesses(await getAllBusinessLocations());
-    }
-
-    const getFavsAndRecents = async () => {
-      const favs = await getBusinessLocationsFromArray(currUser.favorites);
-      const recents = await getBusinessLocationsFromArray(currUser.recents);
-      setFavs(favs);
-      setRecents(recents);
-    }
-
-
-    getBizList();
-    getFavsAndRecents();
 
     return unsub;
   }, []);
