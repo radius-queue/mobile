@@ -34,7 +34,7 @@ export const BusinessCard = (props: BusinessCardProps): CardElement => {
           style={styles.title}
           category='h2'
           status='control'>
-          {bCard.title}
+          {business.name}
         </Text>
       </ImageOverlay>
     </Card>

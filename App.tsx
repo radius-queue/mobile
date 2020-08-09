@@ -57,6 +57,8 @@ interface TabProps {
   setFavs: (b: BusinessLocation[]) => void,
   setRecents: (b: BusinessLocation[]) => void,
   feedLists: [BusinessLocation[], BusinessLocation[], BusinessLocation[]],
+  setBusiness: (b: [BusinessLocation | undefined, number]) => void,
+  business: [BusinessLocation | undefined, number],
 }
 
 export interface RenderProps {
@@ -64,10 +66,16 @@ export interface RenderProps {
   currUser: Customer,
 }
 
-const TabNavigator = ({setUser, currUser, setFavs, setRecents, feedLists}: TabProps) => (
+const TabNavigator = ({setUser, currUser, setBusiness, business, setFavs, feedLists}: TabProps) => (
   <Tab.Navigator tabBar={(props) => <BottomTabBar {...props} />}>
     <Tab.Screen name="Feed">
-      {() => <BusinessListScreen {...businesses} />}
+      {() => <BusinessListScreen
+          setBusiness={setBusiness}
+          setFavs={setFavs}
+          feedList={feedLists}
+          currUser={currUser}
+          business={business}
+        />}
     </Tab.Screen>
     <Tab.Screen name="Me">
       {() => <ProfileWrapper setUser={setUser} currUser={currUser}/>}
@@ -86,7 +94,7 @@ export default function App() {
   const [recents, setRecents] = useState<BusinessLocation[]>([]);
   const [favs, setFavs] = useState<BusinessLocation[]>([]);
   const [businesses, setBusinesses] = useState<BusinessLocation[]>([]);
-  const [business, setBusiness] = useState<BusinessLocation | undefined>();
+  const [business, setBusiness] = useState<[BusinessLocation | undefined, number]>([undefined, 0]); // the business you're queueing in
 
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(async function(user) {
@@ -110,7 +118,7 @@ export default function App() {
       } else {
         setUser(new Customer());
         setRecents([]);
-        setBusiness(undefined);
+        setBusiness([undefined, 0]);
         setFavs([]);
         setBusinesses([]);
       }
@@ -130,6 +138,8 @@ export default function App() {
             currUser={currUser}
             setFavs={setFavs}
             setRecents={setRecents}
+            setBusiness={setBusiness}
+            business={business}
           />
         </NavigationContainer>
       </ApplicationProvider>

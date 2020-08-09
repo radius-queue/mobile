@@ -61,7 +61,11 @@ export const getAllBusinessLocations = async () : Promise<BusinessLocation[]> =>
     throw new Error('Problem Connecting to Firestore');
   }
 
-  const value = await response.json();
+  let value = await response.json();
+  value = value.map((b: any) => {
+    b.hours = b.hours.map((val: [string | null, string | null]) => hoursFromAPI(val));
+    return b;
+  });
   return value;
 }
 

@@ -19,6 +19,7 @@ import HaversineGeolocation from 'haversine-geolocation';
 import { default as theme } from "../custom-theme.json";
 import { allNumbers, parsePhoneNum } from '../util/util-functions';
 import { AntDesign } from '@expo/vector-icons';
+import { Customer } from '../util/customer';
 
 const RADIUS_BUFFER_METERS = 10;
 
@@ -26,8 +27,8 @@ interface ModalProps {
   show: boolean,
   addToQ: () => void,
   hide: () => void,
-  user: User | undefined,
-  coords: [number, number],
+  user: Customer | undefined,
+  coords: number[],
   radius: number,
 };
 

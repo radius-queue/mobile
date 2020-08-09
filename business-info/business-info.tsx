@@ -1,4 +1,4 @@
-import React, { useState, useRef, FunctionComponent } from "react";
+import React, { useState, useRef, FunctionComponent, useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -13,16 +13,21 @@ import call from "react-native-phone-call";
 import { Card, Layout, Button, Icon } from "@ui-kitten/components";
 import { useNavigation } from "@react-navigation/native";
 import BusinessModal from "./business-info-modal";
-import type { BusinessInfo, User } from "./data";
 import MapView, { Marker, Circle } from "react-native-maps";
 import { dateToOperationHours, parsePhoneNum } from "../util/util-functions";
 import defaultStyles from "../config/styles";
 import {Fontisto, SimpleLineIcons} from '@expo/vector-icons';
 import { default as theme } from "../custom-theme.json";
+import { BusinessLocation } from "../util/business";
+import { Customer } from "../util/customer";
+import { QueueInfo } from '../util/queue';
+import { getQueueInfo } from "../util/api-functions";
+import { businesses } from "../feed/feed";
 
 interface BusinessInfoProps {
-  business: BusinessInfo;
-  user: User | undefined;
+  business: BusinessLocation;
+  user: Customer | undefined;
+  isFavorite: boolean,
 }
 
 const DEGREES_PER_HUNDRED_METERS = 0.001;
@@ -30,13 +35,23 @@ const DEGREES_PER_HUNDRED_METERS = 0.001;
 const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   business,
   user,
+  isFavorite
 }: BusinessInfoProps) => {
   const [showJoin, setJoin] = useState<boolean>(false);
-  const [isFav, setIsFav] = useState<boolean>(false);
+  const [isFav, setIsFav] = useState<boolean>(isFavorite);
+  const [queueInfo, setQueueInfo] = useState<QueueInfo | undefined>();
 
   const scrollA = useRef(new Animated.Value(0)).current;
 
   const navigation = useNavigation();
+
+  useEffect(() => {
+    const getQueue = async () => {
+      setQueueInfo(await getQueueInfo(business.queues[0]));
+    }
+
+    getQueue();
+  }, []);
 
   const calculateDelta = (radius: number) => {
     return ((radius * 4) / 100) * DEGREES_PER_HUNDRED_METERS;
@@ -44,7 +59,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
 
   const callHandler = () => {
     const args = {
-      number: business.phone.replace("-", ""),
+      number: business.phoneNumber,
       prompt: true,
     };
 
@@ -71,8 +86,8 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
             region={{
               latitude: business.coordinates[0],
               longitude: business.coordinates[1],
-              latitudeDelta: calculateDelta(business.radius),
-              longitudeDelta: calculateDelta(business.radius),
+              latitudeDelta: calculateDelta(business.geoFenceRadius),
+              longitudeDelta: calculateDelta(business.geoFenceRadius),
             }}
             style={styles.map}
           >
@@ -88,7 +103,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
                 latitude: business.coordinates[0],
                 longitude: business.coordinates[1],
               }}
-              radius={business.radius}
+              radius={business.geoFenceRadius}
               strokeWidth={1}
               strokeColor={"#ff0000"}
               style={styles.circle}
@@ -116,7 +131,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
             <TouchableOpacity onPress={callHandler}>
                 <Text></Text>
                 <Text style={[defaultStyles.text, styles.phone]}>
-                  {parsePhoneNum(business.phone)}
+                  {parsePhoneNum(business.phoneNumber)}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -126,24 +141,24 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
             <View style={styles.queueInfoTextContainer}>
               <Text style={[defaultStyles.text, styles.contentLabel]}>Status:</Text>
               <Text style={defaultStyles.text}>
-                {business.queues[0].open ? "Open" : "Closed"}
+                {queueInfo?.open ? "Open" : "Closed"}
               </Text>
             </View>
             <View style={styles.queueInfoTextContainer}>
               <Text style={[defaultStyles.text, styles.contentLabel]}>Line Length:</Text>
               <Text style={defaultStyles.text}>
-                {business.queues[0].length} parties
+              {queueInfo && queueInfo.open ? `${queueInfo.length} parties` : `N/A`}
               </Text>
             </View>
             <View style={styles.queueInfoTextContainer}>
               <Text style={[defaultStyles.text, styles.contentLabel]}>Recent Wait Time:</Text>
               <Text style={defaultStyles.text}>
-                {business.queues[0].firstWaitTime} minutes
+                {queueInfo && queueInfo.open ? `${queueInfo.longestWaitTime === -1 ? 0: queueInfo.longestWaitTime} minutes` : `N/A`}
               </Text>
             </View>
             <Button
               style={styles.joinButton}
-              disabled={!business.queues[0].open}
+              disabled={queueInfo ? !queueInfo.open : true}
               onPress={() => setJoin(true)}
             >
               Join Queue
@@ -177,7 +192,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
         show={showJoin}
         addToQ={addToQ}
         coords={business.coordinates}
-        radius={business.radius}
+        radius={business.geoFenceRadius}
         hide={() => setJoin(false)}
         user={user}
       />
