@@ -5,6 +5,7 @@ import { BusinessCard } from './business-overview-card';
 import { BusinessCardInfo } from './data';
 import Screen from '../components/screen';
 import { default as theme } from "../custom-theme.json";
+import { BusinessLocation } from '../util/business';
 
 export const businesses: BusinessCardInfo[][] = [
   [
@@ -24,7 +25,14 @@ export const businesses: BusinessCardInfo[][] = [
   ],
 ];
 
-export const BusinessListScreen = (businesses: BusinessCardInfo[][]): React.ReactElement => {
+interface FeedProps { 
+  setBusiness: (b: BusinessLocation) => void,
+  feedList: [BusinessLocation[], BusinessLocation[], BusinessLocation[]],
+  setFavs: (b: BusinessLocation[]) => void,
+  setRecents: (b: BusinessLocation[]) => void,
+}
+
+export const BusinessListScreen = ({feedList, setBusiness, setFavs, setRecents}: FeedProps) : React.ReactElement => {
 
   const renderHeader = (): React.ReactElement => (
     <React.Fragment>

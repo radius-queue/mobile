@@ -91,16 +91,22 @@ export default function App() {
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(async function(user) {
       if (user) {
+        let customer = currUser;
         if (new Date().getTime() - new Date(user.metadata.creationTime!).getTime() > REGISTRATION_TIME_THRESHOLD) {
           getCustomer(user.uid).then((retrievedCustomer) => {
             setUser(retrievedCustomer);
+            customer = currUser;
           });
         }
         setBusinesses(await getAllBusinessLocations());
-        const favs = await getBusinessLocationsFromArray(currUser.favorites);
-        const recents = await getBusinessLocationsFromArray(currUser.recents);
-        setFavs(favs);
-        setRecents(recents);
+        if (customer.favorites.length > 0) {
+          const favs = await getBusinessLocationsFromArray(currUser.favorites);
+          setFavs(favs);
+        }
+        if (customer.recents.length > 0) {
+          const recents = await getBusinessLocationsFromArray(currUser.recents);
+          setRecents(recents);
+        }
       } else {
         setUser(new Customer());
         setRecents([]);

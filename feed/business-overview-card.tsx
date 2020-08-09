@@ -2,17 +2,20 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { Card, CardElement, CardProps, Text } from '@ui-kitten/components';
 import { ImageOverlay } from './image-overlay';
-import { BusinessCardInfo} from './data';
+import { BusinessLocation } from '../util/business';
+import { businesses } from './feed';
 
 export interface BusinessCardProps extends Omit<CardProps, 'children'> {
-  bCard: BusinessCardInfo;
+  business: BusinessLocation;
 }
+
+const image = require('../assets/landing.jpg');
 
 export type BusinessCardElement = React.ReactElement<BusinessCardProps>;
 
 export const BusinessCard = (props: BusinessCardProps): CardElement => {
 
-  const { style, bCard, ...cardProps } = props;
+  const { style, business, ...cardProps } = props;
 
   return (
     <Card
@@ -20,12 +23,12 @@ export const BusinessCard = (props: BusinessCardProps): CardElement => {
       style={[styles.container, style]}>
       <ImageOverlay
         style={styles.image}
-        source={bCard.image}>
+        source={image}>
         <Text
           style={styles.level}
           category='s1'
           status='control'>
-          {bCard.type}
+          {'Type Goes Here'}
         </Text>
         <Text
           style={styles.title}
