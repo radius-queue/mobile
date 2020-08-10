@@ -4,8 +4,6 @@ import {useForm, Controller} from 'react-hook-form';
 import { useNavigation } from "@react-navigation/native";
 import { Layout, Button, Text, Input } from "@ui-kitten/components";
 import { AntDesign } from "@expo/vector-icons";
-import * as Facebook from 'expo-facebook';
-import * as Google from 'expo-google-sign-in';
 import {firebase, auth} from '../firebase';
 import { RenderProps } from "../App";
 
@@ -44,44 +42,6 @@ function Login({setUser, currUser}: RenderProps) {
         });
       });
   });
-
-  const facebookSignIn = async () => {
-    try {
-      await Facebook.initializeAsync();
-      const result = await Facebook.logInWithReadPermissionsAsync({
-        permissions: ['public_profile'],
-      });
-      if (result.type === 'success') {
-        const credential = firebase.auth.FacebookAuthProvider.credential(result.token);
-        auth.signInWithCredential(credential).catch((error) => {
-          console.log(error);
-        });
-      } else {
-        // type === 'cancel'
-        console.log('Did not work');
-      }
-    } catch ({ message }) {
-      alert(`Facebook Login Error: ${message}`);
-    }
-  };
-
-  const googleSignIn = async () => {
-    try {
-      await Google.initAsync();
-      const {type, user} = await Google.signInAsync();
-      if (type === 'success') {
-        const {idToken, accessToken} = user!.auth!;
-        const credential = firebase.auth.GoogleAuthProvider.credential(idToken, accessToken);
-        auth.signInWithCredential(credential).catch((error) => {
-          console.log(error);
-        });
-      } else {
-        console.log('Did Not Work');
-      }
-    } catch(error) {
-      console.log(error);
-    }
-  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -131,24 +91,6 @@ function Login({setUser, currUser}: RenderProps) {
         <Button style={styles.button} onPress={onSubmit}>
           Login with Email
         </Button>
-        <View style={styles.altContainer}>
-          <Button
-            style={styles.altGoogle}
-            status="success"
-            accessoryRight={googleIcon}
-            onPress={googleSignIn}
-          >
-            Sign in with Google
-          </Button>
-          <Button
-            style={styles.altFacebook}
-            status="info"
-            accessoryRight={facebookIcon}
-            onPress={facebookSignIn}
-          >
-            Sign in with Facebook
-          </Button>
-        </View>
         <View style={styles.registerContainer}>
           <Text>Don't have a Radius Account?</Text>
           <Button
