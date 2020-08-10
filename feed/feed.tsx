@@ -8,7 +8,7 @@ import { default as theme } from "../custom-theme.json";
 import { BusinessLocation } from '../util/business';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { Customer } from '../util/customer';
-import  BusinessInfoScreen from '../business-info/business-info';
+import BusinessInfoScreen from '../business-info/business-info';
 
 export const businesses: BusinessCardInfo[][] = [
   [
@@ -28,7 +28,7 @@ export const businesses: BusinessCardInfo[][] = [
   ],
 ];
 
-interface FeedProps { 
+interface FeedProps {
   setBusiness: (b: [BusinessLocation | undefined, number]) => void,
   feedList: [BusinessLocation[], BusinessLocation[], BusinessLocation[]],
   setFavs: (b: BusinessLocation[]) => void,
@@ -36,13 +36,13 @@ interface FeedProps {
   currUser: Customer,
 }
 
-export const BusinessListScreen = ({feedList, setBusiness, setFavs, currUser, business}: FeedProps) : React.ReactElement => {
+export const BusinessListScreen = ({ feedList, setBusiness, setFavs, currUser, business }: FeedProps): React.ReactElement => {
   const [chosenBusiness, setChosenBusiness] = useState<[BusinessLocation | undefined, number]>(business);
 
   const renderHeader = (): React.ReactElement => (
     <React.Fragment>
-      {(feedList[0].length > 0) ? renderFav() : <React.Fragment/>}
-      {(feedList[1].length > 0) ? renderRecent() : <React.Fragment/>}
+      {(feedList[0].length > 0) ? renderFav() : <React.Fragment />}
+      {(feedList[1].length > 0) ? renderRecent() : <React.Fragment />}
       <Text
         style={styles.headerTitle}
         appearance='hint'>
@@ -67,6 +67,25 @@ export const BusinessListScreen = ({feedList, setBusiness, setFavs, currUser, bu
       />
     </React.Fragment>
   );
+
+  const addFav = () => {
+    const newFavs = feedList[0];
+    newFavs.push(chosenBusiness[0]!);
+    setFavs(newFavs);
+  };
+
+  const removeFav = () => {
+    const favsCopy = feedList[0];
+    const unfavorite = chosenBusiness[0];
+    let newFavs: BusinessLocation[] = [];
+    let i: number;
+    for (i = 0; i < favsCopy.length; i++) {
+      if (favsCopy[i] !== unfavorite) {
+        newFavs.push(favsCopy[i]);
+      }
+    }
+    setFavs(newFavs);
+  };
 
   const renderRecent = (): React.ReactElement => (
     <React.Fragment>
@@ -118,12 +137,14 @@ export const BusinessListScreen = ({feedList, setBusiness, setFavs, currUser, bu
   console.log(chosenBusiness);
   return (
     <Screen style={styles.container}>
-      {chosenBusiness[0] ? <BusinessInfoScreen 
+      {chosenBusiness[0] ? <BusinessInfoScreen
         user={currUser}
         business={chosenBusiness[0]!}
         isFavorite={feedList[0].includes(chosenBusiness[0])}
+        addFav={addFav}
+        removeFav={removeFav}
       />
-      : renderAll()}
+        : renderAll()}
     </Screen>
   );
 };

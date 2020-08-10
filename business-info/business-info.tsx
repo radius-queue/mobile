@@ -16,7 +16,7 @@ import BusinessModal from "./business-info-modal";
 import MapView, { Marker, Circle } from "react-native-maps";
 import { dateToOperationHours, parsePhoneNum } from "../util/util-functions";
 import defaultStyles from "../config/styles";
-import {Fontisto, SimpleLineIcons} from '@expo/vector-icons';
+import { Fontisto, SimpleLineIcons } from '@expo/vector-icons';
 import { default as theme } from "../custom-theme.json";
 import { BusinessLocation } from "../util/business";
 import { Customer } from "../util/customer";
@@ -28,6 +28,8 @@ interface BusinessInfoProps {
   business: BusinessLocation;
   user: Customer | undefined;
   isFavorite: boolean,
+  addFav: () => void;
+  removeFav: () => void;
 }
 
 const DEGREES_PER_HUNDRED_METERS = 0.001;
@@ -35,7 +37,9 @@ const DEGREES_PER_HUNDRED_METERS = 0.001;
 const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   business,
   user,
-  isFavorite
+  isFavorite,
+  addFav,
+  removeFav,
 }: BusinessInfoProps) => {
   const [showJoin, setJoin] = useState<boolean>(false);
   const [isFav, setIsFav] = useState<boolean>(isFavorite);
@@ -52,6 +56,14 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
 
     getQueue();
   }, []);
+
+  useEffect(() => {
+    if (isFav) {
+      removeFav();
+    } else {
+      addFav();
+    }
+  }, [isFav]);
 
   const calculateDelta = (radius: number) => {
     return ((radius * 4) / 100) * DEGREES_PER_HUNDRED_METERS;
@@ -111,8 +123,8 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
           </MapView>
         </Animated.View>
         <Card disabled={true} style={styles.businessCard}>
-          <Layout style={styles.dragNotif}/>
-          <Layout style={[styles.layout, {flexDirection: 'row'}]} level="2">
+          <Layout style={styles.dragNotif} />
+          <Layout style={[styles.layout, { flexDirection: 'row' }]} level="2">
             <View>
               <View style={styles.businessNameContainer}>
                 <Text style={[defaultStyles.text, styles.name, styles.businessName]}>
@@ -121,14 +133,14 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
                 <TouchableOpacity disabled={!!!user} onPress={() => setIsFav(!isFav)}>
                   {!isFav
                     ? <SimpleLineIcons name="star" size={24} color="yellow" />
-                    : <Fontisto name='star'size={24} color='yellow'/>
+                    : <Fontisto name='star' size={24} color='yellow' />
                   }
                 </TouchableOpacity>
               </View>
               <Text style={[defaultStyles.text]}>
                 {business.address}
               </Text>
-            <TouchableOpacity onPress={callHandler}>
+              <TouchableOpacity onPress={callHandler}>
                 <Text></Text>
                 <Text style={[defaultStyles.text, styles.phone]}>
                   {parsePhoneNum(business.phoneNumber)}
@@ -147,13 +159,13 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
             <View style={styles.queueInfoTextContainer}>
               <Text style={[defaultStyles.text, styles.contentLabel]}>Line Length:</Text>
               <Text style={defaultStyles.text}>
-              {queueInfo && queueInfo.open ? `${queueInfo.length} parties` : `N/A`}
+                {queueInfo && queueInfo.open ? `${queueInfo.length} parties` : `N/A`}
               </Text>
             </View>
             <View style={styles.queueInfoTextContainer}>
               <Text style={[defaultStyles.text, styles.contentLabel]}>Recent Wait Time:</Text>
               <Text style={defaultStyles.text}>
-                {queueInfo && queueInfo.open ? `${queueInfo.longestWaitTime === -1 ? 0: queueInfo.longestWaitTime} minutes` : `N/A`}
+                {queueInfo && queueInfo.open ? `${queueInfo.longestWaitTime === -1 ? 0 : queueInfo.longestWaitTime} minutes` : `N/A`}
               </Text>
             </View>
             <Button
@@ -179,7 +191,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
                   <Text key={idx} style={[defaultStyles.text, styles.dayText]}>
                     {val[0]
                       ? dateToOperationHours(val[0]) + ` - ` +
-                        dateToOperationHours(val[1]!)
+                      dateToOperationHours(val[1]!)
                       : "Closed"}
                   </Text>
                 ))}
