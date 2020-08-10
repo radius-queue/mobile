@@ -58,7 +58,7 @@ export const getAllBusinessLocations = async () : Promise<BusinessLocation[]> =>
     throw new Error('Unauthorized');
   }
   if (response.status === 500) {
-    throw new Error('Problem Connecting to Firestore');
+    throw new Error('Problem Connecting to Firestore in All Locations Method');
   }
 
   let value = await response.json();
@@ -66,6 +66,7 @@ export const getAllBusinessLocations = async () : Promise<BusinessLocation[]> =>
     b.hours = b.hours.map((val: [string | null, string | null]) => hoursFromAPI(val));
     return b;
   });
+
   return value;
 }
 
@@ -78,6 +79,10 @@ export const getAllBusinessLocations = async () : Promise<BusinessLocation[]> =>
  * @throws {Error} if there is a connection problem with Firestore. 
  */
 export const getBusinessLocationsFromArray = async (locations : string[]) : Promise<BusinessLocation[]> => {
+  if (locations.length === 0) {
+    return [];
+  }
+  
   const token : string = await auth.currentUser!.getIdToken();
 
   const response = await fetch(
@@ -93,10 +98,16 @@ export const getBusinessLocationsFromArray = async (locations : string[]) : Prom
   }
 
   if (response.status === 500) {
-    throw new Error('Problem Connecting to Firestore')
+    throw new Error('Problem Connecting to Firestore from "Location from Array Method"');
   }
 
-  return await response.json();
+  let value = await response.json();
+  value = value.map((b: any) => {
+    b.hours = b.hours.map((val: [string | null, string | null]) => hoursFromAPI(val));
+    return b;
+  });
+  
+  return value;
 }
 
 /**

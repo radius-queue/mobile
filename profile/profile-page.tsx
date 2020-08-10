@@ -9,29 +9,13 @@ import { Customer } from '../util/customer';
 import { RenderProps } from '../App';
 import { useNavigation } from "@react-navigation/native";
 
-interface userInfo {
-  email: string,
-  firstName: string,
-  lastName: string,
-  phoneNumber: string,
-};
-
-export const sampleUserInfo: userInfo = {
-  email: 'harryhusky123@gmail.com',
-  firstName: 'Harry',
-  lastName: 'Husky',
-  phoneNumber: '(206)876-4432'
-};
-
 const ProfilePage = ({setUser, currUser}: RenderProps): React.ReactElement => {
   
   const navigation = useNavigation();
 
   const signOut = async () => {
     setUser(new Customer());
-    navigation.navigate("Feed");
-    await auth.signOut();
-    //setRerenderApp(rerenderApp+1);
+    auth.signOut();
   }
 
   return (

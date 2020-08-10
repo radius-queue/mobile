@@ -69,7 +69,7 @@ export const BusinessListScreen = ({ feedList, setBusiness, setFavs, currUser, b
   );
 
   const addFav = () => {
-    const newFavs = feedList[0];
+    const newFavs = feedList[0].slice();
     newFavs.push(chosenBusiness[0]!);
     setFavs(newFavs);
   };
@@ -134,13 +134,12 @@ export const BusinessListScreen = ({ feedList, setBusiness, setFavs, currUser, b
     </TouchableHighlight>
   );
 
-  console.log(chosenBusiness);
   return (
     <Screen style={styles.container}>
       {chosenBusiness[0] ? <BusinessInfoScreen
         user={currUser}
         business={chosenBusiness[0]!}
-        isFavorite={feedList[0].includes(chosenBusiness[0])}
+        isFavorite={feedList[0].map((b) => b.queues[0]).includes(chosenBusiness[0].queues[0])}
         addFav={addFav}
         removeFav={removeFav}
       />

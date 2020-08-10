@@ -4,8 +4,7 @@ import { StyleSheet } from "react-native";
 import Me from "./profile/Me";
 import QueuePage from "./queue-view/queue-page";
 import ProfilePage from "./profile/profile-page";
-import { BusinessListScreen, businesses } from "./feed/feed";
-import { sampleUserInfo } from "./profile/profile-page";
+import { BusinessListScreen } from "./feed/feed";
 import type { BusinessLocation } from "./util/business";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -20,9 +19,8 @@ import * as eva from "@eva-design/eva";
 import { default as theme } from "./custom-theme.json";
 import { EvaIconsPack } from "@ui-kitten/eva-icons";
 import {Customer} from "./util/customer"
-import {getCustomer, getAllBusinessLocations, getBusinessLocationsFromArray} from "./util/api-functions";
+import {getCustomer, getAllBusinessLocations, getBusinessLocationsFromArray, postCustomer} from "./util/api-functions";
 import { auth} from './firebase';
-import { Business } from "./util/business";
 
 const REGISTRATION_TIME_THRESHOLD : number = 3000;
 
@@ -99,22 +97,21 @@ export default function App() {
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(async function(user) {
       if (user) {
-        let customer = currUser;
-        if (new Date().getTime() - new Date(user.metadata.creationTime!).getTime() > REGISTRATION_TIME_THRESHOLD) {
-          getCustomer(user.uid).then((retrievedCustomer) => {
-            setUser(retrievedCustomer);
-            customer = currUser;
-          });
-        }
-        setBusinesses(await getAllBusinessLocations());
-        if (customer.favorites.length > 0) {
-          const favs = await getBusinessLocationsFromArray(currUser.favorites);
-          setFavs(favs);
-        }
-        if (customer.recents.length > 0) {
-          const recents = await getBusinessLocationsFromArray(currUser.recents);
-          setRecents(recents);
-        }
+        if (new Date().getTime() - new Date(user.metadata.creationTime!).getTime() > REGISTRATION_TIME_THRESHOLD) { // assuming not registering
+          let customer: Customer = await getCustomer(user.uid);
+          
+          const newFavs = await getBusinessLocationsFromArray(customer.favorites);
+          setFavs(newFavs);
+
+          const newRecents = await getBusinessLocationsFromArray(customer.recents);
+          setRecents(newRecents);
+
+          setUser(customer);
+        } 
+
+        const businessLocations = await getAllBusinessLocations();
+        setBusinesses(businessLocations);
+
       } else {
         setUser(new Customer());
         setRecents([]);
@@ -126,6 +123,33 @@ export default function App() {
 
     return unsub;
   }, []);
+
+  
+  useEffect(() => {
+    if (currUser.email.length !== 0 && currUser.favorites.length !== favs.length) {
+      const newFavs = favs.map((b: BusinessLocation) => b.queues[0]); // gets the uids of each business location
+      const newCustomer = {
+        ...currUser,
+        favorites: newFavs,
+      };
+      postCustomer(newCustomer);
+      setUser(newCustomer);
+    }
+  }, [favs, currUser]);
+
+
+  useEffect(() => {
+    if (currUser.email.length !== 0 && currUser.recents.length !== recents.length) {
+      const newRecs = recents.map((b: BusinessLocation) => b.queues[0]) // get the uids of each business location
+      const newCustomer = {
+        ...currUser,
+        recents: newRecs,
+      };
+      postCustomer(newCustomer);
+      setUser(newCustomer);
+    }
+  }, [recents, currUser]);
+
   
   return (
     <>

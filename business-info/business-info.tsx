@@ -57,13 +57,14 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
     getQueue();
   }, []);
 
-  useEffect(() => {
+  const onStarPress = () => {
     if (isFav) {
       removeFav();
     } else {
       addFav();
     }
-  }, [isFav]);
+    setIsFav(!isFav);
+  }
 
   const calculateDelta = (radius: number) => {
     return ((radius * 4) / 100) * DEGREES_PER_HUNDRED_METERS;
@@ -130,7 +131,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
                 <Text style={[defaultStyles.text, styles.name, styles.businessName]}>
                   {business.name}
                 </Text>
-                <TouchableOpacity disabled={!!!user} onPress={() => setIsFav(!isFav)}>
+                <TouchableOpacity disabled={!!!user} onPress={onStarPress}>
                   {!isFav
                     ? <SimpleLineIcons name="star" size={24} color="yellow" />
                     : <Fontisto name='star' size={24} color='yellow' />
