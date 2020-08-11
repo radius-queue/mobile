@@ -21,8 +21,9 @@ import { QueueInfo, Queue } from '../util/queue';
 import { getQueueInfo, addToQueue } from "../util/api-functions";
 
 interface BusinessInfoProps {
-  business: BusinessLocation;
-  user: Customer | undefined;
+  business: BusinessLocation,
+  user: Customer | undefined,
+  setUser: (c: Customer) => void,
   isFavorite: boolean,
   addFav: () => void;
   removeFav: () => void;
@@ -41,7 +42,8 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   removeFav,
   setQueue,
   queue,
-  setQueueBusiness
+  setQueueBusiness,
+  setUser,
 }: BusinessInfoProps) => {
   const [showJoin, setJoin] = useState<boolean>(false);
   const [isFav, setIsFav] = useState<boolean>(isFavorite);
@@ -98,6 +100,8 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
     }); 
     setQueue(newQueue.uid);
     setQueueBusiness(business);
+    const newUser = {...user!, currentQueue: newQueue.uid};
+    setUser(newUser);
     navigation.navigate("Queue");
   };
 

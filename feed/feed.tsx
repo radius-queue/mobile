@@ -18,9 +18,19 @@ interface FeedProps {
   currUser: Customer,
   queueId: string,
   setQueueId: (q: string) => void,
+  setUser: (c:Customer) => void,
 }
 
-export const BusinessListScreen = ({ feedList, setQueueBusiness, setFavs, currUser, business, queueId, setQueueId }: FeedProps): React.ReactElement => {
+export const BusinessListScreen = ({
+  feedList,
+  setQueueBusiness,
+  setFavs,
+  currUser,
+  business,
+  queueId,
+  setQueueId,
+  setUser,
+}: FeedProps): React.ReactElement => {
   const [chosenBusiness, setChosenBusiness] = useState<BusinessLocation | undefined>(business);
 
   useEffect(() => {
@@ -133,6 +143,7 @@ export const BusinessListScreen = ({ feedList, setQueueBusiness, setFavs, currUs
         queue={queueId}
         setQueue={setQueueId}
         setQueueBusiness={setQueueBusiness}
+        setUser={setUser}
       />
         : renderAll()}
     </Screen>

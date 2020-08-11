@@ -26,6 +26,7 @@ interface QueueProps {
  * current queue. If not in a queue, the user is notified.
  */
 const QueuePage = ({queueId, setQueueId, currUser, setUser, setQueueBusiness}: QueueProps) => {
+  console.log(`Queue ID: ${queueId}`);
   const [leaveModalVisible, setLeaveModalVisible] = useState(false);
 
   const [queueInfo, setQueueInfo] = useState<{queue: Queue | undefined, inLine: number | undefined}>({queue: undefined, inLine: undefined});

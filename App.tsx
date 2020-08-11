@@ -78,6 +78,7 @@ const TabNavigator = ({ setUser, currUser, setQueueBusiness, business, setFavs, 
         business={business}
         setQueueId={setQueueId}
         queueId={queueId}
+        setUser={setUser}
       />}
     </Tab.Screen>
     <Tab.Screen name="Me">
@@ -111,8 +112,9 @@ export default function App() {
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(async function (user) {
       if (user) {
+        let customer: Customer | undefined;
         if (new Date().getTime() - new Date(user.metadata.creationTime!).getTime() > REGISTRATION_TIME_THRESHOLD) { // assuming not registering
-          let customer: Customer = await getCustomer(user.uid);
+          customer = await getCustomer(user.uid);
           
           const newFavs = await getBusinessLocationsFromArray(customer.favorites);
           setFavs(newFavs);
@@ -127,6 +129,15 @@ export default function App() {
 
         const businessLocations = await getAllBusinessLocations();
         setBusinesses(businessLocations);
+
+        if (customer && customer.currentQueue.length !== 0) {
+          for (const biz of businessLocations) {
+            if (biz.queues[0] === customer.currentQueue) {
+              setBusiness(biz);
+              break;
+            }
+          }
+        }
 
       } else {
         setUser(new Customer());
@@ -150,7 +161,6 @@ export default function App() {
         ...currUser,
         favorites: newFavs,
       };
-      postCustomer(newCustomer);
       setUser(newCustomer);
     }
   }, [favs, currUser]);
@@ -163,11 +173,18 @@ export default function App() {
         ...currUser,
         recents: newRecs,
       };
-      postCustomer(newCustomer);
       setUser(newCustomer);
     }
   }, [recents, currUser]);
+
+
+  useEffect(() => {
+    if (currUser.email.length !== 0) {
+      postCustomer(currUser);
+    }
+  }, [currUser]);
   
+
   return (
     <>
       <IconRegistry icons={EvaIconsPack} />
