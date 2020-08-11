@@ -27,8 +27,8 @@ interface BusinessInfoProps {
   addFav: () => void;
   removeFav: () => void;
   setQueueBusiness: (b: BusinessLocation | undefined) => void,
-  queue: Queue | undefined,
-  setQueue: (q: Queue | undefined) => void,
+  queue: string,
+  setQueue: (q: string) => void,
 }
 
 const DEGREES_PER_HUNDRED_METERS = 0.001;
@@ -96,8 +96,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
       quote: -1,
       messages: [],
     }); 
-    console.log(newQueue);
-    setQueue(newQueue);
+    setQueue(newQueue.uid);
     setQueueBusiness(business);
     navigation.navigate("Queue");
   };

@@ -58,8 +58,8 @@ interface TabProps {
   feedLists: [BusinessLocation[], BusinessLocation[], BusinessLocation[]],
   setQueueBusiness: (b: BusinessLocation | undefined) => void,
   business: BusinessLocation | undefined,
-  queue: Queue | undefined,
-  setQueue: (q: Queue | undefined) => void,
+  queueId: string,
+  setQueueId: (s: string) => void,
 }
 
 export interface RenderProps {
@@ -67,7 +67,7 @@ export interface RenderProps {
   currUser: Customer,
 }
 
-const TabNavigator = ({ setUser, currUser, setQueueBusiness, business, setFavs, feedLists, queue, setQueue }: TabProps) => (
+const TabNavigator = ({ setUser, currUser, setQueueBusiness, business, setFavs, feedLists, queueId, setQueueId }: TabProps) => (
   <Tab.Navigator tabBar={(props) => <BottomTabBar {...props} />}>
     <Tab.Screen name="Feed">
       {() => <BusinessListScreen
@@ -76,8 +76,8 @@ const TabNavigator = ({ setUser, currUser, setQueueBusiness, business, setFavs, 
         feedList={feedLists}
         currUser={currUser}
         business={business}
-        setQueue={setQueue}
-        queue={queue}
+        setQueueId={setQueueId}
+        queueId={queueId}
       />}
     </Tab.Screen>
     <Tab.Screen name="Me">
@@ -85,9 +85,9 @@ const TabNavigator = ({ setUser, currUser, setQueueBusiness, business, setFavs, 
     </Tab.Screen>
     <Tab.Screen name="Queue">
       {() => <QueuePage
-        queue={queue}
+        queueId={queueId}
         setQueueBusiness={setQueueBusiness}
-        setQueue={setQueue}
+        setQueueId={setQueueId}
         currUser={currUser}
         setUser={setUser}
       />}
@@ -105,8 +105,8 @@ export default function App() {
   const [recents, setRecents] = useState<BusinessLocation[]>([]);
   const [favs, setFavs] = useState<BusinessLocation[]>([]);
   const [businesses, setBusinesses] = useState<BusinessLocation[]>([]);
-  const [business, setBusiness] = useState<BusinessLocation | undefined>(undefined);
-  const [queue, setQueue] = useState<Queue | undefined>(undefined);
+  const [business, setBusiness] = useState<BusinessLocation | undefined>();
+  const [queueId, setQueueId] = useState<string>('');
 
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(async function (user) {
@@ -120,10 +120,7 @@ export default function App() {
           const newRecents = await getBusinessLocationsFromArray(customer.recents);
           setRecents(newRecents);
           
-          if (customer.currentQueue !== '') {
-            const newQueue = await getQueue(customer.currentQueue);
-            setQueue(newQueue);
-          }
+          setQueueId(customer.currentQueue);
 
           setUser(customer);
         } 
@@ -140,7 +137,9 @@ export default function App() {
       }
     });
 
-    return unsub;
+    return () => {
+      unsub();
+    };
   }, []);
 
   
@@ -168,7 +167,6 @@ export default function App() {
       setUser(newCustomer);
     }
   }, [recents, currUser]);
-
   
   return (
     <>
@@ -183,8 +181,8 @@ export default function App() {
             setRecents={setRecents}
             setQueueBusiness={setBusiness}
             business={business}
-            queue={queue}
-            setQueue={setQueue}
+            queueId={queueId}
+            setQueueId={setQueueId}
           />
         </NavigationContainer>
       </ApplicationProvider>

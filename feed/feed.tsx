@@ -16,11 +16,11 @@ interface FeedProps {
   setFavs: (b: BusinessLocation[]) => void,
   business: BusinessLocation | undefined,
   currUser: Customer,
-  queue: Queue | undefined,
-  setQueue: (q: Queue | undefined) => void,
+  queueId: string,
+  setQueueId: (q: string) => void,
 }
 
-export const BusinessListScreen = ({ feedList, setQueueBusiness, setFavs, currUser, business, queue, setQueue }: FeedProps): React.ReactElement => {
+export const BusinessListScreen = ({ feedList, setQueueBusiness, setFavs, currUser, business, queueId, setQueueId }: FeedProps): React.ReactElement => {
   const [chosenBusiness, setChosenBusiness] = useState<BusinessLocation | undefined>(business);
 
   useEffect(() => {
@@ -130,8 +130,8 @@ export const BusinessListScreen = ({ feedList, setQueueBusiness, setFavs, currUs
         isFavorite={feedList[0].map((b) => b.queues[0]).includes(chosenBusiness.queues[0])}
         addFav={addFav}
         removeFav={removeFav}
-        queue={queue}
-        setQueue={setQueue}
+        queue={queueId}
+        setQueue={setQueueId}
         setQueueBusiness={setQueueBusiness}
       />
         : renderAll()}
