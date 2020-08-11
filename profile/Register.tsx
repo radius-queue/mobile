@@ -1,13 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
   TouchableWithoutFeedback,
-  ImageProps,
   Keyboard,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Layout, Button, Text, Input, Icon } from "@ui-kitten/components";
+import { Layout, Button, Text, Input } from "@ui-kitten/components";
 import { useForm, Controller } from "react-hook-form";
 import {auth} from '../firebase';
 import {newCustomer} from '../util/api-functions';
@@ -15,17 +14,42 @@ import {newCustomer} from '../util/api-functions';
 import { Feather } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { RenderProps } from "../App";
+import { allNumbers, parsePhoneNum } from "../util/util-functions";
 
 type FormData = {
   firstName: string;
   lastName: string;
   email: string;
   password: string;
+  phoneNumber: string;
 };
 
 
 function Register({setUser, currUser}: RenderProps) {
   const navigation = useNavigation();
+  const [phone, setPhone] = useState<string>('');
+  const [phoneDisplay, setPhoneDisplay] = useState<string>('');
+
+  /**
+   * Takes the user phone number input and sets the current phone
+   * number state and the phone number display state.
+   * Ensures that only numbers are inputted before setting states.
+   * @param {string} next The phone number inputted by the user.
+   */
+  const changePhone = (next: string) => {
+    let isAllNumbers: boolean = true;
+    let strippedToNumbers = '';
+    for (let i: number = 0; i < next.length; i++) {
+      if (allNumbers.includes(next[i])) {
+        strippedToNumbers += next[i];
+      }
+    }
+    if (isAllNumbers) {
+      setPhone(strippedToNumbers);
+      setPhoneDisplay(parsePhoneNum(strippedToNumbers));
+      return parsePhoneNum(strippedToNumbers);
+    }
+  };
 
   const { control, setError, handleSubmit, errors, reset } = useForm<
     FormData
@@ -36,11 +60,13 @@ function Register({setUser, currUser}: RenderProps) {
     const shouldGo = await auth.createUserWithEmailAndPassword(email, password)
           .then(async (newUser: firebase.auth.UserCredential) => {
             const uid = newUser.user!.uid;
-            const user = await newCustomer({firstName, lastName, email, uid, phoneNumber: '2817325876'});
+            const user = await newCustomer({firstName, lastName, email, uid, phone});
             setUser(user);
             //setRerenderApp(rerenderApp+1);
             navigation.navigate('Feed');
             reset({firstName: '', lastName: '', email: '', password: ''});
+            setPhone('');
+            setPhoneDisplay('');
           }).catch((error) => {
             setError('email', {
               type: 'manual',
@@ -74,7 +100,7 @@ function Register({setUser, currUser}: RenderProps) {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <Layout style={styles.background} level="3">
         <View style={styles.registerContainer}>
-          <Text style={styles.header}>Register with Email</Text>
+          <Text style={styles.header}>Create an account</Text>
           <Controller
             control={control}
             render={({ onChange, onBlur, value }) => (
@@ -84,7 +110,6 @@ function Register({setUser, currUser}: RenderProps) {
                 onChangeText={(value) => onChange(value)}
                 value={value}
                 placeholder="First Name"
-                size="large"
               />
             )}
             name="firstName"
@@ -109,7 +134,6 @@ function Register({setUser, currUser}: RenderProps) {
                 onChangeText={(value) => onChange(value)}
                 value={value}
                 placeholder="Last Name"
-                size="large"
               />
             )}
             name="lastName"
@@ -131,10 +155,40 @@ function Register({setUser, currUser}: RenderProps) {
               <Input
                 style={styles.inputField}
                 onBlur={onBlur}
+                onChangeText={(value) => onChange(changePhone(value))}
+                value={value}
+                placeholder="Phone Number"
+                keyboardType='number-pad'
+                maxLength={13}
+              />
+            )}
+            name="phoneNumber"
+            rules={{ required:true, minLength: 13, maxLength: 13 }}
+            defaultValue=""
+          />
+          {errors.phoneNumber?.type === "required" && (
+            <Text style={styles.errorText}>This field is required.</Text>
+          )}
+          {errors.phoneNumber?.type === "minLength" && (
+            <Text style={styles.errorText}>
+              Not a valid phone number.
+            </Text>
+          )}
+          {errors.phoneNumber?.type === "maxLength" && (
+            <Text style={styles.errorText}>
+              Not a valid phone number.
+            </Text>
+          )}
+
+          <Controller
+            control={control}
+            render={({ onChange, onBlur, value }) => (
+              <Input
+                style={styles.inputField}
+                onBlur={onBlur}
                 onChangeText={(value) => onChange(value)}
                 value={value}
                 placeholder="Email Address"
-                size="large"
               />
             )}
             name="email"
@@ -164,7 +218,6 @@ function Register({setUser, currUser}: RenderProps) {
                 onChangeText={(value) => onChange(value)}
                 value={value}
                 placeholder="Password"
-                size="large"
                 secureTextEntry={secureTextEntry}
                 accessoryRight={renderInputIcon}
               />
@@ -191,48 +244,12 @@ function Register({setUser, currUser}: RenderProps) {
             Register
           </Button>
         </View>
-        <View style={styles.altContainer}>
-          <Button
-            style={styles.altGoogle}
-            status="success"
-            accessoryRight={googleIcon}
-            onPress={() => {
-              console.log("Google sign in");
-            }}
-          >
-            Sign in with Google
-          </Button>
-          <Button
-            style={styles.altFacebook}
-            status="info"
-            accessoryRight={facebookIcon}
-            onPress={() => {
-              console.log("Facebook sign in");
-            }}
-          >
-            Sign in with Facebook
-          </Button>
-        </View>
       </Layout>
     </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
-  altContainer: {
-    flex: 1,
-    justifyContent: "flex-end",
-    margin: 10,
-  },
-
-  altGoogle: {
-    marginBottom: 10,
-  },
-
-  altFacebook: {
-    marginBottom: 10,
-  },
-
   background: {
     flex: 1,
     flexDirection: "column",
@@ -251,6 +268,8 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     paddingHorizontal: 10,
     paddingBottom: 10,
+    fontSize: 30,
+    fontWeight: 'bold',
   },
 
   inputField: {
