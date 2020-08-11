@@ -5,9 +5,6 @@ import {
   Animated,
   Text,
   TouchableOpacity,
-  Alert,
-  Platform,
-  Linking,
 } from "react-native";
 import call from "react-native-phone-call";
 import { Card, Layout, Button, Icon } from "@ui-kitten/components";
@@ -20,9 +17,8 @@ import { Fontisto, SimpleLineIcons } from '@expo/vector-icons';
 import { default as theme } from "../custom-theme.json";
 import { BusinessLocation } from "../util/business";
 import { Customer } from "../util/customer";
-import { QueueInfo } from '../util/queue';
-import { getQueueInfo } from "../util/api-functions";
-import { businesses } from "../feed/feed";
+import { QueueInfo, Queue } from '../util/queue';
+import { getQueueInfo, addToQueue } from "../util/api-functions";
 
 interface BusinessInfoProps {
   business: BusinessLocation;
@@ -30,6 +26,9 @@ interface BusinessInfoProps {
   isFavorite: boolean,
   addFav: () => void;
   removeFav: () => void;
+  setQueueBusiness: (b: BusinessLocation | undefined) => void,
+  queue: Queue | undefined,
+  setQueue: (q: Queue | undefined) => void,
 }
 
 const DEGREES_PER_HUNDRED_METERS = 0.001;
@@ -40,6 +39,9 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   isFavorite,
   addFav,
   removeFav,
+  setQueue,
+  queue,
+  setQueueBusiness
 }: BusinessInfoProps) => {
   const [showJoin, setJoin] = useState<boolean>(false);
   const [isFav, setIsFav] = useState<boolean>(isFavorite);
@@ -79,7 +81,24 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
     call(args);
   };
 
-  const addToQ = () => {
+  const addToQ = async (
+    firstName : string,
+    lastName : string,
+    phoneNumber : string,
+    size: number,
+  ) => {
+    const newQueue = await addToQueue(business.queues[0], {
+      firstName,
+      lastName,
+      phoneNumber,
+      size,
+      checkIn: new Date(),
+      quote: -1,
+      messages: [],
+    }); 
+    console.log(newQueue);
+    setQueue(newQueue);
+    setQueueBusiness(business);
     navigation.navigate("Queue");
   };
 
@@ -171,7 +190,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
             </View>
             <Button
               style={styles.joinButton}
-              disabled={queueInfo ? !queueInfo.open : true}
+              disabled={queue ? true : (queueInfo ? !queueInfo.open : false)}
               onPress={() => setJoin(true)}
             >
               Join Queue

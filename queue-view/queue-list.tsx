@@ -1,78 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from "react-native";
 import { default as theme } from "../custom-theme.json";
+import {Party} from '../util/queue';
 
-interface Party {
-  id: string,
-  firstName: string,
-  lastName: string,
-  size: number,
-  checkIn: Date,
-};
+interface ListProps {
+  parties: Party[],
+  placeInLine: number,
+}
 
 /**
 * Calculates the time difference in minutes betweeen two Date objects.
 * @param {Date} t1 The most current time.
 * @param {Date} t2 The oldest time.
-* @return {boolean} the time difference in minutes
+* @return {number} the time difference in minutes
 */
-const timeDiffInMinutes = (t1: Date, t2: Date) => {
+const timeDiffInMinutes = (t1: Date, t2: Date) : number => {
   const result : number = Math.round((t1.getTime() - t2.getTime()) / 60000);
   return result === -1 ? 0 : result;
 };
 
 /**
  * Displays the queue of the business the user is currently in line for.
- * @return {View} The list representing the queue.
  */
-const QueueList = () => {
-  const currentUserId = "alsdkjfalkf";
-  const hardCodedDate = new Date("2020-07-21");
+const QueueList = ({parties, placeInLine} : ListProps)  => {
+  const [currTime, setTime] = useState<Date>(new Date());
 
-  const parties = [
-    {
-      id: "sdeeisifsll",
-      firstName: "First",
-      lastName: "Item",
-      size: 4,
-      checkIn: hardCodedDate,
-    },
-    {
-      id: "alsdkjfalkf",
-      firstName: "Second",
-      lastName: "Item",
-      size: 9,
-      checkIn: hardCodedDate,
-    },
-    {
-      id: "klweiofjvns",
-      firstName: "Third",
-      lastName: "Item",
-      size: 8,
-      checkIn: hardCodedDate,
-    },
-    {
-      id: "klweiofjvna",
-      firstName: "Fourth",
-      lastName: "Item",
-      size: 8,
-      checkIn: hardCodedDate,
-    },
-    {
-      id: "klweiafjvna",
-      firstName: "Fifth",
-      lastName: "Item",
-      size: 8,
-      checkIn: hardCodedDate,
-    },
-    {
-      id: "klssiafjvna",
-      firstName: "Sixth",
-      lastName: "Item",
-      size: 8,
-      checkIn: hardCodedDate,
-    },
-  ];
+  useEffect(() => {
+    const interval = setInterval(() => setTime(new Date()), 60000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, []);
 
   /**
    * Representation of a party to be input into a list of parties.
@@ -95,7 +54,7 @@ const QueueList = () => {
           {item.firstName[0]}. {item.lastName[0]}. {currentUser ? '(You)' : ''}
         </Text>
         <Text style={[styles.partyWait, color]}>
-          Waited: {timeDiffInMinutes(new Date(), item.checkIn)} min.
+          Waited: {timeDiffInMinutes(currTime, item.checkIn)} min.
         </Text>
       </View>
       <Text style={[styles.partySize, color]}>
@@ -109,7 +68,7 @@ const QueueList = () => {
    * @param itemInfo The current party retrieved from 'parties' and the index of the party 
    */
   const renderItem: React.FC<{item: Party, index: number}> = ({ item, index }) => {
-    let currentUser: boolean = item.id === currentUserId;
+    let currentUser: boolean = index === placeInLine;
     let backgroundColor: string = currentUser ? theme['color-primary-500'] : theme['color-basic-100'];
     let color: string = currentUser ? theme['color-basic-300'] : theme['color-basic-900'];
     let fontWeight: string = currentUser ? 'bold' : 'normal';
@@ -129,6 +88,7 @@ const QueueList = () => {
     <FlatList
       data={parties}
       renderItem={renderItem}
+      keyExtractor={(party) => party.phoneNumber}
     />
   );
 }

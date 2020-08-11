@@ -1,41 +1,104 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {Text, Button} from '@ui-kitten/components';
-import {StyleSheet, View} from "react-native";
+import {StyleSheet, View, TouchableOpacity} from "react-native";
 import QueueList from './queue-list';
 import QueueMessages from './queue-messages'
 import LeaveModal from './leave-modal';
 import { default as theme } from "../custom-theme.json";
 import Screen from "../components/screen";
+import {useNavigation} from '@react-navigation/native';
+import { Queue, Party } from '../util/queue';
+import { Customer } from '../util/customer';
+import {BusinessLocation} from '../util/business';
+import {QueueListener} from '../util/queue-listener';
+import {postQueue} from '../util/api-functions';
 
+interface QueueProps {
+  queue: Queue | undefined,
+  setQueue: (q: Queue | undefined) => void,
+  setUser: (c: Customer) => void,
+  currUser: Customer,
+  setQueueBusiness: (b: BusinessLocation | undefined) => void,
+}
 
 /**
  * The page displaying relevant information regarding the user's
  * current queue. If not in a queue, the user is notified.
- * @return {View} The entire page.
  */
-const QueuePage = () => {
-  const [userInLine, setUserInLine] = useState(true);
+const QueuePage = ({queue, setQueue, currUser, setUser, setQueueBusiness}: QueueProps) => {
   const [leaveModalVisible, setLeaveModalVisible] = useState(false);
+  const [placeInLine, setInLine] = useState<number | undefined>(
+    queue
+    ? queue.parties.map((val) => val.phoneNumber).indexOf(currUser.phoneNumber)
+    : undefined
+  );
 
-  const leaveLine = () => {
+  const leaveLine = (fromUser: boolean) => {
+    if (fromUser) {
+      const newParties = queue!.parties.filter((val: Party,idx: number) => {
+        return idx !== placeInLine
+      });
+      postQueue({...queue!, parties: newParties});
+    }
+    setQueue(undefined);
+    setQueueBusiness(undefined);
+    setInLine(undefined);
     setLeaveModalVisible(false);
-    setUserInLine(false);
+    setUser({...currUser, currentQueue: ''});
   };
 
-  if (userInLine) {
+  useEffect(() => {
+    if (queue && placeInLine !== undefined) {
+      const listener = new QueueListener(queue.uid, (newQ: Queue) => {
+        let ourCustomer;
+        for(let i = 0; i < newQ.parties.length; i++) {
+          if (currUser.lastName === newQ.parties[i].lastName &&
+              currUser.phoneNumber === newQ.parties[i].phoneNumber) {
+                ourCustomer = i;
+          }
+        }
+
+        if (ourCustomer !== undefined) {
+          setInLine(ourCustomer);
+          setQueue(newQ);
+        } else {
+          leaveLine(false);
+        }
+      });
+      
+      return () => {
+        listener.free();
+      };
+    }
+  }, [currUser]);
+
+  useEffect(() => {
+    const newPlace : number | undefined =queue
+      ? queue.parties.map((val) => val.phoneNumber).indexOf(currUser.phoneNumber)
+      : undefined; 
+
+    setInLine(newPlace !== -1 ? newPlace : undefined);
+  }, [queue]);
+
+  const navigator = useNavigation();
+
+
+  if (queue && placeInLine !== undefined) {
     return (
       <Screen style={styles.container}>
         <View style={[styles.card, styles.headerCard]}>
           <Text style={styles.pageTitle}>You're 
-            <Text style={[styles.pageTitle, {color: theme['color-primary-500']}]}> 3rd </Text>
+            <Text style={[styles.pageTitle, {color: theme['color-primary-500']}]}> {`${placeInLine}`} </Text>
             in line at:
           </Text>
-          <Text style={styles.pageTitle}>Alladin's Gyro-Cery and Deli</Text>
+          <TouchableOpacity onPress={() => navigator.navigate('Feed')}>
+            <Text style={styles.pageTitle}>{queue.name}</Text>
+          </TouchableOpacity>
         </View>
         <View style={[styles.card, styles.lineCard]}>
           <Text style={styles.cardHeader}>👯 Line</Text>
           <View style={styles.lineCardContent}>
-            <QueueList />
+            <QueueList parties={queue.parties} placeInLine={placeInLine} />
           </View> 
           <Button style={styles.leaveLineButton} status='danger' onPress={() => setLeaveModalVisible(true)}>
             Leave Line
@@ -44,13 +107,13 @@ const QueuePage = () => {
         <View style={[styles.card, styles.messagesCard]}>
           <Text style={styles.cardHeader}>💬 Messages</Text> 
           <View style={styles.messagesCardContent}>
-            <QueueMessages />
+            <QueueMessages messages={queue.parties[placeInLine].messages}/>
           </View>
         </View>
         <LeaveModal
           show={leaveModalVisible}
           hide={() => setLeaveModalVisible(false)}
-          leave={leaveLine}
+          leave={() => leaveLine(true)}
         />
       </Screen>
     );

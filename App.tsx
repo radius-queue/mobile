@@ -19,8 +19,9 @@ import * as eva from "@eva-design/eva";
 import { default as theme } from "./custom-theme.json";
 import { EvaIconsPack } from "@ui-kitten/eva-icons";
 import {Customer} from "./util/customer"
-import {getCustomer, getAllBusinessLocations, getBusinessLocationsFromArray, postCustomer} from "./util/api-functions";
+import {getCustomer, getAllBusinessLocations, getBusinessLocationsFromArray, postCustomer, getQueue} from "./util/api-functions";
 import { auth} from './firebase';
+import { Queue } from "./util/queue";
 
 const REGISTRATION_TIME_THRESHOLD: number = 3000;
 
@@ -55,8 +56,10 @@ interface TabProps {
   setFavs: (b: BusinessLocation[]) => void,
   setRecents: (b: BusinessLocation[]) => void,
   feedLists: [BusinessLocation[], BusinessLocation[], BusinessLocation[]],
-  setBusiness: (b: [BusinessLocation | undefined, number]) => void,
-  business: [BusinessLocation | undefined, number],
+  setQueueBusiness: (b: BusinessLocation | undefined) => void,
+  business: BusinessLocation | undefined,
+  queue: Queue | undefined,
+  setQueue: (q: Queue | undefined) => void,
 }
 
 export interface RenderProps {
@@ -64,21 +67,31 @@ export interface RenderProps {
   currUser: Customer,
 }
 
-const TabNavigator = ({ setUser, currUser, setBusiness, business, setFavs, feedLists }: TabProps) => (
+const TabNavigator = ({ setUser, currUser, setQueueBusiness, business, setFavs, feedLists, queue, setQueue }: TabProps) => (
   <Tab.Navigator tabBar={(props) => <BottomTabBar {...props} />}>
     <Tab.Screen name="Feed">
       {() => <BusinessListScreen
-        setBusiness={setBusiness}
+        setQueueBusiness={setQueueBusiness}
         setFavs={setFavs}
         feedList={feedLists}
         currUser={currUser}
         business={business}
+        setQueue={setQueue}
+        queue={queue}
       />}
     </Tab.Screen>
     <Tab.Screen name="Me">
       {() => <ProfileWrapper setUser={setUser} currUser={currUser} />}
     </Tab.Screen>
-    <Tab.Screen name="Queue" component={QueuePage} />
+    <Tab.Screen name="Queue">
+      {() => <QueuePage
+        queue={queue}
+        setQueueBusiness={setQueueBusiness}
+        setQueue={setQueue}
+        currUser={currUser}
+        setUser={setUser}
+      />}
+    </Tab.Screen>
   </Tab.Navigator>
 );
 
@@ -92,7 +105,8 @@ export default function App() {
   const [recents, setRecents] = useState<BusinessLocation[]>([]);
   const [favs, setFavs] = useState<BusinessLocation[]>([]);
   const [businesses, setBusinesses] = useState<BusinessLocation[]>([]);
-  const [business, setBusiness] = useState<[BusinessLocation | undefined, number]>([undefined, 0]); // the business you're queueing in
+  const [business, setBusiness] = useState<BusinessLocation | undefined>(undefined);
+  const [queue, setQueue] = useState<Queue | undefined>(undefined);
 
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(async function (user) {
@@ -105,6 +119,11 @@ export default function App() {
 
           const newRecents = await getBusinessLocationsFromArray(customer.recents);
           setRecents(newRecents);
+          
+          if (customer.currentQueue !== '') {
+            const newQueue = await getQueue(customer.currentQueue);
+            setQueue(newQueue);
+          }
 
           setUser(customer);
         } 
@@ -115,7 +134,7 @@ export default function App() {
       } else {
         setUser(new Customer());
         setRecents([]);
-        setBusiness([undefined, 0]);
+        setBusiness(undefined);
         setFavs([]);
         setBusinesses([]);
       }
@@ -162,8 +181,10 @@ export default function App() {
             currUser={currUser}
             setFavs={setFavs}
             setRecents={setRecents}
-            setBusiness={setBusiness}
+            setQueueBusiness={setBusiness}
             business={business}
+            queue={queue}
+            setQueue={setQueue}
           />
         </NavigationContainer>
       </ApplicationProvider>

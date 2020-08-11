@@ -25,7 +25,7 @@ const RADIUS_BUFFER_METERS = 10;
 
 interface ModalProps {
   show: boolean,
-  addToQ: () => void,
+  addToQ: (firstName: string, lastName: string, phoneNumber: string, size: number) => void,
   hide: () => void,
   user: Customer | undefined,
   coords: number[],
@@ -115,7 +115,7 @@ const BusinessModal = ({show, addToQ, hide, user, coords, radius} : ModalProps) 
 
       if (shouldAdd[1]) {
         onHide();
-        addToQ();
+        addToQ(firstName, lastName, phoneNumber, parseInt(partySize));
       } else if (shouldAdd[0] !== undefined) { // they are not inside the radius
         Alert.alert(
           "You're Outside the Radius",

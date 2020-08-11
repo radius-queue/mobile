@@ -32,13 +32,11 @@ function Register({setUser, currUser}: RenderProps) {
   >();
 
   const onSubmit =  handleSubmit(async ({ firstName, lastName, email, password }) => {
-    // currUser.email='register';
     const shouldGo = await auth.createUserWithEmailAndPassword(email, password)
           .then(async (newUser: firebase.auth.UserCredential) => {
             const uid = newUser.user!.uid;
-            const user = await newCustomer({firstName, lastName, email, uid, phoneNumber: '2817325876'});
+            const user = await newCustomer({firstName, lastName, email: email.toLowerCase(), uid, phoneNumber: '2817325876'});
             setUser(user);
-            //setRerenderApp(rerenderApp+1);
             navigation.navigate('Feed');
             reset({firstName: '', lastName: '', email: '', password: ''});
           }).catch((error) => {
