@@ -107,7 +107,7 @@ function Login({setUser, currUser}: RenderProps) {
           </View>
         </KeyboardAvoidingView>
         <View style={styles.registerContainer}>
-          <Text>Don't have a Radius Account?</Text>
+          <Text>Don't have a Radius account?</Text>
           <Button
             appearance="ghost"
             status="primary"

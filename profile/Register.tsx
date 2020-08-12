@@ -88,6 +88,7 @@ function Register({setUser, currUser}: RenderProps) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={styles.screen}>
+      <View style={styles.all}>
       <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : "height"} style={styles.background}>
         <View style={styles.registerContainer}>
           <Text style={styles.header}>📇 Create an account</Text>
@@ -273,11 +274,27 @@ function Register({setUser, currUser}: RenderProps) {
           </Button>
         </View>
       </KeyboardAvoidingView>
+      <View style={styles.loginContainer}>
+        <Text>Already a Radius user?</Text>
+        <Button
+          appearance="ghost"
+          status="primary"
+          onPress={() => navigation.navigate("Login")}
+        >
+          Log in here
+        </Button>
+      </View>
+      </View>
     </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
+  all: {
+    width: '100%',
+    height: '100%',
+  },
+
   background: {
     display: 'flex',
     flex: 1,
@@ -311,6 +328,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingLeft: 10,
     fontSize: 15,
+  },
+
+  loginContainer: {
+    justifyContent: "flex-end",
+    alignItems: "center",
+    paddingBottom: '10%',
+    backgroundColor: theme['color-basic-800'],
   },
 
   passwordContainer: {
