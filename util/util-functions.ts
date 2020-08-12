@@ -72,18 +72,22 @@ export function dateToOperationHours(date: Date) {
   return `${hourDisplay}:` + `${minsWithZero}` + ` ${amPm}`;
 };
 
-export function oridnalSuffix(num: number) {
-  const j : number = num % 10;
-  const k : number = num % 100;
-  if (j == 1 && k != 11) {
-      return num + "st";
+/**
+ * Returns the correct suffix for the users position number.
+ * @param {number} position Their position in line
+ * @return {string} The suffix
+ */
+export function getSuffix(position: number) {
+  const ones = position % 10;
+  const tens = position % 100;
+  if (ones === 1 && tens !== 11) {
+    return "st";
   }
-  if (j == 2 && k != 12) {
-      return num + "nd";
+  if (ones === 2 && tens !== 12) {
+    return "nd";
   }
-  if (j == 3 && k != 13) {
-      return num + "rd";
+  if (ones === 3 && tens !== 13) {
+    return "rd";
   }
-  return num + "th";
+  return "th";
 }
-

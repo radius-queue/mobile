@@ -1,11 +1,12 @@
-import React, {useState, useEffect} from "react";
-import { View, StyleSheet, TouchableWithoutFeedback, Keyboard } from "react-native";
+import React from "react";
+import { View, StyleSheet, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, Platform } from "react-native";
 import {useForm, Controller} from 'react-hook-form';
 import { useNavigation } from "@react-navigation/native";
-import { Layout, Button, Text, Input } from "@ui-kitten/components";
-import { AntDesign } from "@expo/vector-icons";
-import {firebase, auth} from '../firebase';
+import { Button, Text } from "@ui-kitten/components";
+import { auth } from '../firebase';
 import { RenderProps } from "../App";
+import { default as theme } from "../custom-theme.json";
+import { TextInput } from "react-native-gesture-handler";
 
 interface FormData {
   email: string;
@@ -18,16 +19,6 @@ function Login({setUser, currUser}: RenderProps) {
     FormData
   >();
   const navigation = useNavigation();
-
-  const google = <AntDesign name="google" size={24} color="white" />;
-  const facebook = <AntDesign name="facebook-square" size={24} color="white" />;
-
-  const googleIcon = () => (
-    <TouchableWithoutFeedback>{google}</TouchableWithoutFeedback>
-  );
-  const facebookIcon = () => (
-    <TouchableWithoutFeedback>{facebook}</TouchableWithoutFeedback>
-  );
 
   const onSubmit = handleSubmit(async ({email, password}) => {
     await auth.signInWithEmailAndPassword(email, password)
@@ -44,55 +35,79 @@ function Login({setUser, currUser}: RenderProps) {
   });
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <Layout style={styles.background} level="3">
-        <Controller
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <Input
-              style={styles.inputField}
-              onBlur={onBlur}
-              placeholder="Email address"
-              value={value}
-              onChangeText={(value) => onChange(value)}
-              size="large"
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={styles.screen}>
+      <View style={styles.all}>
+        <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : "height"} style={styles.background}>
+          <View style={styles.loginContainer}>
+            <Text style={styles.header}>✍️ Log in</Text>
+
+            {errors.email?.type === 'firebase' && (
+              <Text style={[styles.errorText, styles.errorTextFirebase]}>{errors.email?.message}</Text>
+            )}
+
+            <View style={styles.subheaderContainer}>
+              <Text style={styles.subheader}>Email Address</Text>
+              <View>
+                {errors.email?.type === "required" && (
+                  <Text style={styles.errorText}>This field is required.</Text>
+                )}
+                {errors.email?.type === "pattern" && (
+                  <Text style={styles.errorText}>
+                    Invalid email.
+                  </Text>
+                )}
+              </View>
+            </View>
+            <Controller
+              control={control}
+              render={({onChange, onBlur, value}) => (
+                <TextInput
+                  style={styles.inputField}
+                  onBlur={onBlur}
+                  placeholder="Email Address"
+                  value={value}
+                  onChangeText={(value) => onChange(value)}
+                  returnKeyType='done'
+                />
+              )}
+              name='email'
+              rules={{required: true, pattern: /^([a-zA-Z0-9_\-\.]+)@([a-zA-Z0-9_\-\.]+)\.([a-zA-Z]{2,5})$/}}
+              defaultValue=''
             />
-          )}
-          name='email'
-          rules={{required: true}}
-          defaultValue=''
-        />
-        {errors.email?.type === "required" && (
-          <Text style={styles.errorText}>This field is required</Text>
-        )}
-        <Controller
-          control={control}
-          render={({onChange, onBlur, value}) => (
-            <Input
-              style={styles.inputField}
-              placeholder="Password"
-              onBlur={onBlur}
-              value={value}
-              onChangeText={(value) => onChange(value)}
-              size="large"
-              secureTextEntry
+
+
+            <View style={styles.subheaderContainer}>
+              <Text style={styles.subheader}>Password</Text>
+              <View>
+                {errors.password?.type === 'required' && (
+                  <Text style={styles.errorText}>This field is required.</Text>
+                )}
+              </View>
+            </View>
+            <Controller
+              control={control}
+              render={({onChange, onBlur, value}) => (
+                <TextInput
+                  style={styles.inputField}
+                  placeholder="Password"
+                  onBlur={onBlur}
+                  value={value}
+                  onChangeText={(value) => onChange(value)}
+                  returnKeyType='done'
+                  secureTextEntry
+                />
+              )}
+              name="password"
+              rules={{ required: true}}
+              defaultValue=""
             />
-          )}
-          name="password"
-          rules={{ required: true}}
-          defaultValue=""
-        />
-        {errors.password?.type === 'required' && (
-          <Text style={styles.errorText}>This field is required.</Text>
-        )}
-        {errors.email?.type === 'firebase' && (
-          <Text style={styles.errorText}>{errors.email?.message}</Text>
-        )}
-        <Button style={styles.button} onPress={onSubmit}>
-          Login with Email
-        </Button>
+            <Button style={styles.button} onPress={onSubmit}>
+              Log in with email
+            </Button>
+          </View>
+        </KeyboardAvoidingView>
         <View style={styles.registerContainer}>
-          <Text>Don't have a Radius Account?</Text>
+          <Text>Don't have a Radius account?</Text>
           <Button
             appearance="ghost"
             status="primary"
@@ -101,53 +116,86 @@ function Login({setUser, currUser}: RenderProps) {
             Register here
           </Button>
         </View>
-      </Layout>
+      </View>
     </TouchableWithoutFeedback>
   );
 }
 
 const styles = StyleSheet.create({
-  altContainer: {
-    flex: 1,
-    justifyContent: "flex-start",
-    width: "100%",
-    paddingTop: 25,
-  },
-
-  altGoogle: {
-    marginBottom: 10,
-  },
-
-  altFacebook: {
-    marginBottom: 10,
+  all: {
+    width: '100%',
+    height: '100%',
   },
 
   background: {
+    display: 'flex',
     flex: 1,
-    flexDirection: "column",
-    alignItems: "center",
-    paddingTop: 50,
+    alignItems: 'center',
+    justifyContent: "center",
+    backgroundColor: theme['color-basic-800'],
   },
 
   button: {
-    margin: 10,
-    width: "95%",
+    marginTop: 4,
   },
 
   errorText: {
     color: "red",
-    marginLeft: 10,
+    fontSize: 12,
+  },
+
+  errorTextFirebase: {
+    marginVertical: 10,
+  },
+
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: theme['color-basic-1100'],
+    marginBottom: 8,
   },
 
   inputField: {
-    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: theme['color-basic-100'],
+    marginBottom: 6,
+    backgroundColor: theme['color-basic-400'],
+    height: 36,
+    borderRadius: 10,
+    paddingLeft: 10,
+    fontSize: 15,
+  },
+
+  loginContainer: {
+    backgroundColor: theme['color-basic-100'],
+    padding: 10,
+    width: '94%',
+    borderRadius: 8,
   },
 
   registerContainer: {
-    flex: 1,
     justifyContent: "flex-end",
     alignItems: "center",
-    paddingBottom: 50,
+    paddingBottom: '10%',
+    backgroundColor: theme['color-basic-800'],
+  },
+
+  screen: {
+    backgroundColor: theme['color-basic-1000'],
+    height: '100%',
+  },
+
+  subheader: {
+    color: theme['color-basic-1100'],
+    fontSize: 12,
+  },
+
+  subheaderContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginHorizontal: 2,
+    marginBottom: 2,
   },
 });
 
