@@ -19,7 +19,7 @@ import * as eva from "@eva-design/eva";
 import { default as theme } from "./custom-theme.json";
 import { EvaIconsPack } from "@ui-kitten/eva-icons";
 import {Customer} from "./util/customer"
-import {getCustomer, getAllBusinessLocations, getBusinessLocationsFromArray, postCustomer, getQueue} from "./util/api-functions";
+import {getCustomer, getAllBusinessLocations, getBusinessLocationsFromArray, postCustomer, getQueue, newCustomer} from "./util/api-functions";
 import { auth} from './firebase';
 import { Queue } from "./util/queue";
 
@@ -45,7 +45,7 @@ const BottomTabBar = (Navigator: {
       }
     >
       <BottomNavigationTab icon={FeedIcon} title="FEED" />
-      <BottomNavigationTab icon={MeIcon} title="ME" />
+      {/*<BottomNavigationTab icon={MeIcon} title="ME" />*/}
       <BottomNavigationTab icon={QueueIcon} title="QUEUE" />
     </BottomNavigation>
   );
@@ -81,9 +81,9 @@ const TabNavigator = ({ setUser, currUser, setQueueBusiness, business, setFavs, 
         setUser={setUser}
       />}
     </Tab.Screen>
-    <Tab.Screen name="Me">
+    {/*<Tab.Screen name="Me">
       {() => <ProfileWrapper setUser={setUser} currUser={currUser} />}
-    </Tab.Screen>
+      </Tab.Screen>*/}
     <Tab.Screen name="Queue">
       {() => <QueuePage
         queueId={queueId}
@@ -98,7 +98,7 @@ const TabNavigator = ({ setUser, currUser, setQueueBusiness, business, setFavs, 
 );
 
 const ProfileWrapper = ({ setUser, currUser }: RenderProps) => (
-  currUser.email.length > 0 ? <ProfilePage setUser={setUser} currUser={currUser} /> : <Me setUser={setUser} currUser={currUser} />
+  currUser.uid.length > 0 ? <ProfilePage setUser={setUser} currUser={currUser} /> : <Me setUser={setUser} currUser={currUser} />
 );
 
 export default function App() {
@@ -107,31 +107,28 @@ export default function App() {
   const [recents, setRecents] = useState<BusinessLocation[]>([]);
   const [favs, setFavs] = useState<BusinessLocation[]>([]);
   const [businesses, setBusinesses] = useState<BusinessLocation[]>([]);
-  const [business, setBusiness] = useState<BusinessLocation | undefined>();
+  const [business, setBusiness] = useState<BusinessLocation | undefined>(); // business that you are in a queue with
   const [queueId, setQueueId] = useState<string>('');
 
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(async function (user) {
       if (user) {
-        let customer: Customer | undefined;
-        if (new Date().getTime() - new Date(user.metadata.creationTime!).getTime() > REGISTRATION_TIME_THRESHOLD) { // assuming not registering
+        let customer: Customer;
+
+        try {
           customer = await getCustomer(user.uid);
-          
-          const newFavs = await getBusinessLocationsFromArray(customer.favorites);
-          setFavs(newFavs);
-
-          const newRecents = await getBusinessLocationsFromArray(customer.recents);
-          setRecents(newRecents);
-          
-          setQueueId(customer.currentQueue);
-
-          setUser(customer);
-        } 
-
+        } catch(errror) {
+          customer = await newCustomer(user.uid);
+        }
+        
+        const newFavs = await getBusinessLocationsFromArray(customer.favorites);
+        
+        const newRecents = await getBusinessLocationsFromArray(customer.recents);
+  
         const businessLocations = await getAllBusinessLocations();
-        setBusinesses(businessLocations);
 
-        if (customer && customer.currentQueue.length !== 0) {
+
+        if (customer.currentQueue.length !== 0) {
           for (const biz of businessLocations) {
             if (biz.queues[0] === customer.currentQueue) {
               setBusiness(biz);
@@ -140,12 +137,15 @@ export default function App() {
           }
         }
 
+        setBusinesses(businessLocations);
+        setRecents(newRecents);
+        setFavs(newFavs);
+        setQueueId(customer.currentQueue);
+        setUser(customer);
       } else {
-        setUser(new Customer());
-        setRecents([]);
-        setBusiness(undefined);
-        setFavs([]);
-        setBusinesses([]);
+        auth.signInAnonymously().catch((error) =>{
+          console.error(error);
+        });
       }
     });
 
@@ -156,7 +156,7 @@ export default function App() {
 
   
   useEffect(() => {
-    if (currUser.email.length !== 0 && currUser.favorites.length !== favs.length) {
+    if (currUser.uid.length !== 0 && currUser.favorites.length !== favs.length) {
       const newFavs = favs.map((b: BusinessLocation) => b.queues[0]); // gets the uids of each business location
       const newCustomer = {
         ...currUser,
@@ -168,7 +168,7 @@ export default function App() {
 
 
   useEffect(() => {
-    if (currUser.email.length !== 0 && currUser.recents.length !== recents.length) {
+    if (currUser.uid.length !== 0 && currUser.recents.length !== recents.length) {
       const newRecs = recents.map((b: BusinessLocation) => b.queues[0]) // get the uids of each business location
       const newCustomer = {
         ...currUser,
@@ -180,7 +180,7 @@ export default function App() {
 
 
   useEffect(() => {
-    if (currUser.email.length !== 0) {
+    if (currUser.uid.length !== 0) {
       postCustomer(currUser);
     }
   }, [currUser]);

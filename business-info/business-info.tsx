@@ -98,9 +98,16 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
       quote: -1,
       messages: [],
     }); 
+
+    const newUser = {
+      ...user!, 
+      firstName,
+      lastName,
+      phoneNumber,
+      currentQueue: newQueue.uid
+    };  
     setQueue(newQueue.uid);
     setQueueBusiness(business);
-    const newUser = {...user!, currentQueue: newQueue.uid};
     setUser(newUser);
     navigation.navigate("Queue");
   };
