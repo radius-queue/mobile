@@ -12,6 +12,7 @@ import { Customer } from '../util/customer';
 import {BusinessLocation} from '../util/business';
 import {QueueListener} from '../util/queue-listener';
 import {postQueue} from '../util/api-functions';
+import { oridnalSuffix } from '../util/util-functions';
 
 interface QueueProps {
   queueId: string,
@@ -19,14 +20,14 @@ interface QueueProps {
   setUser: (c: Customer) => void,
   currUser: Customer,
   setQueueBusiness: (b: BusinessLocation | undefined) => void,
+  businessName: string | undefined,
 }
 
 /**
  * The page displaying relevant information regarding the user's
  * current queue. If not in a queue, the user is notified.
  */
-const QueuePage = ({queueId, setQueueId, currUser, setUser, setQueueBusiness}: QueueProps) => {
-  console.log(`Queue ID: ${queueId}`);
+const QueuePage = ({queueId, setQueueId, currUser, setUser, setQueueBusiness, businessName}: QueueProps) => {
   const [leaveModalVisible, setLeaveModalVisible] = useState(false);
 
   const [queueInfo, setQueueInfo] = useState<{queue: Queue | undefined, inLine: number | undefined}>({queue: undefined, inLine: undefined});
@@ -79,11 +80,11 @@ const QueuePage = ({queueId, setQueueId, currUser, setUser, setQueueBusiness}: Q
       <Screen style={styles.container}>
         <View style={[styles.card, styles.headerCard]}>
           <Text style={styles.pageTitle}>You're 
-            <Text style={[styles.pageTitle, {color: theme['color-primary-500']}]}> {`${queueInfo.inLine}`} </Text>
+            <Text style={[styles.pageTitle, {color: theme['color-primary-500']}]}> {`${oridnalSuffix(queueInfo.inLine + 1)}`} </Text>
             in line at:
           </Text>
           <TouchableOpacity onPress={() => navigator.navigate('Feed')}>
-            <Text style={styles.pageTitle}>{queueInfo.queue.name}</Text>
+            <Text style={styles.pageTitle}>{businessName}</Text>
           </TouchableOpacity>
         </View>
         <View style={[styles.card, styles.lineCard]}>
@@ -98,7 +99,7 @@ const QueuePage = ({queueId, setQueueId, currUser, setUser, setQueueBusiness}: Q
         <View style={[styles.card, styles.messagesCard]}>
           <Text style={styles.cardHeader}>💬 Messages</Text> 
           <View style={styles.messagesCardContent}>
-            <QueueMessages messages={queueInfo.queue.parties[queueInfo.inLine].messages}/>
+            <QueueMessages messages={queueInfo.queue.parties[queueInfo.inLine].messages.reverse()}/>
           </View>
         </View>
         <LeaveModal

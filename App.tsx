@@ -91,6 +91,7 @@ const TabNavigator = ({ setUser, currUser, setQueueBusiness, business, setFavs, 
         setQueueId={setQueueId}
         currUser={currUser}
         setUser={setUser}
+        businessName={business?.name}
       />}
     </Tab.Screen>
   </Tab.Navigator>
