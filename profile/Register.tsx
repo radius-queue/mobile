@@ -9,7 +9,7 @@ import {
   TextInput,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Layout, Button, Text } from "@ui-kitten/components";
+import { Button, Text } from "@ui-kitten/components";
 import { useForm, Controller } from "react-hook-form";
 import {auth} from '../firebase';
 import {newCustomer} from '../util/api-functions';
@@ -90,7 +90,7 @@ function Register({setUser, currUser}: RenderProps) {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={styles.screen}>
       <KeyboardAvoidingView behavior={Platform.OS == "ios" ? "padding" : "height"} style={styles.background}>
         <View style={styles.registerContainer}>
-          <Text style={styles.header}>Create an account</Text>
+          <Text style={styles.header}>📇 Create an account</Text>
         
           <View style={styles.subheaderContainer}>
             <Text style={styles.subheader}>First Name</Text>
