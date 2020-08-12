@@ -5,6 +5,34 @@ import {auth} from '../firebase';
 
 const ROOT_URL : string = 'https://us-central1-ahead-9d906.cloudfunctions.net/widgets';
 
+/* This function posts the given queue to Firestore
+*
+* @param {Queue} queue the queue to be posted
+* @throws {Error} if the connection with Firestore is severed or
+* the queue object is missing properties (both should not occur)
+*/
+export const postQueue = async (queue : Queue) => {
+ const idToken : string = await auth.currentUser!.getIdToken();
+
+ const options : any = fetchOptions('POST', idToken);
+ options.body = JSON.stringify({queue});
+
+ const response = await fetch(`${ROOT_URL}/api/queues`, options);
+ if (response.status === 403) {
+   throw new Error('Unauthorized');
+ }
+
+ if (response.status === 400) {
+   throw new Error('Malformed Request');
+ }
+ 
+ if (response.status === 500) {
+   throw new Error('Problem Connecting to Firestore');
+ }
+};
+
+
+
 /**
  * This functions retreives a business' location information.
  * Ie. phone number, geofence radius, address, hours, etc.
@@ -229,6 +257,40 @@ export const getQueueInfo = async (uid: string) : Promise<QueueInfo> => {
 
   return await response.json();
 }
+
+/**
+ * This function retreives the queue information
+ * of the entity with the given uid.
+ *
+ * @param {string} uid the id of the queue
+ * @return {Promise<Queue | undefined>} the result of the query, either the
+ * queue object or undefined if it did not exist.
+ * @throws {Error} if the connection with Firestore is severed
+ */
+export const getQueue = async (uid: string): Promise<Queue | undefined> => {
+  const idToken : string = await auth.currentUser!.getIdToken();
+
+  const response = await fetch(
+      `${ROOT_URL}/api/queues?uid=${uid}`,
+      fetchOptions('GET', idToken),
+  );
+
+  if (response.status === 403) {
+    throw new Error('Unauthorized');
+  }
+  if (response.status === 500) { // error on server (status === 500)
+    // This would be a very big problem, will want the user
+    // to refresh the page
+    throw new Error('Problem Connecting to Firestore');
+  }
+  if (response.status === 404) { // queue doesn't exist, shouldn't happen
+    return undefined;
+  }
+
+  const value = await response.json();
+  value.parties = value.parties.map((val : any) => partyFromAPI(val));
+  return value;
+};
 
 /**
  * This function adds a party to the desired queue, and returns

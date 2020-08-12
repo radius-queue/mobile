@@ -1,4 +1,4 @@
-import {firestore} from '../firebase';
+import {firebase} from '../firebase';
 import {queueConverter, Queue} from './queue';
 
 /**
@@ -13,7 +13,7 @@ export class QueueListener {
    * @param {function} kickback function to deal with update
    */
   constructor(uid: string, kickback: (q: any) => void) {
-    this.listener = firestore.collection('queues').doc(uid)
+    this.listener = firebase.firestore().collection('queues').doc(uid)
         .withConverter(queueConverter)
         .onSnapshot(function(doc) {
           if (doc.exists) {

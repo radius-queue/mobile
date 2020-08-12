@@ -1,42 +1,22 @@
 import React from 'react';
 import { Divider, List, ListItem } from '@ui-kitten/components';
 
-interface MessageItem {
-  message: string,
-  time: Date,
-};
+interface MessageProps {
+  messages: [Date, string][]
+}
 
-const QueueMessages = () => {
+const QueueMessages = ({messages} : MessageProps) => {
 
-  const data = [
-    {
-      message: 'Come to the store now pls.',
-      time: new Date(),
-    },
-    {
-      message: 'Come to the store now pls.',
-      time: new Date(),
-    },
-    {
-      message: 'Come to the store now pls.',
-      time: new Date(),
-    },
-    {
-      message: 'Come to the store now pls.',
-      time: new Date(),
-    },
-  ]
-
-  const renderMessage: React.FC<{item: MessageItem}> = ({ item }) => (
+  const renderMessage: React.FC<{item : [Date, string]} > = ({ item }) => (
     <ListItem
-      title={`${item.message}`}
-      description={`${item.time}`}
+      title={`${item[1]}`}
+      description={`${item[0]}`}
     />
   );
 
   return (
     <List
-      data={data}
+      data={messages}
       ItemSeparatorComponent={Divider}
       renderItem={renderMessage}
     />

@@ -19,8 +19,9 @@ import * as eva from "@eva-design/eva";
 import { default as theme } from "./custom-theme.json";
 import { EvaIconsPack } from "@ui-kitten/eva-icons";
 import {Customer} from "./util/customer"
-import {getCustomer, getAllBusinessLocations, getBusinessLocationsFromArray, postCustomer} from "./util/api-functions";
+import {getCustomer, getAllBusinessLocations, getBusinessLocationsFromArray, postCustomer, getQueue} from "./util/api-functions";
 import { auth} from './firebase';
+import { Queue } from "./util/queue";
 
 const REGISTRATION_TIME_THRESHOLD: number = 3000;
 
@@ -55,8 +56,10 @@ interface TabProps {
   setFavs: (b: BusinessLocation[]) => void,
   setRecents: (b: BusinessLocation[]) => void,
   feedLists: [BusinessLocation[], BusinessLocation[], BusinessLocation[]],
-  setBusiness: (b: [BusinessLocation | undefined, number]) => void,
-  business: [BusinessLocation | undefined, number],
+  setQueueBusiness: (b: BusinessLocation | undefined) => void,
+  business: BusinessLocation | undefined,
+  queueId: string,
+  setQueueId: (s: string) => void,
 }
 
 export interface RenderProps {
@@ -64,21 +67,32 @@ export interface RenderProps {
   currUser: Customer,
 }
 
-const TabNavigator = ({ setUser, currUser, setBusiness, business, setFavs, feedLists }: TabProps) => (
+const TabNavigator = ({ setUser, currUser, setQueueBusiness, business, setFavs, feedLists, queueId, setQueueId }: TabProps) => (
   <Tab.Navigator tabBar={(props) => <BottomTabBar {...props} />}>
     <Tab.Screen name="Feed">
       {() => <BusinessListScreen
-        setBusiness={setBusiness}
+        setQueueBusiness={setQueueBusiness}
         setFavs={setFavs}
         feedList={feedLists}
         currUser={currUser}
         business={business}
+        setQueueId={setQueueId}
+        queueId={queueId}
+        setUser={setUser}
       />}
     </Tab.Screen>
     <Tab.Screen name="Me">
       {() => <ProfileWrapper setUser={setUser} currUser={currUser} />}
     </Tab.Screen>
-    <Tab.Screen name="Queue" component={QueuePage} />
+    <Tab.Screen name="Queue">
+      {() => <QueuePage
+        queueId={queueId}
+        setQueueBusiness={setQueueBusiness}
+        setQueueId={setQueueId}
+        currUser={currUser}
+        setUser={setUser}
+      />}
+    </Tab.Screen>
   </Tab.Navigator>
 );
 
@@ -92,19 +106,23 @@ export default function App() {
   const [recents, setRecents] = useState<BusinessLocation[]>([]);
   const [favs, setFavs] = useState<BusinessLocation[]>([]);
   const [businesses, setBusinesses] = useState<BusinessLocation[]>([]);
-  const [business, setBusiness] = useState<[BusinessLocation | undefined, number]>([undefined, 0]); // the business you're queueing in
+  const [business, setBusiness] = useState<BusinessLocation | undefined>();
+  const [queueId, setQueueId] = useState<string>('');
 
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(async function (user) {
       if (user) {
+        let customer: Customer | undefined;
         if (new Date().getTime() - new Date(user.metadata.creationTime!).getTime() > REGISTRATION_TIME_THRESHOLD) { // assuming not registering
-          let customer: Customer = await getCustomer(user.uid);
+          customer = await getCustomer(user.uid);
           
           const newFavs = await getBusinessLocationsFromArray(customer.favorites);
           setFavs(newFavs);
 
           const newRecents = await getBusinessLocationsFromArray(customer.recents);
           setRecents(newRecents);
+          
+          setQueueId(customer.currentQueue);
 
           setUser(customer);
         } 
@@ -112,16 +130,27 @@ export default function App() {
         const businessLocations = await getAllBusinessLocations();
         setBusinesses(businessLocations);
 
+        if (customer && customer.currentQueue.length !== 0) {
+          for (const biz of businessLocations) {
+            if (biz.queues[0] === customer.currentQueue) {
+              setBusiness(biz);
+              break;
+            }
+          }
+        }
+
       } else {
         setUser(new Customer());
         setRecents([]);
-        setBusiness([undefined, 0]);
+        setBusiness(undefined);
         setFavs([]);
         setBusinesses([]);
       }
     });
 
-    return unsub;
+    return () => {
+      unsub();
+    };
   }, []);
 
   
@@ -132,7 +161,6 @@ export default function App() {
         ...currUser,
         favorites: newFavs,
       };
-      postCustomer(newCustomer);
       setUser(newCustomer);
     }
   }, [favs, currUser]);
@@ -145,12 +173,18 @@ export default function App() {
         ...currUser,
         recents: newRecs,
       };
-      postCustomer(newCustomer);
       setUser(newCustomer);
     }
   }, [recents, currUser]);
 
+
+  useEffect(() => {
+    if (currUser.email.length !== 0) {
+      postCustomer(currUser);
+    }
+  }, [currUser]);
   
+
   return (
     <>
       <IconRegistry icons={EvaIconsPack} />
@@ -162,8 +196,10 @@ export default function App() {
             currUser={currUser}
             setFavs={setFavs}
             setRecents={setRecents}
-            setBusiness={setBusiness}
+            setQueueBusiness={setBusiness}
             business={business}
+            queueId={queueId}
+            setQueueId={setQueueId}
           />
         </NavigationContainer>
       </ApplicationProvider>
