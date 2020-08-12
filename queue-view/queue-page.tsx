@@ -12,6 +12,7 @@ import { Customer } from '../util/customer';
 import {BusinessLocation} from '../util/business';
 import {QueueListener} from '../util/queue-listener';
 import {postQueue} from '../util/api-functions';
+import { getSuffix } from '../util/util-functions';
 
 interface QueueProps {
   queueId: string,
@@ -75,12 +76,14 @@ const QueuePage = ({queueId, setQueueId, currUser, setUser, setQueueBusiness}: Q
   const navigator = useNavigation();
 
   if (queueInfo.queue && queueInfo.inLine !== undefined) {
+    const positionInLineSuffix: string = getSuffix(queueInfo.inLine + 1);
     return (
       <Screen style={styles.container}>
         <View style={[styles.card, styles.headerCard]}>
-          <Text style={styles.pageTitle}>You're 
-            <Text style={[styles.pageTitle, {color: theme['color-primary-500']}]}> {`${queueInfo.inLine}`} </Text>
-            in line at:
+          <Text style={styles.pageTitle}>
+            <Text style={styles.pageTitle}>You're </Text>
+            <Text style={[styles.pageTitle, {color: theme['color-primary-500']}]}>{`${queueInfo.inLine + 1}`}{positionInLineSuffix}</Text>
+            <Text style={styles.pageTitle}> in line at:</Text>
           </Text>
           <TouchableOpacity onPress={() => navigator.navigate('Feed')}>
             <Text style={styles.pageTitle}>{queueInfo.queue.name}</Text>
