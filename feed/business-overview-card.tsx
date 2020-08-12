@@ -3,7 +3,6 @@ import { StyleSheet } from 'react-native';
 import { Card, CardElement, CardProps, Text } from '@ui-kitten/components';
 import { ImageOverlay } from './image-overlay';
 import { BusinessLocation } from '../util/business';
-import { businesses } from './feed';
 
 export interface BusinessCardProps extends Omit<CardProps, 'children'> {
   business: BusinessLocation;
@@ -28,7 +27,7 @@ export const BusinessCard = (props: BusinessCardProps): CardElement => {
           style={styles.level}
           category='s1'
           status='control'>
-          {'Type Goes Here'}
+          {business.type}
         </Text>
         <Text
           style={styles.title}

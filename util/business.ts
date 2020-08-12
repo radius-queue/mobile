@@ -43,6 +43,7 @@ export class BusinessLocation {
   coordinates: number[]; // in decimal degrees (DD).
   queues: string[];
   geoFenceRadius: number; // in meters
+  type: string;
 
   /**
    * @param {string} name Name of specific location
@@ -59,7 +60,7 @@ export class BusinessLocation {
    *    of -1
    */
   constructor(name: string, address: string, phoneNumber: string, hours: [Date | null, Date | null][],
-      coordinates: number[], queues: string[] = [],
+      coordinates: number[], type: string, queues: string[] = [],
       geoFenceRadius: number = -1) {
     this.name = name;
     this.address = address;
@@ -68,6 +69,7 @@ export class BusinessLocation {
     this.coordinates = coordinates;
     this.queues = queues;
     this.geoFenceRadius = geoFenceRadius;
+    this.type = type;
   }
 
   /* Firebase helper methods */
@@ -77,15 +79,16 @@ export class BusinessLocation {
   * @param {object} location firebase location object
   * @return {BusinessLocation} equivalent js object
   */
-  static fromFirebase(location: any): BusinessLocation {
+  static fromFirebase(type: string, location: any): BusinessLocation {
     const locPrams : [string, string, string, [Date | null, Date | null][], number[],
-     string[], number] = [
+     string, string[], number] = [
        location.name,
        location.address,
        location.phoneNumber,
        BusinessLocation.hoursFromFirebase(location.hours),
        [location.coordinates.latitude,
          location.coordinates.longitude],
+       type,
        location.queues,
        location.geoFenceRadius,
      ];
@@ -158,7 +161,7 @@ export const businessConverter = {
         data.lastName,
         data.email,
         '', // uid
-        data.locations.map((e: any) => BusinessLocation.fromFirebase(e)),
+        data.locations.map((e: any) => BusinessLocation.fromFirebase(data.type, e)),
     );
   },
 };
