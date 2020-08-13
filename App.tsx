@@ -99,9 +99,9 @@ const TabNavigator = ({ setUser, currUser, setQueueBusiness, business, setFavs, 
   </Tab.Navigator>
 );
 
-const ProfileWrapper = ({ setUser, currUser }: RenderProps) => (
-  currUser.uid.length > 0 ? <ProfilePage setUser={setUser} currUser={currUser} /> : <Me setUser={setUser} currUser={currUser} />
-);
+// const ProfileWrapper = ({ setUser, currUser }: RenderProps) => (
+//   currUser.uid.length > 0 ? <ProfilePage setUser={setUser} currUser={currUser} /> : <Me setUser={setUser} currUser={currUser} />
+// );
 
 export default function App() {
 
