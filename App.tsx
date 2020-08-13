@@ -160,18 +160,25 @@ export default function App() {
     setImageURL(businesses, setBusinesses);
   }, [businesses]);
 
-  const setImageURL = (feedList: BusinessLocation[], setNew: (entry: any) => void) => {
-    console.log(feedList);
+  useEffect(() => {
+    setImageURL(recents, setRecents);
+  }, [recents]);
+
+  useEffect(() => {
+    setImageURL(favs, setFavs);
+  }, [favs]);
+
+  const setImageURL = async (feedList: BusinessLocation[], setNew: (entry: any) => void) => {
     for (let i = 0; i < feedList.length; i++) {
       if (feedList[i].images.length != 0 && feedList[i].imageURL == undefined) {
         console.log('getting image for : ' + feedList[i]);
-        getBusPic(feedList[i].uid, feedList[i].images[0], (URL: string) => {
+        await getBusPic(feedList[i].uid, feedList[i].images[0], (URL: string) => {
           let cur = feedList[i];
           cur.imageURL = URL;
-          setNew(feedList);
         });
       }
     }
+    setNew(feedList);
   }
 
   useEffect(() => {
