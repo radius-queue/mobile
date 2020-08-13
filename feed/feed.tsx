@@ -162,6 +162,7 @@ export const BusinessListScreen = ({
         setQueueBusiness={setQueueBusiness}
         setUser={setUser}
         recentsHandler={recentsHandler}
+        setRecents={setRecents}
       />
         : renderAll()}
     </Screen>

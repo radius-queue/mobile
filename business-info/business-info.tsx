@@ -30,6 +30,7 @@ interface BusinessInfoProps {
   setQueueBusiness: (b: BusinessLocation | undefined) => void,
   queue: string,
   setQueue: (q: string) => void,
+  setRecents: (b: BusinessLocation[]) => void,
   recentsHandler: () => void,
 }
 
@@ -46,6 +47,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   setQueueBusiness,
   setUser,
   recentsHandler,
+  setRecents,
 }: BusinessInfoProps) => {
   const [showJoin, setJoin] = useState<boolean>(false);
   const [isFav, setIsFav] = useState<boolean>(isFavorite);
@@ -70,6 +72,11 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
       addFav();
     }
     setIsFav(!isFav);
+  }
+
+  const onQueuePress = () => {
+    setJoin(true)
+    recentsHandler();
   }
 
   const calculateDelta = (radius: number) => {
@@ -108,8 +115,6 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
       phoneNumber,
       currentQueue: newQueue.uid
     };
-
-    recentsHandler();
 
     setQueue(newQueue.uid);
     setQueueBusiness(business);
@@ -206,7 +211,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
             <Button
               style={styles.joinButton}
               disabled={queue ? true : (queueInfo ? !queueInfo.open : false)}
-              onPress={() => setJoin(true)}
+              onPress={onQueuePress}
             >
               Join Queue
             </Button>
