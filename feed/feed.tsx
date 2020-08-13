@@ -106,13 +106,11 @@ export const BusinessListScreen = ({
   const recentsHandler = () => {
     let newRecents: BusinessLocation[] = [];
     newRecents.push(chosenBusiness!);
-    if (feedList[1].length <= 9) {
-      const oldRecents = feedList[1].slice();
-      newRecents.push(...oldRecents);
-    } else {
-      const recentsCopy = feedList[1];
-      let i: number;
-      for (i = 0; i < 9; i++) {
+    const recentsCopy = feedList[1];
+    let i: number;
+
+    for (i = 0; i < recentsCopy.length; i++) {
+      if (recentsCopy[i].uid !== chosenBusiness?.uid) {
         newRecents.push(recentsCopy[i]);
       }
     }
