@@ -30,6 +30,8 @@ interface BusinessInfoProps {
   setQueueBusiness: (b: BusinessLocation | undefined) => void,
   queue: string,
   setQueue: (q: string) => void,
+  setRecents: (b: BusinessLocation[]) => void,
+  recentsHandler: () => void,
 }
 
 const DEGREES_PER_HUNDRED_METERS = 0.001;
@@ -44,6 +46,8 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   queue,
   setQueueBusiness,
   setUser,
+  recentsHandler,
+  setRecents,
 }: BusinessInfoProps) => {
   const [showJoin, setJoin] = useState<boolean>(false);
   const [isFav, setIsFav] = useState<boolean>(isFavorite);
@@ -78,6 +82,11 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
     setIsFav(!isFav);
   }
 
+  const onQueuePress = () => {
+    setJoin(true)
+    recentsHandler();
+  }
+
   const calculateDelta = (radius: number) => {
     return ((radius * 4) / 100) * DEGREES_PER_HUNDRED_METERS;
   };
@@ -92,9 +101,9 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   };
 
   const addToQ = async (
-    firstName : string,
-    lastName : string,
-    phoneNumber : string,
+    firstName: string,
+    lastName: string,
+    phoneNumber: string,
     size: number,
   ) => {
     const newQueue = await addToQueue(business.queues[0], {
@@ -105,15 +114,16 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
       checkIn: new Date(),
       quote: -1,
       messages: [],
-    }); 
+    });
 
     const newUser = {
-      ...user!, 
+      ...user!,
       firstName,
       lastName,
       phoneNumber,
       currentQueue: newQueue.uid
-    };  
+    };
+
     setQueue(newQueue.uid);
     setQueueBusiness(business);
     setUser(newUser);
@@ -221,7 +231,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
             <Button
               style={styles.joinButton}
               disabled={queue ? true : (queueInfo ? !queueInfo.open : false)}
-              onPress={() => setJoin(true)}
+              onPress={onQueuePress}
             >
               Join Queue
             </Button>

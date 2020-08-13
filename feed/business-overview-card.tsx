@@ -22,7 +22,7 @@ export const BusinessCard = (props: BusinessCardProps): CardElement => {
       style={[styles.container, style]}>
       <ImageOverlay
         style={styles.image}
-        source={image}>
+        source={(business.imageURL != undefined) ? {uri: business.imageURL }: image}>
         <Text
           style={styles.level}
           category='s1'

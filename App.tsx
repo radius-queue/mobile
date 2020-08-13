@@ -18,10 +18,11 @@ import {
 import * as eva from "@eva-design/eva";
 import { default as theme } from "./custom-theme.json";
 import { EvaIconsPack } from "@ui-kitten/eva-icons";
-import {Customer} from "./util/customer"
-import {getCustomer, getAllBusinessLocations, getBusinessLocationsFromArray, postCustomer, getQueue, newCustomer} from "./util/api-functions";
-import { auth} from './firebase';
+import { Customer } from "./util/customer"
+import { getCustomer, getAllBusinessLocations, getBusinessLocationsFromArray, postCustomer, getQueue, newCustomer } from "./util/api-functions";
+import { auth } from './firebase';
 import { Queue } from "./util/queue";
+import { getBusPic } from "./util/storage-func";
 
 const REGISTRATION_TIME_THRESHOLD: number = 3000;
 
@@ -67,7 +68,7 @@ export interface RenderProps {
   currUser: Customer,
 }
 
-const TabNavigator = ({ setUser, currUser, setQueueBusiness, business, setFavs, feedLists, queueId, setQueueId }: TabProps) => (
+const TabNavigator = ({ setUser, currUser, setQueueBusiness, business, setFavs, feedLists, queueId, setQueueId, setRecents }: TabProps) => (
   <Tab.Navigator tabBar={(props) => <BottomTabBar {...props} />}>
     <Tab.Screen name="Feed">
       {() => <BusinessListScreen
@@ -79,6 +80,7 @@ const TabNavigator = ({ setUser, currUser, setQueueBusiness, business, setFavs, 
         setQueueId={setQueueId}
         queueId={queueId}
         setUser={setUser}
+        setRecents={setRecents}
       />}
     </Tab.Screen>
     {/*<Tab.Screen name="Me">
@@ -117,14 +119,14 @@ export default function App() {
 
         try {
           customer = await getCustomer(user.uid);
-        } catch(errror) {
+        } catch (errror) {
           customer = await newCustomer(user.uid);
         }
-        
+
         const newFavs = await getBusinessLocationsFromArray(customer.favorites);
-        
+
         const newRecents = await getBusinessLocationsFromArray(customer.recents);
-  
+
         const businessLocations = await getAllBusinessLocations();
 
 
@@ -143,7 +145,7 @@ export default function App() {
         setQueueId(customer.currentQueue);
         setUser(customer);
       } else {
-        auth.signInAnonymously().catch((error) =>{
+        auth.signInAnonymously().catch((error) => {
           console.error(error);
         });
       }
@@ -154,7 +156,24 @@ export default function App() {
     };
   }, []);
 
-  
+  useEffect(() => {
+    setImageURL(businesses, setBusinesses);
+  }, [businesses]);
+
+  const setImageURL = (feedList: BusinessLocation[], setNew: (entry: any) => void) => {
+    console.log(feedList);
+    for (let i = 0; i < feedList.length; i++) {
+      if (feedList[i].images.length != 0 && feedList[i].imageURL == undefined) {
+        console.log('getting image for : ' + feedList[i]);
+        getBusPic(feedList[i].uid, feedList[i].images[0], (URL: string) => {
+          let cur = feedList[i];
+          cur.imageURL = URL;
+          setNew(feedList);
+        });
+      }
+    }
+  }
+
   useEffect(() => {
     if (currUser.uid.length !== 0 && currUser.favorites.length !== favs.length) {
       const newFavs = favs.map((b: BusinessLocation) => b.queues[0]); // gets the uids of each business location
@@ -184,7 +203,7 @@ export default function App() {
       postCustomer(currUser);
     }
   }, [currUser]);
-  
+
 
   return (
     <>
