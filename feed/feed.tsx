@@ -110,7 +110,7 @@ export const BusinessListScreen = ({
     let i: number;
 
     for (i = 0; i < recentsCopy.length; i++) {
-      if (recentsCopy[i].uid !== chosenBusiness?.uid) {
+      if (recentsCopy[i].phoneNumber !== chosenBusiness?.phoneNumber) {
         newRecents.push(recentsCopy[i]);
       }
     }
