@@ -167,20 +167,17 @@ export default function App() {
     let newMap = new Map(assetsMap);
     for (let i = 0; i < feedList.length; i++) {
       // Check if business have image
-      if (feedList[i].images.length != 0 && feedList[i].imageURL == undefined) {
+      if (feedList[i].images.length != 0) {
         // Check if map have image for business
         if (!newMap.has(feedList[i].uid)) {
           console.log('getting image for : ' + feedList[i].name);
           await getBusPic(feedList[i].uid, feedList[i].images[0], (URL: string) => {
-            let cur = copyBusLoc(feedList[i]);
-            cur.imageURL = URL;
-            newMap.set(cur.uid, URL);
+            newMap.set(feedList[i].uid, URL);
           });
         }
       }
     }
     setAssets(newMap);
-    console.log(newMap);
   }
 
   useEffect(() => {
