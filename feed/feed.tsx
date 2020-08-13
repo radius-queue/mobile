@@ -19,6 +19,7 @@ interface FeedProps {
   setQueueId: (q: string) => void,
   setUser: (c: Customer) => void,
   setRecents: (b: BusinessLocation[]) => void,
+  assetsMap: Map<string, string>,
 }
 
 export const BusinessListScreen = ({
@@ -31,6 +32,7 @@ export const BusinessListScreen = ({
   setQueueId,
   setUser,
   setRecents,
+  assetsMap,
 }: FeedProps): React.ReactElement => {
   const [chosenBusiness, setChosenBusiness] = useState<BusinessLocation | undefined>(business);
   const [feedcnt, setCnt] = useState<number>(0);
@@ -140,6 +142,7 @@ export const BusinessListScreen = ({
       <BusinessCard
         style={styles.horizontalItem}
         business={info.item}
+        assetsMap={assetsMap}
       />
     </TouchableHighlight>
   );
@@ -149,6 +152,7 @@ export const BusinessListScreen = ({
       <BusinessCard
         style={styles.verticalItem}
         business={info.item}
+        assetsMap={assetsMap}
       />
     </TouchableHighlight>
   );

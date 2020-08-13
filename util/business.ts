@@ -48,7 +48,6 @@ export class BusinessLocation {
   geoFenceRadius: number; // in meters
   images: string[];
   type: string;
-  imageURL: string;
   uid: string;
 
   /**
@@ -79,7 +78,6 @@ export class BusinessLocation {
     this.geoFenceRadius = geoFenceRadius;
     this.images = images;
     this.type = type;
-    this.imageURL = '';
     this.uid = uid;
   }
 

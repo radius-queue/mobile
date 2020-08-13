@@ -61,6 +61,7 @@ interface TabProps {
   business: BusinessLocation | undefined,
   queueId: string,
   setQueueId: (s: string) => void,
+  assetsMap: Map<string, string>,
 }
 
 export interface RenderProps {
@@ -68,7 +69,7 @@ export interface RenderProps {
   currUser: Customer,
 }
 
-const TabNavigator = ({ setUser, currUser, setQueueBusiness, business, setFavs, feedLists, queueId, setQueueId, setRecents }: TabProps) => (
+const TabNavigator = ({ setUser, currUser, setQueueBusiness, business, setFavs, feedLists, queueId, setQueueId, setRecents, assetsMap }: TabProps) => (
   <Tab.Navigator tabBar={(props) => <BottomTabBar {...props} />}>
     <Tab.Screen name="Feed">
       {() => <BusinessListScreen
@@ -81,6 +82,7 @@ const TabNavigator = ({ setUser, currUser, setQueueBusiness, business, setFavs, 
         queueId={queueId}
         setUser={setUser}
         setRecents={setRecents}
+        assetsMap={assetsMap}
       />}
     </Tab.Screen>
     {/*<Tab.Screen name="Me">
@@ -111,6 +113,7 @@ export default function App() {
   const [businesses, setBusinesses] = useState<BusinessLocation[]>([]);
   const [business, setBusiness] = useState<BusinessLocation | undefined>(); // business that you are in a queue with
   const [queueId, setQueueId] = useState<string>('');
+  const [assetsMap, setAssets] = useState<Map<string, string>>(new Map);
 
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(async function (user) {
@@ -157,36 +160,27 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    setImageURL(businesses, setBusinesses);
+    setImageURL(businesses);
   }, [businesses]);
 
-  useEffect(() => {
-    setImageURL(recents, setRecents);
-  }, [recents]);
-
-  useEffect(() => {
-    setImageURL(favs, setFavs);
-  }, [favs]);
-
-  const setImageURL = async (feedList: BusinessLocation[], setNew: (entry: any) => void) => {
-    let copy = [];
-    let set = 0;
+  const setImageURL = async (feedList: BusinessLocation[]) => {
+    let newMap = new Map(assetsMap);
     for (let i = 0; i < feedList.length; i++) {
+      // Check if business have image
       if (feedList[i].images.length != 0 && feedList[i].imageURL == undefined) {
-        console.log('getting image for : ' + feedList[i]);
-        await getBusPic(feedList[i].uid, feedList[i].images[0], (URL: string) => {
-          let cur = copyBusLoc(feedList[i]);
-          cur.imageURL = URL;
-          copy.push(cur);
-          set = 1;
-        });
-      } else {
-        copy.push(copyBusLoc(feedList[i]));
+        // Check if map have image for business
+        if (!newMap.has(feedList[i].uid)) {
+          console.log('getting image for : ' + feedList[i].name);
+          await getBusPic(feedList[i].uid, feedList[i].images[0], (URL: string) => {
+            let cur = copyBusLoc(feedList[i]);
+            cur.imageURL = URL;
+            newMap.set(cur.uid, URL);
+          });
+        }
       }
     }
-    if (set) {
-      setNew(copy);
-    }
+    setAssets(newMap);
+    console.log(newMap);
   }
 
   useEffect(() => {
@@ -235,6 +229,7 @@ export default function App() {
             business={business}
             queueId={queueId}
             setQueueId={setQueueId}
+            assetsMap={assetsMap}
           />
         </NavigationContainer>
       </ApplicationProvider>

@@ -6,6 +6,7 @@ import { BusinessLocation } from '../util/business';
 
 export interface BusinessCardProps extends Omit<CardProps, 'children'> {
   business: BusinessLocation;
+  assetsMap: Map<string, string>;
 }
 
 const image = require('../assets/landing.jpg');
@@ -14,15 +15,16 @@ export type BusinessCardElement = React.ReactElement<BusinessCardProps>;
 
 export const BusinessCard = (props: BusinessCardProps): CardElement => {
 
-  const { style, business, ...cardProps } = props;
+  const { style, business, assetsMap, ...cardProps } = props;
 
+  let background = assetsMap.get(business.uid);
   return (
     <Card
       {...cardProps}
       style={[styles.container, style]}>
       <ImageOverlay
         style={styles.image}
-        source={(business.imageURL && business.imageURL != '') ? {uri: business.imageURL }: image}>
+        source={(background) ? {uri: background } : image}>
         <Text
           style={styles.level}
           category='s1'
