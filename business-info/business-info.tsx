@@ -32,9 +32,12 @@ interface BusinessInfoProps {
   setQueue: (q: string) => void,
   setRecents: (b: BusinessLocation[]) => void,
   recentsHandler: () => void,
+  setChosenBusiness: React.Dispatch<React.SetStateAction<BusinessLocation | undefined>>
 }
 
 const DEGREES_PER_HUNDRED_METERS = 0.001;
+const BEGIN_HEADER_DISPLAY = 240;
+const END_HEADER_DISPLAY = 295;
 
 const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   business,
@@ -48,6 +51,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   setUser,
   recentsHandler,
   setRecents,
+  setChosenBusiness,
 }: BusinessInfoProps) => {
   const [showJoin, setJoin] = useState<boolean>(false);
   const [isFav, setIsFav] = useState<boolean>(isFavorite);
@@ -58,8 +62,14 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   scrollA.addListener((newScroll) => setScrollAmount(newScroll.value));
 
   const headerOpacity = scrollA.interpolate({
-    inputRange: [280, 310],
+    inputRange: [BEGIN_HEADER_DISPLAY, END_HEADER_DISPLAY],
     outputRange: [0, 1],
+    extrapolate: 'clamp',
+  });
+
+  const backOpacity = scrollA.interpolate({
+    inputRange: [BEGIN_HEADER_DISPLAY, END_HEADER_DISPLAY],
+    outputRange: [1, 0],
     extrapolate: 'clamp',
   });
 
@@ -130,20 +140,44 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
     navigation.navigate("Queue");
   };
 
+  /**
+   * Returns the user to the favorites/recents/explore page.
+   */
   const goBack = () => {
-    navigation.navigate('Feed');
+    setChosenBusiness(undefined);
   }
 
   return (
     <View>
+      {/* Header with bar */}
       <Animated.View style={[styles.headerBar, {opacity: headerOpacity}]}>
-        <TouchableOpacity onPress={() => {if (scrollAmount > 300) {goBack()}}}>
-          <View style={styles.headerContentContainer}>
+        <TouchableOpacity onPress={goBack}>
+          <View style={styles.headerBackContainer}>
             <Ionicons name='ios-arrow-back' size={24} color={theme['color-basic-100']} />
             <Text style={styles.headerText}>Back</Text>
           </View>
         </TouchableOpacity>
+        <Text style={[styles.headerText, styles.headerName]}>{business.name.length > 15 ? business.name.substring(0, 12) + '...' : business.name}</Text>
+        <TouchableOpacity disabled={!!!user} onPress={onStarPress}>
+          <View style={styles.headerIcon}>
+            {!isFav
+              ? <SimpleLineIcons name="star" size={24} color="yellow" />
+              : <Fontisto name='star' size={24} color='yellow' />
+            }
+          </View>
+        </TouchableOpacity>
       </Animated.View>
+
+      {/* Header without bar (only the back button) */}
+      <Animated.View style={[styles.headerBar, styles.backBar, {opacity: backOpacity}]}>
+        <TouchableOpacity onPress={goBack}>
+          <View style={styles.headerBackContainer}>
+            <Ionicons name='ios-arrow-back' size={24} color={theme['color-basic-1100']} />
+            <Text style={[styles.headerText, styles.backText]}>Back</Text>
+          </View>
+        </TouchableOpacity>
+      </Animated.View>
+
       <Animated.ScrollView
         style={styles.scroll}
         scrollEnabled={true}
@@ -151,7 +185,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
           [{ nativeEvent: { contentOffset: { y: scrollA } } }],
           { useNativeDriver: true }
         )}
-        scrollEventThrottle={16}
+        scrollEventThrottle={1}
       >
         <Animated.View style={animatedStyles.mapContainer(scrollA)}>
           <MapView
@@ -287,6 +321,13 @@ const animatedStyles = {
 };
 
 const styles = StyleSheet.create({
+  backBar: {
+    backgroundColor: 'transparent',
+    borderBottomWidth: 0,
+  },
+  backText: {
+    color: theme['color-basic-1100'],
+  },
   businessCard: {
     borderTopLeftRadius: 13,
     borderTopRightRadius: 13,
@@ -330,27 +371,47 @@ const styles = StyleSheet.create({
     marginBottom: 7,
     borderRadius: 3,
   },
+  headerBackContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    paddingLeft: 15,
+    paddingBottom: 6,
+    alignItems: 'flex-end',
+    width: 85,
+    height: '100%',
+  },
   headerBar: {
-    marginBottom: -35,
-    height: 35,
+    marginBottom: -45,
+    height: 45,
     zIndex: 1,
     backgroundColor: theme['color-basic-900'],
     borderBottomWidth: 1,
     borderBottomColor: theme['color-basic-600'],
-  },
-  headerContentContainer: {
     display: 'flex',
     flexDirection: 'row',
-    paddingLeft: 15,
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  headerIcon: {
     width: 85,
-    height: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingRight: 15,
+  },
+  headerName: {
+    color: theme['color-primary-500'],
+    fontWeight: 'bold',
+    fontSize: 20,
+    paddingLeft: 'auto',
+    paddingRight: 'auto',
   },
   headerText: {
     color: theme['color-basic-100'],
     fontSize: 18,
     paddingTop: 1,
     marginLeft: 6,
+    marginBottom: 4,
   },
   hoursContainer: {
     flexDirection: "row",

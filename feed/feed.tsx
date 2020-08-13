@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ListRenderItemInfo, StyleSheet } from 'react-native';
+import { ListRenderItemInfo, StyleSheet, View } from 'react-native';
 import { List, Text } from '@ui-kitten/components';
 import { BusinessCard } from './business-overview-card';
 import Screen from '../components/screen';
@@ -163,6 +163,7 @@ export const BusinessListScreen = ({
         setUser={setUser}
         recentsHandler={recentsHandler}
         setRecents={setRecents}
+        setChosenBusiness={setChosenBusiness}
       />
         : renderAll()}
     </Screen>
