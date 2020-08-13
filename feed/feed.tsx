@@ -18,7 +18,8 @@ interface FeedProps {
   currUser: Customer,
   queueId: string,
   setQueueId: (q: string) => void,
-  setUser: (c:Customer) => void,
+  setUser: (c: Customer) => void,
+  setRecents: (b: BusinessLocation[]) => void,
 }
 
 export const BusinessListScreen = ({
@@ -30,6 +31,7 @@ export const BusinessListScreen = ({
   queueId,
   setQueueId,
   setUser,
+  setRecents,
 }: FeedProps): React.ReactElement => {
   const [chosenBusiness, setChosenBusiness] = useState<BusinessLocation | undefined>(business);
 
@@ -102,6 +104,22 @@ export const BusinessListScreen = ({
     </React.Fragment>
   );
 
+  const recentsHandler = () => {
+    let newRecents: BusinessLocation[] = [];
+    newRecents.push(chosenBusiness!);
+    if (feedList[1].length <= 9) {
+      const oldRecents = feedList[1].slice();
+      newRecents.push(...oldRecents);
+    } else {
+      const recentsCopy = feedList[1];
+      let i: number;
+      for (i = 0; i < 9; i++) {
+        newRecents.push(recentsCopy[i]);
+      }
+    }
+    setRecents(newRecents);
+  };
+
   const renderAll = (): React.ReactElement => (
     <React.Fragment>
       <List
@@ -144,6 +162,7 @@ export const BusinessListScreen = ({
         setQueue={setQueueId}
         setQueueBusiness={setQueueBusiness}
         setUser={setUser}
+        recentsHandler={recentsHandler}
       />
         : renderAll()}
     </Screen>

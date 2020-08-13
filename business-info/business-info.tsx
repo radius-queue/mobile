@@ -30,6 +30,7 @@ interface BusinessInfoProps {
   setQueueBusiness: (b: BusinessLocation | undefined) => void,
   queue: string,
   setQueue: (q: string) => void,
+  recentsHandler: () => void,
 }
 
 const DEGREES_PER_HUNDRED_METERS = 0.001;
@@ -44,6 +45,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   queue,
   setQueueBusiness,
   setUser,
+  recentsHandler,
 }: BusinessInfoProps) => {
   const [showJoin, setJoin] = useState<boolean>(false);
   const [isFav, setIsFav] = useState<boolean>(isFavorite);
@@ -84,9 +86,9 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   };
 
   const addToQ = async (
-    firstName : string,
-    lastName : string,
-    phoneNumber : string,
+    firstName: string,
+    lastName: string,
+    phoneNumber: string,
     size: number,
   ) => {
     const newQueue = await addToQueue(business.queues[0], {
@@ -97,15 +99,18 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
       checkIn: new Date(),
       quote: -1,
       messages: [],
-    }); 
+    });
 
     const newUser = {
-      ...user!, 
+      ...user!,
       firstName,
       lastName,
       phoneNumber,
       currentQueue: newQueue.uid
-    };  
+    };
+
+    recentsHandler();
+
     setQueue(newQueue.uid);
     setQueueBusiness(business);
     setUser(newUser);
