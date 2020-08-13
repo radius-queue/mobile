@@ -22,6 +22,7 @@ import { Customer } from "./util/customer"
 import { getCustomer, getAllBusinessLocations, getBusinessLocationsFromArray, postCustomer, getQueue, newCustomer } from "./util/api-functions";
 import { auth } from './firebase';
 import { Queue } from "./util/queue";
+import { getBusPic } from "./util/storage-func";
 
 const REGISTRATION_TIME_THRESHOLD: number = 3000;
 

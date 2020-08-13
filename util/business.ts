@@ -10,6 +10,7 @@ export class Business {
   locations: BusinessLocation[];
   // password : string;
   uid : string;
+  type : string;
 
   /**
    * @param {string} name Business name
@@ -17,17 +18,19 @@ export class Business {
    * @param {string} lastName Owner Last Name
    * @param {string} email Account email
    * @param {string} uid Unique Identifier
+   * @param {string} type Type of establishment
    * @param {BusinessLocation[]} locations Optional array of store location
    *    objects, Default value is set to be empty array
    */
   constructor(name: string, firstName: string, lastName: string, email: string,
-      uid: string, locations: BusinessLocation[] =[]) {
+      uid: string, type: string, locations: BusinessLocation[] =[]) {
     this.name = name;
     this.firstName = firstName;
     this.lastName = lastName;
     this.email = email;
     this.uid = uid;
     this.locations = locations;
+    this.type = type;
     // this.uid = uid || "";
   }
 }
@@ -43,7 +46,10 @@ export class BusinessLocation {
   coordinates: number[]; // in decimal degrees (DD).
   queues: string[];
   geoFenceRadius: number; // in meters
+  images: string[];
   type: string;
+  imageURL: string;
+  uid: string;
 
   /**
    * @param {string} name Name of specific location
@@ -53,15 +59,17 @@ export class BusinessLocation {
    *    of Date object pairs.
    * @param {number[]} coordinates Geographic coordinates of location in
    *    decimal degrees (DD). ex: [41.40338, 2.17403] lat, long
+   * @param {string} type type of establishment
    * @param {string[]} queues Optional array of queue ids associated with
    *    this location, Default value of empty array
    * @param {number} geoFenceRadius Optional radius around business location
    *    (in meters) that a customer is allowed to enter queue, Default value
    *    of -1
+   * @param {string} uid
    */
   constructor(name: string, address: string, phoneNumber: string, hours: [Date | null, Date | null][],
-      coordinates: number[], type: string, queues: string[] = [],
-      geoFenceRadius: number = -1) {
+      coordinates: number[], type: string, uid: string, queues: string[] = [],
+      geoFenceRadius: number = -1, images: string[] = [])  {
     this.name = name;
     this.address = address;
     this.phoneNumber = phoneNumber;
@@ -69,7 +77,10 @@ export class BusinessLocation {
     this.coordinates = coordinates;
     this.queues = queues;
     this.geoFenceRadius = geoFenceRadius;
+    this.images = images;
     this.type = type;
+    this.imageURL = '';
+    this.uid = uid;
   }
 
   /* Firebase helper methods */
@@ -79,18 +90,20 @@ export class BusinessLocation {
   * @param {object} location firebase location object
   * @return {BusinessLocation} equivalent js object
   */
-  static fromFirebase(type: string, location: any): BusinessLocation {
-    const locPrams : [string, string, string, [Date | null, Date | null][], number[],
-     string, string[], number] = [
+  static fromFirebase(location: any): BusinessLocation {
+    const locPrams : [string, string, string, [Date | null, Date | null][], number[], string, string,
+     string[], number, string[]] = [
        location.name,
        location.address,
        location.phoneNumber,
        BusinessLocation.hoursFromFirebase(location.hours),
        [location.coordinates.latitude,
          location.coordinates.longitude],
-       type,
+       location.type,
+       location.uid,
        location.queues,
        location.geoFenceRadius,
+       location.images
      ];
     return new BusinessLocation(...locPrams);
   }
@@ -150,6 +163,7 @@ export const businessConverter = {
       firstName: b.firstName,
       lastName: b.lastName,
       email: b.email,
+      type: b.type,
       locations: b.locations.map((e) => BusinessLocation.toFirebase(e)),
     };
   },
@@ -161,7 +175,8 @@ export const businessConverter = {
         data.lastName,
         data.email,
         '', // uid
-        data.locations.map((e: any) => BusinessLocation.fromFirebase(data.type, e)),
+        data.type,
+        data.locations.map((e: any) => BusinessLocation.fromFirebase(e)),
     );
   },
 };

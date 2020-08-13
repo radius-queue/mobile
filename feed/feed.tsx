@@ -8,7 +8,6 @@ import { BusinessLocation } from '../util/business';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { Customer } from '../util/customer';
 import BusinessInfoScreen from '../business-info/business-info';
-import { Queue } from '../util/queue';
 
 interface FeedProps {
   setQueueBusiness: (b: BusinessLocation | undefined) => void,
