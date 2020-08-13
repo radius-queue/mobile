@@ -5,7 +5,7 @@ import Me from "./profile/Me";
 import QueuePage from "./queue-view/queue-page";
 import ProfilePage from "./profile/profile-page";
 import { BusinessListScreen } from "./feed/feed";
-import type { BusinessLocation } from "./util/business";
+import { BusinessLocation, copyBusLoc } from "./util/business";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
@@ -169,16 +169,24 @@ export default function App() {
   }, [favs]);
 
   const setImageURL = async (feedList: BusinessLocation[], setNew: (entry: any) => void) => {
+    let copy = [];
+    let set = 0;
     for (let i = 0; i < feedList.length; i++) {
       if (feedList[i].images.length != 0 && feedList[i].imageURL == undefined) {
         console.log('getting image for : ' + feedList[i]);
         await getBusPic(feedList[i].uid, feedList[i].images[0], (URL: string) => {
-          let cur = feedList[i];
+          let cur = copyBusLoc(feedList[i]);
           cur.imageURL = URL;
+          copy.push(cur);
+          set = 1;
         });
+      } else {
+        copy.push(copyBusLoc(feedList[i]));
       }
     }
-    setNew(feedList);
+    if (set) {
+      setNew(copy);
+    }
   }
 
   useEffect(() => {

@@ -33,10 +33,16 @@ export const BusinessListScreen = ({
   setRecents,
 }: FeedProps): React.ReactElement => {
   const [chosenBusiness, setChosenBusiness] = useState<BusinessLocation | undefined>(business);
+  const [feedcnt, setCnt] = useState<number>(0);
 
   useEffect(() => {
     setChosenBusiness(business);
   }, [business]);
+
+  useEffect(() => {
+    console.log(feedcnt + 1);
+    setCnt(feedcnt + 1);
+  }, feedList);
 
   const renderHeader = (): React.ReactElement => (
     <React.Fragment>

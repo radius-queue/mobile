@@ -199,6 +199,11 @@ export function getHoursArray(input: [string, string][]) {
   return result;
 }
 
+export function copyBusLoc(old: BusinessLocation): BusinessLocation {
+  return new BusinessLocation(old.name, old.address, old.phoneNumber, old.hours,
+    old.coordinates, old.type, old.uid, old.queues, old.geoFenceRadius, old.images);
+}
+
 const DATE_INDEX: Map<number, string> = new Map<number, string>([
   [0, 'Sunday'],
   [1, 'Monday'],
