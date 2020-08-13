@@ -7,17 +7,17 @@ import {
   TouchableOpacity,
 } from "react-native";
 import call from "react-native-phone-call";
-import { Card, Layout, Button, Icon } from "@ui-kitten/components";
+import { Card, Layout, Button } from "@ui-kitten/components";
 import { useNavigation } from "@react-navigation/native";
 import BusinessModal from "./business-info-modal";
 import MapView, { Marker, Circle } from "react-native-maps";
 import { dateToOperationHours, parsePhoneNum } from "../util/util-functions";
 import defaultStyles from "../config/styles";
-import { Fontisto, SimpleLineIcons } from '@expo/vector-icons';
+import { Fontisto, SimpleLineIcons, Ionicons } from '@expo/vector-icons';
 import { default as theme } from "../custom-theme.json";
 import { BusinessLocation } from "../util/business";
 import { Customer } from "../util/customer";
-import { QueueInfo, Queue } from '../util/queue';
+import { QueueInfo } from '../util/queue';
 import { getQueueInfo, addToQueue } from "../util/api-functions";
 
 interface BusinessInfoProps {
@@ -48,8 +48,16 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   const [showJoin, setJoin] = useState<boolean>(false);
   const [isFav, setIsFav] = useState<boolean>(isFavorite);
   const [queueInfo, setQueueInfo] = useState<QueueInfo | undefined>();
+  const [scrollAmount, setScrollAmount] = useState<number>(0);
 
   const scrollA = useRef(new Animated.Value(0)).current;
+  scrollA.addListener((newScroll) => setScrollAmount(newScroll.value));
+
+  const headerOpacity = scrollA.interpolate({
+    inputRange: [280, 310],
+    outputRange: [0, 1],
+    extrapolate: 'clamp',
+  });
 
   const navigation = useNavigation();
 
@@ -112,8 +120,20 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
     navigation.navigate("Queue");
   };
 
+  const goBack = () => {
+    navigation.navigate('Feed');
+  }
+
   return (
     <View>
+      <Animated.View style={[styles.headerBar, {opacity: headerOpacity}]}>
+        <TouchableOpacity onPress={() => {if (scrollAmount > 300) {goBack()}}}>
+          <View style={styles.headerContentContainer}>
+            <Ionicons name='ios-arrow-back' size={24} color={theme['color-basic-100']} />
+            <Text style={styles.headerText}>Back</Text>
+          </View>
+        </TouchableOpacity>
+      </Animated.View>
       <Animated.ScrollView
         style={styles.scroll}
         scrollEnabled={true}
@@ -250,9 +270,9 @@ const animatedStyles = {
         translateY: scrollA,
       },
     ],
-    borderBottomRightRadius: 10,
-    borderBottomLeftRadius: 10,
+    borderRadius: 10,
     overflow: "hidden",
+    marginBottom: 4,
   }),
 };
 
@@ -264,6 +284,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 0,
     borderWidth: 0,
     flex: 1,
+    backgroundColor: theme['color-basic-700'],
   },
   businessName: {
     fontSize: 28,
@@ -298,6 +319,28 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginBottom: 7,
     borderRadius: 3,
+  },
+  headerBar: {
+    marginBottom: -35,
+    height: 35,
+    zIndex: 1,
+    backgroundColor: theme['color-basic-900'],
+    borderBottomWidth: 1,
+    borderBottomColor: theme['color-basic-600'],
+  },
+  headerContentContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    paddingLeft: 15,
+    alignItems: 'flex-start',
+    width: 85,
+    height: '100%',
+  },
+  headerText: {
+    color: theme['color-basic-100'],
+    fontSize: 18,
+    paddingTop: 1,
+    marginLeft: 6,
   },
   hoursContainer: {
     flexDirection: "row",
@@ -337,7 +380,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   scroll: {
-    backgroundColor: theme['color-basic-900'],
     display: "flex",
   },
   subtitle: {
