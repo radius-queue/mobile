@@ -156,6 +156,23 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    setImageURL(businesses, setBusinesses);
+  }, [businesses]);
+
+  const setImageURL = (feedList: BusinessLocation[], setNew: (entry: any) => void) => {
+    console.log(feedList);
+    for (let i = 0; i < feedList.length; i++) {
+      if (feedList[i].images.length != 0 && feedList[i].imageURL == undefined) {
+        console.log('getting image for : ' + feedList[i]);
+        getBusPic(feedList[i].uid, feedList[i].images[0], (URL: string) => {
+          let cur = feedList[i];
+          cur.imageURL = URL;
+          setNew(feedList);
+        });
+      }
+    }
+  }
 
   useEffect(() => {
     if (currUser.uid.length !== 0 && currUser.favorites.length !== favs.length) {
