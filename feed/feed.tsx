@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ListRenderItemInfo, StyleSheet } from 'react-native';
+import { ListRenderItemInfo, StyleSheet, View } from 'react-native';
 import { List, Text } from '@ui-kitten/components';
 import { BusinessCard } from './business-overview-card';
 import Screen from '../components/screen';
@@ -106,13 +106,11 @@ export const BusinessListScreen = ({
   const recentsHandler = () => {
     let newRecents: BusinessLocation[] = [];
     newRecents.push(chosenBusiness!);
-    if (feedList[1].length <= 9) {
-      const oldRecents = feedList[1].slice();
-      newRecents.push(...oldRecents);
-    } else {
-      const recentsCopy = feedList[1];
-      let i: number;
-      for (i = 0; i < 9; i++) {
+    const recentsCopy = feedList[1];
+    let i: number;
+
+    for (i = 0; i < recentsCopy.length; i++) {
+      if (recentsCopy[i].phoneNumber !== chosenBusiness?.phoneNumber) {
         newRecents.push(recentsCopy[i]);
       }
     }
@@ -162,6 +160,8 @@ export const BusinessListScreen = ({
         setQueueBusiness={setQueueBusiness}
         setUser={setUser}
         recentsHandler={recentsHandler}
+        setRecents={setRecents}
+        setChosenBusiness={setChosenBusiness}
       />
         : renderAll()}
     </Screen>

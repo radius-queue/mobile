@@ -7,17 +7,17 @@ import {
   TouchableOpacity,
 } from "react-native";
 import call from "react-native-phone-call";
-import { Card, Layout, Button, Icon } from "@ui-kitten/components";
+import { Card, Layout, Button } from "@ui-kitten/components";
 import { useNavigation } from "@react-navigation/native";
 import BusinessModal from "./business-info-modal";
 import MapView, { Marker, Circle } from "react-native-maps";
 import { dateToOperationHours, parsePhoneNum } from "../util/util-functions";
 import defaultStyles from "../config/styles";
-import { Fontisto, SimpleLineIcons } from '@expo/vector-icons';
+import { Fontisto, SimpleLineIcons, Ionicons } from '@expo/vector-icons';
 import { default as theme } from "../custom-theme.json";
 import { BusinessLocation } from "../util/business";
 import { Customer } from "../util/customer";
-import { QueueInfo, Queue } from '../util/queue';
+import { QueueInfo } from '../util/queue';
 import { getQueueInfo, addToQueue } from "../util/api-functions";
 
 interface BusinessInfoProps {
@@ -30,10 +30,14 @@ interface BusinessInfoProps {
   setQueueBusiness: (b: BusinessLocation | undefined) => void,
   queue: string,
   setQueue: (q: string) => void,
+  setRecents: (b: BusinessLocation[]) => void,
   recentsHandler: () => void,
+  setChosenBusiness: React.Dispatch<React.SetStateAction<BusinessLocation | undefined>>
 }
 
 const DEGREES_PER_HUNDRED_METERS = 0.001;
+const BEGIN_HEADER_DISPLAY = 240;
+const END_HEADER_DISPLAY = 295;
 
 const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   business,
@@ -46,12 +50,28 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   setQueueBusiness,
   setUser,
   recentsHandler,
+  setRecents,
+  setChosenBusiness,
 }: BusinessInfoProps) => {
   const [showJoin, setJoin] = useState<boolean>(false);
   const [isFav, setIsFav] = useState<boolean>(isFavorite);
   const [queueInfo, setQueueInfo] = useState<QueueInfo | undefined>();
+  const [scrollAmount, setScrollAmount] = useState<number>(0);
 
   const scrollA = useRef(new Animated.Value(0)).current;
+  scrollA.addListener((newScroll) => setScrollAmount(newScroll.value));
+
+  const headerOpacity = scrollA.interpolate({
+    inputRange: [BEGIN_HEADER_DISPLAY, END_HEADER_DISPLAY],
+    outputRange: [0, 1],
+    extrapolate: 'clamp',
+  });
+
+  const backOpacity = scrollA.interpolate({
+    inputRange: [BEGIN_HEADER_DISPLAY, END_HEADER_DISPLAY],
+    outputRange: [1, 0],
+    extrapolate: 'clamp',
+  });
 
   const navigation = useNavigation();
 
@@ -70,6 +90,11 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
       addFav();
     }
     setIsFav(!isFav);
+  }
+
+  const onQueuePress = () => {
+    setJoin(true)
+    recentsHandler();
   }
 
   const calculateDelta = (radius: number) => {
@@ -109,16 +134,50 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
       currentQueue: newQueue.uid
     };
 
-    recentsHandler();
-
     setQueue(newQueue.uid);
     setQueueBusiness(business);
     setUser(newUser);
     navigation.navigate("Queue");
   };
 
+  /**
+   * Returns the user to the favorites/recents/explore page.
+   */
+  const goBack = () => {
+    setChosenBusiness(undefined);
+  }
+
   return (
     <View>
+      {/* Header with bar */}
+      <Animated.View style={[styles.headerBar, {opacity: headerOpacity}]}>
+        <TouchableOpacity onPress={goBack}>
+          <View style={styles.headerBackContainer}>
+            <Ionicons name='ios-arrow-back' size={24} color={theme['color-basic-100']} />
+            <Text style={styles.headerText}>Back</Text>
+          </View>
+        </TouchableOpacity>
+        <Text style={[styles.headerText, styles.headerName]}>{business.name.length > 15 ? business.name.substring(0, 12) + '...' : business.name}</Text>
+        <TouchableOpacity disabled={!!!user} onPress={onStarPress}>
+          <View style={styles.headerIcon}>
+            {!isFav
+              ? <SimpleLineIcons name="star" size={24} color="yellow" />
+              : <Fontisto name='star' size={24} color='yellow' />
+            }
+          </View>
+        </TouchableOpacity>
+      </Animated.View>
+
+      {/* Header without bar (only the back button) */}
+      <Animated.View style={[styles.headerBar, styles.backBar, {opacity: backOpacity}]}>
+        <TouchableOpacity onPress={goBack}>
+          <View style={styles.headerBackContainer}>
+            <Ionicons name='ios-arrow-back' size={24} color={theme['color-basic-1100']} />
+            <Text style={[styles.headerText, styles.backText]}>Back</Text>
+          </View>
+        </TouchableOpacity>
+      </Animated.View>
+
       <Animated.ScrollView
         style={styles.scroll}
         scrollEnabled={true}
@@ -126,7 +185,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
           [{ nativeEvent: { contentOffset: { y: scrollA } } }],
           { useNativeDriver: true }
         )}
-        scrollEventThrottle={16}
+        scrollEventThrottle={1}
       >
         <Animated.View style={animatedStyles.mapContainer(scrollA)}>
           <MapView
@@ -206,7 +265,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
             <Button
               style={styles.joinButton}
               disabled={queue ? true : (queueInfo ? !queueInfo.open : false)}
-              onPress={() => setJoin(true)}
+              onPress={onQueuePress}
             >
               Join Queue
             </Button>
@@ -255,13 +314,20 @@ const animatedStyles = {
         translateY: scrollA,
       },
     ],
-    borderBottomRightRadius: 10,
-    borderBottomLeftRadius: 10,
+    borderRadius: 10,
     overflow: "hidden",
+    marginBottom: 4,
   }),
 };
 
 const styles = StyleSheet.create({
+  backBar: {
+    backgroundColor: 'transparent',
+    borderBottomWidth: 0,
+  },
+  backText: {
+    color: theme['color-basic-1100'],
+  },
   businessCard: {
     borderTopLeftRadius: 13,
     borderTopRightRadius: 13,
@@ -269,6 +335,7 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: 0,
     borderWidth: 0,
     flex: 1,
+    backgroundColor: theme['color-basic-700'],
   },
   businessName: {
     fontSize: 28,
@@ -303,6 +370,48 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginBottom: 7,
     borderRadius: 3,
+  },
+  headerBackContainer: {
+    display: 'flex',
+    flexDirection: 'row',
+    paddingLeft: 15,
+    paddingBottom: 6,
+    alignItems: 'flex-end',
+    width: 85,
+    height: '100%',
+  },
+  headerBar: {
+    marginBottom: -45,
+    height: 45,
+    zIndex: 1,
+    backgroundColor: theme['color-basic-900'],
+    borderBottomWidth: 1,
+    borderBottomColor: theme['color-basic-600'],
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  headerIcon: {
+    width: 85,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    paddingRight: 15,
+  },
+  headerName: {
+    color: theme['color-primary-500'],
+    fontWeight: 'bold',
+    fontSize: 20,
+    paddingLeft: 'auto',
+    paddingRight: 'auto',
+  },
+  headerText: {
+    color: theme['color-basic-100'],
+    fontSize: 18,
+    paddingTop: 1,
+    marginLeft: 6,
+    marginBottom: 4,
   },
   hoursContainer: {
     flexDirection: "row",
@@ -342,7 +451,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   scroll: {
-    backgroundColor: theme['color-basic-900'],
     display: "flex",
   },
   subtitle: {
