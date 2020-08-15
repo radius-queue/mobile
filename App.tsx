@@ -29,7 +29,7 @@ const REGISTRATION_TIME_THRESHOLD: number = 3000;
 const Tab = createBottomTabNavigator();
 
 const FeedIcon = (props: any) => <Icon {...props} name="browser-outline" />;
-const MeIcon = (props: any) => <Icon {...props} name="person-outline" />;
+// const MeIcon = (props: any) => <Icon {...props} name="person-outline" />;
 const QueueIcon = (props: any) => <Icon {...props} name="list-outline" />;
 
 

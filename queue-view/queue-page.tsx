@@ -85,7 +85,7 @@ const QueuePage = ({queueId, setQueueId, currUser, setUser, setQueueBusiness, bu
             <Text style={[styles.pageTitle, {color: theme['color-primary-500']}]}>{`${queueInfo.inLine + 1}`}{positionInLineSuffix}</Text>
             <Text style={styles.pageTitle}> in line at:</Text>
           </Text>
-          <TouchableOpacity onPress={() => navigator.navigate('Feed')}>
+          <TouchableOpacity onPress={() => navigator.navigate(queueId)}>
             <Text style={styles.pageTitle}>{businessName}</Text>
           </TouchableOpacity>
         </View>

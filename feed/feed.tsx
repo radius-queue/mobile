@@ -8,6 +8,8 @@ import { BusinessLocation } from '../util/business';
 import { TouchableHighlight } from 'react-native-gesture-handler';
 import { Customer } from '../util/customer';
 import BusinessInfoScreen from '../business-info/business-info';
+import { createStackNavigator } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
 
 interface FeedProps {
   setQueueBusiness: (b: BusinessLocation | undefined) => void,
@@ -34,12 +36,8 @@ export const BusinessListScreen = ({
   setRecents,
   assetsMap,
 }: FeedProps): React.ReactElement => {
-  const [chosenBusiness, setChosenBusiness] = useState<BusinessLocation | undefined>(business);
   const [feedcnt, setCnt] = useState<number>(0);
-
-  useEffect(() => {
-    setChosenBusiness(business);
-  }, [business]);
+  const navigation = useNavigation(); 
 
   useEffect(() => {
     console.log(feedcnt + 1);
@@ -75,13 +73,13 @@ export const BusinessListScreen = ({
     </React.Fragment>
   );
 
-  const addFav = () => {
+  const addFav = (chosenBusiness: BusinessLocation) => {
     const newFavs = feedList[0].slice();
     newFavs.push(chosenBusiness!);
     setFavs(newFavs);
   };
 
-  const removeFav = () => {
+  const removeFav = (chosenBusiness: BusinessLocation) => {
     const favsCopy = feedList[0];
     const unfavorite = chosenBusiness;
     let newFavs: BusinessLocation[] = [];
@@ -111,7 +109,7 @@ export const BusinessListScreen = ({
     </React.Fragment>
   );
 
-  const recentsHandler = () => {
+  const recentsHandler = (chosenBusiness: BusinessLocation) => {
     let newRecents: BusinessLocation[] = [];
     newRecents.push(chosenBusiness!);
     const recentsCopy = feedList[1];
@@ -126,19 +124,21 @@ export const BusinessListScreen = ({
   };
 
   const renderAll = (): React.ReactElement => (
-    <React.Fragment>
-      <List
-        contentContainerStyle={styles.list}
-        data={feedList[2]}
-        renderItem={renderVerticalTrainingItem}
-        ListHeaderComponent={renderHeader}
-      />
-    </React.Fragment>
+    <Screen style={styles.container}>
+      <React.Fragment>
+        <List
+          contentContainerStyle={styles.list}
+          data={feedList[2]}
+          renderItem={renderVerticalTrainingItem}
+          ListHeaderComponent={renderHeader}
+        />
+      </React.Fragment>
+    </Screen>
   );
 
 
   const renderHorizontalTrainingItem = (info: ListRenderItemInfo<BusinessLocation>): React.ReactElement => (
-    <TouchableHighlight onPress={() => setChosenBusiness(info.item)}>
+    <TouchableHighlight onPress={() => navigation.navigate(info.item.uid)}>
       <BusinessCard
         style={styles.horizontalItem}
         business={info.item}
@@ -148,7 +148,7 @@ export const BusinessListScreen = ({
   );
 
   const renderVerticalTrainingItem = (info: ListRenderItemInfo<BusinessLocation>): React.ReactElement => (
-    <TouchableHighlight onPress={() => setChosenBusiness(info.item)}>
+    <TouchableHighlight onPress={() => navigation.navigate(info.item.uid)}>
       <BusinessCard
         style={styles.verticalItem}
         business={info.item}
@@ -157,24 +157,42 @@ export const BusinessListScreen = ({
     </TouchableHighlight>
   );
 
+  const Stack = createStackNavigator();
+
+  const BusinessScreen = (chosenBusiness: BusinessLocation) => {
+    return(
+      <Screen style={styles.container}>
+        <BusinessInfoScreen
+          user={currUser}
+          business={chosenBusiness}
+          isFavorite={feedList[0].map((b) => b.queues[0]).includes(chosenBusiness.queues[0])}
+          addFav={addFav}
+          removeFav={removeFav}
+          queue={queueId}
+          setQueue={setQueueId}
+          setQueueBusiness={setQueueBusiness}
+          setUser={setUser}
+          recentsHandler={recentsHandler}
+        /> 
+      </Screen>
+    );
+  }
+
+
+
   return (
-    <Screen style={styles.container}>
-      {chosenBusiness ? <BusinessInfoScreen
-        user={currUser}
-        business={chosenBusiness!}
-        isFavorite={feedList[0].map((b) => b.queues[0]).includes(chosenBusiness.queues[0])}
-        addFav={addFav}
-        removeFav={removeFav}
-        queue={queueId}
-        setQueue={setQueueId}
-        setQueueBusiness={setQueueBusiness}
-        setUser={setUser}
-        recentsHandler={recentsHandler}
-        setRecents={setRecents}
-        setChosenBusiness={setChosenBusiness}
-      />
-        : renderAll()}
-    </Screen>
+    <Stack.Navigator>
+      <Stack.Screen name='Feed' options={{ headerShown: false }} component={renderAll} />
+      {feedList[2].map((business) => (
+        <Stack.Screen
+          key={business.uid}
+          name={business.uid}
+          options={{ headerShown: false }}
+        >
+          {() => BusinessScreen(business)}
+        </Stack.Screen>
+      ))}
+    </Stack.Navigator>
   );
 };
 

@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import call from "react-native-phone-call";
-import { Card, Layout, Button } from "@ui-kitten/components";
+import { Card, Layout, Button, ButtonGroup } from "@ui-kitten/components";
 import { useNavigation } from "@react-navigation/native";
 import BusinessModal from "./business-info-modal";
 import MapView, { Marker, Circle } from "react-native-maps";
@@ -25,14 +25,12 @@ interface BusinessInfoProps {
   user: Customer | undefined,
   setUser: (c: Customer) => void,
   isFavorite: boolean,
-  addFav: () => void;
-  removeFav: () => void;
+  addFav: (b: BusinessLocation) => void;
+  removeFav: (b: BusinessLocation) => void;
   setQueueBusiness: (b: BusinessLocation | undefined) => void,
   queue: string,
   setQueue: (q: string) => void,
-  setRecents: (b: BusinessLocation[]) => void,
-  recentsHandler: () => void,
-  setChosenBusiness: React.Dispatch<React.SetStateAction<BusinessLocation | undefined>>
+  recentsHandler: (b: BusinessLocation) => void,
 }
 
 const DEGREES_PER_HUNDRED_METERS = 0.001;
@@ -50,8 +48,6 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   setQueueBusiness,
   setUser,
   recentsHandler,
-  setRecents,
-  setChosenBusiness,
 }: BusinessInfoProps) => {
   const [showJoin, setJoin] = useState<boolean>(false);
   const [isFav, setIsFav] = useState<boolean>(isFavorite);
@@ -84,17 +80,18 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   }, []);
 
   const onStarPress = () => {
+    console.log('star press');
     if (isFav) {
-      removeFav();
+      removeFav(business);
     } else {
-      addFav();
+      addFav(business);
     }
     setIsFav(!isFav);
   }
 
   const onQueuePress = () => {
-    setJoin(true)
-    recentsHandler();
+    setJoin(true);
+    recentsHandler(business);
   }
 
   const calculateDelta = (radius: number) => {
@@ -144,7 +141,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
    * Returns the user to the favorites/recents/explore page.
    */
   const goBack = () => {
-    setChosenBusiness(undefined);
+    navigation.navigate('Feed');
   }
 
   return (
@@ -158,7 +155,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
           </View>
         </TouchableOpacity>
         <Text style={[styles.headerText, styles.headerName]}>{business.name.length > 15 ? business.name.substring(0, 12) + '...' : business.name}</Text>
-        <TouchableOpacity disabled={!!!user} onPress={onStarPress}>
+        <TouchableOpacity onPress={onStarPress} >
           <View style={styles.headerIcon}>
             {!isFav
               ? <SimpleLineIcons name="star" size={24} color="yellow" />
@@ -224,7 +221,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
                 <Text style={[defaultStyles.text, styles.name, styles.businessName]}>
                   {business.name}
                 </Text>
-                <TouchableOpacity disabled={!!!user} onPress={onStarPress}>
+                <TouchableOpacity onPress={onStarPress}>
                   {!isFav
                     ? <SimpleLineIcons name="star" size={24} color="yellow" />
                     : <Fontisto name='star' size={24} color='yellow' />
@@ -456,6 +453,9 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 15,
     marginTop: 5,
+  },
+  touch: {
+    backgroundColor: 'red',
   },
 });
 
