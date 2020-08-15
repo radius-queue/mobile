@@ -5,7 +5,7 @@ import { BusinessCard } from './business-overview-card';
 import Screen from '../components/screen';
 import { default as theme } from "../custom-theme.json";
 import { BusinessLocation } from '../util/business';
-import { TouchableHighlight } from 'react-native-gesture-handler';
+import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 import { Customer } from '../util/customer';
 import BusinessInfoScreen from '../business-info/business-info';
 
@@ -138,23 +138,23 @@ export const BusinessListScreen = ({
 
 
   const renderHorizontalTrainingItem = (info: ListRenderItemInfo<BusinessLocation>): React.ReactElement => (
-    <TouchableHighlight onPress={() => setChosenBusiness(info.item)}>
+    <TouchableOpacity activeOpacity={.6} onPress={() => setChosenBusiness(info.item)}>
       <BusinessCard
         style={styles.horizontalItem}
         business={info.item}
         assetsMap={assetsMap}
       />
-    </TouchableHighlight>
+    </TouchableOpacity>
   );
 
   const renderVerticalTrainingItem = (info: ListRenderItemInfo<BusinessLocation>): React.ReactElement => (
-    <TouchableHighlight onPress={() => setChosenBusiness(info.item)}>
+    <TouchableOpacity activeOpacity={.6} onPress={() => setChosenBusiness(info.item)}>
       <BusinessCard
         style={styles.verticalItem}
         business={info.item}
         assetsMap={assetsMap}
       />
-    </TouchableHighlight>
+    </TouchableOpacity>
   );
 
   return (

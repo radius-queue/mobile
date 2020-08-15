@@ -170,7 +170,6 @@ export default function App() {
       if (feedList[i].images.length != 0) {
         // Check if map have image for business
         if (!newMap.has(feedList[i].uid)) {
-          console.log('getting image for : ' + feedList[i].name);
           await getBusPic(feedList[i].uid, feedList[i].images[0], (URL: string) => {
             newMap.set(feedList[i].uid, URL);
           });
