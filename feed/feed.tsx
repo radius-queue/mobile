@@ -70,7 +70,7 @@ export const BusinessListScreen = ({
 
   const addFav = (chosenBusiness: BusinessLocation) => {
     const newFavs = feedList[0].slice();
-    newFavs.push(chosenBusiness!);
+    newFavs.push(chosenBusiness);
     setFavs(newFavs);
   };
 
@@ -80,7 +80,7 @@ export const BusinessListScreen = ({
     let newFavs: BusinessLocation[] = [];
     let i: number;
     for (i = 0; i < favsCopy.length; i++) {
-      if (favsCopy[i] !== unfavorite) {
+      if (favsCopy[i].uid !== unfavorite.uid) {
         newFavs.push(favsCopy[i]);
       }
     }

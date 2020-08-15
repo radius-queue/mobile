@@ -36,6 +36,7 @@ interface BusinessInfoProps {
 const DEGREES_PER_HUNDRED_METERS = 0.001;
 const BEGIN_HEADER_DISPLAY = 240;
 const END_HEADER_DISPLAY = 295;
+const HEADER_HEIGHT = 50;
 
 const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   business,
@@ -63,11 +64,13 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
     extrapolate: 'clamp',
   });
 
-  const backOpacity = scrollA.interpolate({
+  const antiHeaderOpacity = scrollA.interpolate({
     inputRange: [BEGIN_HEADER_DISPLAY, END_HEADER_DISPLAY],
     outputRange: [1, 0],
     extrapolate: 'clamp',
   });
+
+  const zIndexPicker: number = scrollAmount < END_HEADER_DISPLAY ? 1 : 2;
 
   const navigation = useNavigation();
 
@@ -80,7 +83,6 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   }, []);
 
   const onStarPress = () => {
-    console.log('star press');
     if (isFav) {
       removeFav(business);
     } else {
@@ -146,34 +148,46 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
 
   return (
     <View>
-      {/* Header with bar */}
+      {/* Header bar with business name text display */}
       <Animated.View style={[styles.headerBar, {opacity: headerOpacity}]}>
-        <TouchableOpacity onPress={goBack}>
-          <View style={styles.headerBackContainer}>
-            <Ionicons name='ios-arrow-back' size={24} color={theme['color-basic-100']} />
-            <Text style={styles.headerText}>Back</Text>
-          </View>
-        </TouchableOpacity>
-        <Text style={[styles.headerText, styles.headerName]}>{business.name.length > 15 ? business.name.substring(0, 12) + '...' : business.name}</Text>
-        <TouchableOpacity onPress={onStarPress} >
-          <View style={styles.headerIcon}>
-            {!isFav
-              ? <SimpleLineIcons name="star" size={24} color="yellow" />
-              : <Fontisto name='star' size={24} color='yellow' />
-            }
-          </View>
-        </TouchableOpacity>
+        <Text style={styles.headerName}>{business.name.length > 15 ? business.name.substring(0, 12) + '...' : business.name}</Text>
       </Animated.View>
 
-      {/* Header without bar (only the back button) */}
-      <Animated.View style={[styles.headerBar, styles.backBar, {opacity: backOpacity}]}>
-        <TouchableOpacity onPress={goBack}>
-          <View style={styles.headerBackContainer}>
-            <Ionicons name='ios-arrow-back' size={24} color={theme['color-basic-1100']} />
-            <Text style={[styles.headerText, styles.backText]}>Back</Text>
-          </View>
-        </TouchableOpacity>
-      </Animated.View>
+      {/* Back arrow and text in white for display when header bar is displayed */}
+      <TouchableOpacity onPress={goBack} style={[styles.headerBackContainer, {zIndex: zIndexPicker}]}>
+        <Animated.View style={[styles.headerBackContent, {opacity: headerOpacity}]}>
+          <Ionicons name='ios-arrow-back' size={24} color={theme['color-basic-100']} />
+          <Animated.Text style={styles.headerText}>Back</Animated.Text>
+        </Animated.View>
+      </TouchableOpacity>
+
+      {/* Back arrow and text in black for display when header bar is not displayed */}
+      <TouchableOpacity onPress={goBack} style={styles.headerBackContainer}>
+        <Animated.View style={[styles.headerBackContent, {opacity: antiHeaderOpacity}]}>
+          <Ionicons name='ios-arrow-back' size={24} color={theme['color-basic-1100']} />
+          <Animated.Text style={[styles.headerText, {color: theme['color-basic-1100']}]}>Back</Animated.Text>
+        </Animated.View>
+      </TouchableOpacity>
+
+      {/* Favorite star in yello for display when header bar is displayed */}
+      <TouchableOpacity onPress={onStarPress} style={[styles.headerIcon, {zIndex: zIndexPicker}]}>
+        <Animated.View style={{opacity: headerOpacity}}>
+          {isFav
+            ? <Fontisto name='star' size={24} color='yellow' />
+            : <SimpleLineIcons name="star" size={24} color="yellow" />
+          }
+        </Animated.View>
+      </TouchableOpacity>
+
+      {/* Favorite star in black for display when header bar is not displayed */}
+      <TouchableOpacity onPress={onStarPress} style={styles.headerIcon}>
+        <Animated.View style={{opacity: antiHeaderOpacity}}>
+          {isFav
+            ? <Fontisto name='star' size={24} color={theme['color-basic-1100']} />
+            : <SimpleLineIcons name="star" size={24} color={theme['color-basic-1100']} />
+          }
+        </Animated.View>
+      </TouchableOpacity>
 
       <Animated.ScrollView
         style={styles.scroll}
@@ -222,9 +236,9 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
                   {business.name}
                 </Text>
                 <TouchableOpacity onPress={onStarPress}>
-                  {!isFav
-                    ? <SimpleLineIcons name="star" size={24} color="yellow" />
-                    : <Fontisto name='star' size={24} color='yellow' />
+                  {isFav
+                    ? <Fontisto name='star' size={24} color='yellow' />
+                    : <SimpleLineIcons name="star" size={24} color="yellow" />
                   }
                 </TouchableOpacity>
               </View>
@@ -369,17 +383,21 @@ const styles = StyleSheet.create({
     borderRadius: 3,
   },
   headerBackContainer: {
+    alignItems: 'center',
+    width: 80,
+    height: HEADER_HEIGHT,
+    display: 'flex',
+    justifyContent: 'center',
+    zIndex: 1,
+    marginBottom: -HEADER_HEIGHT,
+  },
+  headerBackContent: {
     display: 'flex',
     flexDirection: 'row',
-    paddingLeft: 15,
-    paddingBottom: 6,
-    alignItems: 'flex-end',
-    width: 85,
-    height: '100%',
   },
   headerBar: {
-    marginBottom: -45,
-    height: 45,
+    marginBottom: -HEADER_HEIGHT,
+    height: HEADER_HEIGHT,
     zIndex: 1,
     backgroundColor: theme['color-basic-900'],
     borderBottomWidth: 1,
@@ -387,13 +405,17 @@ const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
   },
   headerIcon: {
-    width: 85,
+    height: HEADER_HEIGHT,
+    position: 'absolute',
+    right: 0,
     display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
+    justifyContent: 'center',
+    zIndex: 1,
+    marginBottom: -HEADER_HEIGHT,
+    paddingLeft: 15,
     paddingRight: 15,
   },
   headerName: {
@@ -402,6 +424,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     paddingLeft: 'auto',
     paddingRight: 'auto',
+    marginBottom: 4,
   },
   headerText: {
     color: theme['color-basic-100'],
