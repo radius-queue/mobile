@@ -5,7 +5,7 @@ import { BusinessCard } from './business-overview-card';
 import Screen from '../components/screen';
 import { default as theme } from "../custom-theme.json";
 import { BusinessLocation } from '../util/business';
-import { TouchableHighlight } from 'react-native-gesture-handler';
+import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 import { Customer } from '../util/customer';
 import BusinessInfoScreen from '../business-info/business-info';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -38,11 +38,6 @@ export const BusinessListScreen = ({
 }: FeedProps): React.ReactElement => {
   const [feedcnt, setCnt] = useState<number>(0);
   const navigation = useNavigation(); 
-
-  useEffect(() => {
-    console.log(feedcnt + 1);
-    setCnt(feedcnt + 1);
-  }, feedList);
 
   const renderHeader = (): React.ReactElement => (
     <React.Fragment>
@@ -138,23 +133,23 @@ export const BusinessListScreen = ({
 
 
   const renderHorizontalTrainingItem = (info: ListRenderItemInfo<BusinessLocation>): React.ReactElement => (
-    <TouchableHighlight onPress={() => navigation.navigate(info.item.uid)}>
+    <TouchableOpacity activeOpacity={.6} onPress={() => navigation.navigate(info.item.uid)}>
       <BusinessCard
         style={styles.horizontalItem}
         business={info.item}
         assetsMap={assetsMap}
       />
-    </TouchableHighlight>
+    </TouchableOpacity>
   );
 
   const renderVerticalTrainingItem = (info: ListRenderItemInfo<BusinessLocation>): React.ReactElement => (
-    <TouchableHighlight onPress={() => navigation.navigate(info.item.uid)}>
+    <TouchableOpacity activeOpacity={.6} onPress={() => navigation.navigate(info.item.uid)}>
       <BusinessCard
         style={styles.verticalItem}
         business={info.item}
         assetsMap={assetsMap}
       />
-    </TouchableHighlight>
+    </TouchableOpacity>
   );
 
   const Stack = createStackNavigator();

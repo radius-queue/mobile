@@ -62,7 +62,6 @@ export async function getPic(path: string, callback: (URL : string) => void) {
 
   // Get the download URL
   await starsRef.getDownloadURL().then(function(url:string) {
-    console.log("url: " +url);
     callback(url);
   }).catch(function(error) {
     console.log(error.code);
