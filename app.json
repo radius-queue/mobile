@@ -1,4 +1,7 @@
 {
+  "android": {
+    "googleServicesFile": "./google-services.json"
+  },
   "expo": {
     "name": "radius-mobile",
     "slug": "radius-mobile",
@@ -13,9 +16,7 @@
     "updates": {
       "fallbackToCacheTimeout": 0
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "facebookAppId": "647671979177221",
     "facebookScheme": "fb647671979177221",
     "facebookDisplayName": "Radius-Mobile",
