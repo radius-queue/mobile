@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, Dispatch, SetStateAction } from "react";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 
 import Me from "./profile/Me";
 import QueuePage from "./queue-view/queue-page";
@@ -23,6 +23,9 @@ import { getCustomer, getAllBusinessLocations, getBusinessLocationsFromArray, po
 import { auth } from './firebase';
 import { Queue } from "./util/queue";
 import { getBusPic } from "./util/storage-func";
+import * as Permissions from "expo-permissions";
+import * as Notifications from "expo-notifications";
+import Constants from "expo-constants";
 
 const Tab = createBottomTabNavigator();
 
@@ -112,6 +115,37 @@ export default function App() {
   const [queueId, setQueueId] = useState<string>('');
   const [assetsMap, setAssets] = useState<Map<string, string>>(new Map);
 
+  async function registerForPushNotificationsAsync() {
+    let token;
+    if (Constants.isDevice) {
+      const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+      let finalStatus = existingStatus;
+      if (existingStatus !== 'granted') {
+        const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+        finalStatus = status;
+      }
+      if (finalStatus !== 'granted') {
+        alert('Failed to get push token for push notification!');
+        return;
+      }
+      token = (await Notifications.getExpoPushTokenAsync()).data;
+      console.log(token);
+    } else {
+      alert('Must use physical device for Push Notifications');
+    }
+
+    if (Platform.OS === 'android') {
+      Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
+
+    return token;
+  }
+
   useEffect(() => {
     const unsub = auth.onAuthStateChanged(async function (user) {
       if (user) {
@@ -119,9 +153,9 @@ export default function App() {
 
         try {
           customer = await getCustomer(user.uid);
-        } catch (error) {
-          // get permissions for push notifications
-          customer = await newCustomer(user.uid, /*push token goes here*/);
+        } catch (errror) {
+          let userToken = (await registerForPushNotificationsAsync())!;
+          customer = await newCustomer(user.uid, userToken);
         }
         const newFavs = await getBusinessLocationsFromArray(customer.favorites);
 
