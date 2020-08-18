@@ -154,7 +154,7 @@ export default function App() {
         try {
           customer = await getCustomer(user.uid);
         } catch (errror) {
-          let userToken = registerForPushNotificationsAsync();
+          let userToken = (await registerForPushNotificationsAsync())!;
           customer = await newCustomer(user.uid, userToken);
         }
         const newFavs = await getBusinessLocationsFromArray(customer.favorites);
