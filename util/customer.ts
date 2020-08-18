@@ -9,6 +9,7 @@ export class Customer {
   currentQueue: string;
   favorites: string[];
   recents: string[];
+  pushToken: string;
 
   /**
    * @param {string} firstName Customer First Name
@@ -22,7 +23,7 @@ export class Customer {
    */
   constructor(uid: string = '', firstName : string = '', lastName: string = '',
       phoneNumber: string = '', currentQueue: string = '',
-      favorites: string[] = [], recents: string[] = []) {
+      favorites: string[] = [], recents: string[] = [], pushToken : string = '') {
     this.firstName = firstName;
     this.lastName = lastName;
     this.phoneNumber = phoneNumber;
@@ -30,6 +31,7 @@ export class Customer {
     this.currentQueue = currentQueue;
     this.favorites = favorites;
     this.recents= recents;
+    this.pushToken = pushToken;
   }
 }
 

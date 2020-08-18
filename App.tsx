@@ -24,12 +24,9 @@ import { auth } from './firebase';
 import { Queue } from "./util/queue";
 import { getBusPic } from "./util/storage-func";
 
-const REGISTRATION_TIME_THRESHOLD: number = 3000;
-
 const Tab = createBottomTabNavigator();
 
 const FeedIcon = (props: any) => <Icon {...props} name="browser-outline" />;
-// const MeIcon = (props: any) => <Icon {...props} name="person-outline" />;
 const QueueIcon = (props: any) => <Icon {...props} name="list-outline" />;
 
 
@@ -122,10 +119,10 @@ export default function App() {
 
         try {
           customer = await getCustomer(user.uid);
-        } catch (errror) {
-          customer = await newCustomer(user.uid);
+        } catch (error) {
+          // get permissions for push notifications
+          customer = await newCustomer(user.uid, /*push token goes here*/);
         }
-
         const newFavs = await getBusinessLocationsFromArray(customer.favorites);
 
         const newRecents = await getBusinessLocationsFromArray(customer.recents);
