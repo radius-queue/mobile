@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, Dispatch, SetStateAction } from "react";
+import React, { useEffect, useState, useRef, Dispatch, SetStateAction, MutableRefObject } from "react";
 import { StyleSheet, Platform } from "react-native";
 
 import Me from "./profile/Me";
@@ -101,6 +101,14 @@ const TabNavigator = ({ setUser, currUser, setQueueBusiness, business, setFavs, 
   </Tab.Navigator>
 );
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
 // const ProfileWrapper = ({ setUser, currUser }: RenderProps) => (
 //   currUser.uid.length > 0 ? <ProfilePage setUser={setUser} currUser={currUser} /> : <Me setUser={setUser} currUser={currUser} />
 // );
@@ -114,6 +122,11 @@ export default function App() {
   const [business, setBusiness] = useState<BusinessLocation | undefined>(); // business that you are in a queue with
   const [queueId, setQueueId] = useState<string>('');
   const [assetsMap, setAssets] = useState<Map<string, string>>(new Map);
+  const [expoPushToken, setExpoPushToken] = useState('');
+  const [notification, setNotification] = useState(false);
+
+  const notificationListener = useRef<any>();
+  const responseListener = useRef<any>();
 
   async function registerForPushNotificationsAsync() {
     let token;
@@ -156,6 +169,17 @@ export default function App() {
         } catch (errror) {
           let userToken = (await registerForPushNotificationsAsync())!;
           customer = await newCustomer(user.uid, userToken);
+          setExpoPushToken(userToken);
+
+          // This listener is fired whenever a notification is received while the app is foregrounded
+          notificationListener.current = Notifications.addNotificationReceivedListener(notification => {
+            setNotification(true);
+          });
+
+          // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
+          responseListener.current = Notifications.addNotificationResponseReceivedListener(response => {
+            console.log(response);
+          });
         }
         const newFavs = await getBusinessLocationsFromArray(customer.favorites);
 
@@ -187,6 +211,8 @@ export default function App() {
 
     return () => {
       unsub();
+      Notifications.removeNotificationSubscription(notificationListener.current);
+      Notifications.removeNotificationSubscription(responseListener.current);
     };
   }, []);
 
