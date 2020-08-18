@@ -216,7 +216,7 @@ export const newCustomer = async (uid : string, pushToken: string) : Promise<Cus
 
   const options : any = fetchOptions('POST', token);
 
-  const notificationToken = pushToken === '' ? pushToken : 'NO_ID';
+  const notificationToken = pushToken === '' ? 'NO_ID' : pushToken;
 
   const response = await fetch(`${ROOT_URL}/api/customers/new?uid=${uid}&pushToken=${notificationToken}`, options);
 

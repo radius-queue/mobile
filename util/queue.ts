@@ -33,6 +33,7 @@ export class Party {
   phoneNumber: string;
   quote: number;
   messages: [Date, string][];
+  pushToken: string;
   // uid: string;
 
   /**
@@ -48,7 +49,7 @@ export class Party {
    */
   constructor(firstName: string, size: number, phoneNumber: string,
       quote:number, checkIn : Date= new Date(), lastName : string = '',
-      messages: [Date, string][] = []) {
+      messages: [Date, string][] = [], pushToken: string = '') {
     this.firstName = firstName;
     this.lastName = lastName;
     this.checkIn = checkIn;
@@ -56,6 +57,7 @@ export class Party {
     this.phoneNumber = phoneNumber;
     this.quote = quote;
     this.messages = messages;
+    this.pushToken = pushToken;
     // this.uid = uid || "";
   }
 
@@ -101,7 +103,7 @@ export class Party {
   */
   static fromFirebase(party: any): Party {
     const partyPrams : [string, number, string, number, Date, string,
-        [Date, string][]] = [
+        [Date, string][], string] = [
           party.firstName,
           party.size,
           party.phoneNumber,
@@ -109,6 +111,7 @@ export class Party {
           new Date(party.checkIn),
           party.lastName,
           this.messageFromFB(party.messages),
+          party.pushToken,
         ];
     return new Party(...partyPrams);
   }
@@ -125,11 +128,10 @@ export class Party {
       checkIn: firebase.firestore.Timestamp.fromDate(party.checkIn!),
       lastName: party.lastName,
       messages: this.messageToFB(party.messages),
+      pushToken: party.pushToken,
     };
   }
 }
-
-export const Q_COLUMNS : string[] = ['#', 'Name', 'Party Size', 'Quoted Time'];
 
 export const queueConverter = {
   toFirestore: function(q: Queue) {
