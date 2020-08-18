@@ -27,12 +27,9 @@ import * as Permissions from "expo-permissions";
 import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
 
-const REGISTRATION_TIME_THRESHOLD: number = 3000;
-
 const Tab = createBottomTabNavigator();
 
 const FeedIcon = (props: any) => <Icon {...props} name="browser-outline" />;
-// const MeIcon = (props: any) => <Icon {...props} name="person-outline" />;
 const QueueIcon = (props: any) => <Icon {...props} name="list-outline" />;
 
 
@@ -160,7 +157,6 @@ export default function App() {
           let userToken = registerForPushNotificationsAsync();
           customer = await newCustomer(user.uid, userToken);
         }
-
         const newFavs = await getBusinessLocationsFromArray(customer.favorites);
 
         const newRecents = await getBusinessLocationsFromArray(customer.recents);

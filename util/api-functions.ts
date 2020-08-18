@@ -211,12 +211,14 @@ export const postCustomer = async (customer: Customer) => {
  * @throws {Error} if the given object does not have the correct parameters,
  * or if there was a problem connecting to firestore.
  */
-export const newCustomer = async (uid : string) : Promise<Customer> => {
+export const newCustomer = async (uid : string, pushToken: string) : Promise<Customer> => {
   const token : string = await auth.currentUser!.getIdToken();
 
   const options : any = fetchOptions('POST', token);
 
-  const response = await fetch(`${ROOT_URL}/api/customers/new?uid=${uid}`, options);
+  const notificationToken = pushToken === '' ? pushToken : 'NO_ID';
+
+  const response = await fetch(`${ROOT_URL}/api/customers/new?uid=${uid}&pushToken=${notificationToken}`, options);
 
   if (response.status === 403) {
     throw new Error('Unauthorized');
