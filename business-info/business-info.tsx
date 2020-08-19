@@ -25,12 +25,12 @@ interface BusinessInfoProps {
   user: Customer | undefined,
   setUser: (c: Customer) => void,
   isFavorite: boolean,
-  addFav: (b: BusinessLocation) => void;
-  removeFav: (b: BusinessLocation) => void;
+  addFav: (b: string) => void;
+  removeFav: (b: string) => void;
   setQueueBusiness: (b: BusinessLocation | undefined) => void,
   queue: string,
   setQueue: (q: string) => void,
-  recentsHandler: (b: BusinessLocation) => void,
+  recentsHandler: (b: string) => void,
 }
 
 const DEGREES_PER_HUNDRED_METERS = 0.001;
@@ -84,16 +84,15 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
 
   const onStarPress = () => {
     if (isFav) {
-      removeFav(business);
+      removeFav(business.uid);
     } else {
-      addFav(business);
+      addFav(business.uid);
     }
     setIsFav(!isFav);
   }
 
   const onQueuePress = () => {
     setJoin(true);
-    recentsHandler(business);
   }
 
   const calculateDelta = (radius: number) => {
@@ -123,6 +122,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
       checkIn: new Date(),
       quote: -1,
       messages: [],
+      pushToken: user!.pushToken,
     });
 
     const newUser = {
@@ -135,6 +135,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
 
     setQueue(newQueue.uid);
     setQueueBusiness(business);
+    recentsHandler(business.uid);
     setUser(newUser);
     navigation.navigate("Queue");
   };

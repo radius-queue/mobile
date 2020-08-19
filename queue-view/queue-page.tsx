@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {Text, Button} from '@ui-kitten/components';
-import {StyleSheet, View, TouchableOpacity} from "react-native";
+import {StyleSheet, View, TouchableOpacity, ActivityIndicator} from "react-native";
 import QueueList from './queue-list';
 import QueueMessages from './queue-messages'
 import LeaveModal from './leave-modal';
@@ -30,7 +30,8 @@ interface QueueProps {
 const QueuePage = ({queueId, setQueueId, currUser, setUser, setQueueBusiness, businessName}: QueueProps) => {
   const [leaveModalVisible, setLeaveModalVisible] = useState(false);
 
-  const [queueInfo, setQueueInfo] = useState<{queue: Queue | undefined, inLine: number | undefined}>({queue: undefined, inLine: undefined});
+  const [queueInfo, setQueueInfo] = useState<any>({queue: undefined, inLine: undefined});
+  const [loading, setLoading] = useState<boolean>(true);
 
   const leaveLine = (fromUser: boolean) => {
     const {queue, inLine} = queueInfo;
@@ -51,6 +52,7 @@ const QueuePage = ({queueId, setQueueId, currUser, setUser, setQueueBusiness, bu
 
   useEffect(() => {
     if (queueId.length !== 0) {
+      setLoading(true);
       const listener = new QueueListener(queueId, (newQ: Queue) => {
         let ourCustomer;
         for(let i = 0; i < newQ.parties.length; i++) {
@@ -65,11 +67,14 @@ const QueuePage = ({queueId, setQueueId, currUser, setUser, setQueueBusiness, bu
         } else {
           leaveLine(false);
         }
+        setLoading(false);
       });
       
       return () => {
         listener.free();
       };
+    } else {
+      setLoading(false);
     }
   }, [currUser, queueId]);
 
@@ -111,7 +116,7 @@ const QueuePage = ({queueId, setQueueId, currUser, setUser, setQueueBusiness, bu
         />
       </Screen>
     );
-  } else {
+  } else if (!loading) {
     return (
       <Screen style={styles.container}>
         <View style={[styles.card, styles.headerCard, styles.noLineCard]}>
@@ -120,6 +125,12 @@ const QueuePage = ({queueId, setQueueId, currUser, setUser, setQueueBusiness, bu
         </View>
       </Screen>
     );
+  } else {
+    return (
+      <Screen style={[styles.container, {justifyContent: 'center'}]}>
+        <ActivityIndicator/>
+      </Screen>
+    )
   }
 };
 

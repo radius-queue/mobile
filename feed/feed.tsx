@@ -13,15 +13,15 @@ import { useNavigation } from '@react-navigation/native';
 
 interface FeedProps {
   setQueueBusiness: (b: BusinessLocation | undefined) => void,
-  feedList: [BusinessLocation[], BusinessLocation[], BusinessLocation[]],
-  setFavs: (b: BusinessLocation[]) => void,
-  business: BusinessLocation | undefined,
+  feedList: [string[], string[], BusinessLocation[]],
+  setFavs: (s: string[]) => void,
   currUser: Customer,
   queueId: string,
   setQueueId: (q: string) => void,
   setUser: (c: Customer) => void,
-  setRecents: (b: BusinessLocation[]) => void,
+  setRecents: (b: string[]) => void,
   assetsMap: Map<string, string>,
+  businessMap: Map<string, BusinessLocation>,
 }
 
 export const BusinessListScreen = ({
@@ -29,12 +29,12 @@ export const BusinessListScreen = ({
   setQueueBusiness,
   setFavs,
   currUser,
-  business,
   queueId,
   setQueueId,
   setUser,
   setRecents,
   assetsMap,
+  businessMap,
 }: FeedProps): React.ReactElement => {
   const [feedcnt, setCnt] = useState<number>(0);
   const navigation = useNavigation(); 
@@ -62,25 +62,25 @@ export const BusinessListScreen = ({
         contentContainerStyle={styles.horizontalList}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
-        data={feedList[0]}
+        data={feedList[0].map((val : string) => businessMap.get(val))}
         renderItem={renderHorizontalTrainingItem}
       />
     </React.Fragment>
   );
 
-  const addFav = (chosenBusiness: BusinessLocation) => {
+  const addFav = (chosenBusiness: string) => {
     const newFavs = feedList[0].slice();
     newFavs.push(chosenBusiness);
     setFavs(newFavs);
   };
 
-  const removeFav = (chosenBusiness: BusinessLocation) => {
+  const removeFav = (chosenBusiness: string) => {
     const favsCopy = feedList[0];
     const unfavorite = chosenBusiness;
-    let newFavs: BusinessLocation[] = [];
+    let newFavs: string[] = [];
     let i: number;
     for (i = 0; i < favsCopy.length; i++) {
-      if (favsCopy[i].uid !== unfavorite.uid) {
+      if (favsCopy[i] !== unfavorite) {
         newFavs.push(favsCopy[i]);
       }
     }
@@ -98,20 +98,19 @@ export const BusinessListScreen = ({
         contentContainerStyle={styles.horizontalList}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
-        data={feedList[1]}
+        data={feedList[1].map((val) => businessMap.get(val))}
         renderItem={renderHorizontalTrainingItem}
       />
     </React.Fragment>
   );
 
-  const recentsHandler = (chosenBusiness: BusinessLocation) => {
-    let newRecents: BusinessLocation[] = [];
-    newRecents.push(chosenBusiness!);
+  const recentsHandler = (chosenBusiness: string) => {
+    let newRecents: string[] = [];
+    newRecents.push(chosenBusiness);
     const recentsCopy = feedList[1];
-    let i: number;
 
-    for (i = 0; i < recentsCopy.length; i++) {
-      if (recentsCopy[i].phoneNumber !== chosenBusiness?.phoneNumber) {
+    for (let i = 0; i < recentsCopy.length; i++) {
+      if (recentsCopy[i] !== chosenBusiness) {
         newRecents.push(recentsCopy[i]);
       }
     }
@@ -160,7 +159,7 @@ export const BusinessListScreen = ({
         <BusinessInfoScreen
           user={currUser}
           business={chosenBusiness}
-          isFavorite={feedList[0].map((b) => b.queues[0]).includes(chosenBusiness.queues[0])}
+          isFavorite={feedList[0].includes(chosenBusiness.queues[0])}
           addFav={addFav}
           removeFav={removeFav}
           queue={queueId}

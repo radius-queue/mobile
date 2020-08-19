@@ -54,14 +54,15 @@ const BottomTabBar = (Navigator: {
 interface TabProps {
   setUser: (c: Customer) => void,
   currUser: Customer,
-  setFavs: (b: BusinessLocation[]) => void,
-  setRecents: (b: BusinessLocation[]) => void,
-  feedLists: [BusinessLocation[], BusinessLocation[], BusinessLocation[]],
+  setFavs: (b: string[]) => void,
+  setRecents: (b: string[]) => void,
+  feedLists: [string[], string[], BusinessLocation[]],
   setQueueBusiness: (b: BusinessLocation | undefined) => void,
   business: BusinessLocation | undefined,
   queueId: string,
   setQueueId: (s: string) => void,
   assetsMap: Map<string, string>,
+  businessMap: Map<string, BusinessLocation>,
 }
 
 export interface RenderProps {
@@ -69,7 +70,19 @@ export interface RenderProps {
   currUser: Customer,
 }
 
-const TabNavigator = ({ setUser, currUser, setQueueBusiness, business, setFavs, feedLists, queueId, setQueueId, setRecents, assetsMap }: TabProps) => (
+const TabNavigator = ({
+  setUser,
+  currUser,
+  setQueueBusiness,
+  business,
+  setFavs,
+  feedLists,
+  queueId,
+  setQueueId,
+  setRecents,
+  assetsMap,
+  businessMap
+}: TabProps) => (
   <Tab.Navigator tabBar={(props) => <BottomTabBar {...props} />}>
     <Tab.Screen name="Feed">
       {() => <BusinessListScreen
@@ -77,12 +90,12 @@ const TabNavigator = ({ setUser, currUser, setQueueBusiness, business, setFavs, 
         setFavs={setFavs}
         feedList={feedLists}
         currUser={currUser}
-        business={business}
         setQueueId={setQueueId}
         queueId={queueId}
         setUser={setUser}
         setRecents={setRecents}
         assetsMap={assetsMap}
+        businessMap={businessMap}
       />}
     </Tab.Screen>
     {/*<Tab.Screen name="Me">
@@ -116,9 +129,10 @@ Notifications.setNotificationHandler({
 export default function App() {
 
   const [currUser, setUser] = useState<Customer>(new Customer());
-  const [recents, setRecents] = useState<BusinessLocation[]>([]);
-  const [favs, setFavs] = useState<BusinessLocation[]>([]);
+  const [recents, setRecents] = useState<string[]>([]);
+  const [favs, setFavs] = useState<string[]>([]);
   const [businesses, setBusinesses] = useState<BusinessLocation[]>([]);
+  const [businessMap, setBusinessMap] = useState<Map<string, BusinessLocation>>(new Map);
   const [business, setBusiness] = useState<BusinessLocation | undefined>(); // business that you are in a queue with
   const [queueId, setQueueId] = useState<string>('');
   const [assetsMap, setAssets] = useState<Map<string, string>>(new Map);
@@ -142,7 +156,6 @@ export default function App() {
         return;
       }
       token = (await Notifications.getExpoPushTokenAsync()).data;
-      console.log(token);
     } else {
       alert('Must use physical device for Push Notifications');
     }
@@ -181,25 +194,21 @@ export default function App() {
             console.log(response);
           });
         }
-        const newFavs = await getBusinessLocationsFromArray(customer.favorites);
-
-        const newRecents = await getBusinessLocationsFromArray(customer.recents);
 
         const businessLocations = await getAllBusinessLocations();
 
-
-        if (customer.currentQueue.length !== 0) {
-          for (const biz of businessLocations) {
-            if (biz.queues[0] === customer.currentQueue) {
-              setBusiness(biz);
-              break;
-            }
+        const newMap = new Map<string, BusinessLocation>();
+        for (const biz of businessLocations) {
+          if (biz.queues[0] === customer.currentQueue) {
+            setBusiness(biz);
           }
+          newMap.set(biz.uid, biz);
         }
 
         setBusinesses(businessLocations);
-        setRecents(newRecents);
-        setFavs(newFavs);
+        setBusinessMap(newMap);
+        setRecents(customer.recents);
+        setFavs(customer.favorites);
         setQueueId(customer.currentQueue);
         setUser(customer);
       } else {
@@ -238,10 +247,9 @@ export default function App() {
 
   useEffect(() => {
     if (currUser.uid.length !== 0 && currUser.favorites.length !== favs.length) {
-      const newFavs = favs.map((b: BusinessLocation) => b.queues[0]); // gets the uids of each business location
       const newCustomer = {
         ...currUser,
-        favorites: newFavs,
+        favorites: favs,
       };
       setUser(newCustomer);
     }
@@ -250,10 +258,9 @@ export default function App() {
 
   useEffect(() => {
     if (currUser.uid.length !== 0 && currUser.recents.length !== recents.length) {
-      const newRecs = recents.map((b: BusinessLocation) => b.queues[0]) // get the uids of each business location
       const newCustomer = {
         ...currUser,
-        recents: newRecs,
+        recents: recents,
       };
       setUser(newCustomer);
     }
@@ -283,6 +290,7 @@ export default function App() {
             queueId={queueId}
             setQueueId={setQueueId}
             assetsMap={assetsMap}
+            businessMap={businessMap}
           />
         </NavigationContainer>
       </ApplicationProvider>
