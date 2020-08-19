@@ -17,13 +17,10 @@
       "fallbackToCacheTimeout": 0
     },
     "assetBundlePatterns": ["**/*"],
-    "facebookAppId": "647671979177221",
-    "facebookScheme": "fb647671979177221",
-    "facebookDisplayName": "Radius-Mobile",
     "android": {
       "config": {
         "googleMaps": {
-          "apiKey": ""
+          "apiKey": "AIzaSyC7HooFP8mz-qSPwWwCPWsgzgvVO6Y162E"
         }
       },
       "package": "com.radius_android",
