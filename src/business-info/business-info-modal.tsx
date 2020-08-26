@@ -1,6 +1,4 @@
 import React, { useState } from 'react';
-import { Button } from '@ui-kitten/components';
-import Modal from 'react-native-modal';
 import {
   StyleSheet,
   View,
@@ -11,12 +9,15 @@ import {
   KeyboardAvoidingView,
   TextInput,
 } from 'react-native';
+import Modal from 'react-native-modal';
+import { Button } from '@ui-kitten/components';
 import defaultStyles from '../config/styles';
-import { User } from './data';
+import { default as theme } from "../../custom-theme.json";
+
 import * as Location from 'expo-location';
 import * as IntentLauncherAndroid from 'expo-intent-launcher';
 import HaversineGeolocation from 'haversine-geolocation';
-import { default as theme } from "../custom-theme.json";
+
 import { allNumbers, parsePhoneNum } from '../util/util-functions';
 import { AntDesign } from '@expo/vector-icons';
 import { Customer } from '../util/customer';

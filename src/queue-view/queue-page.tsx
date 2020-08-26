@@ -4,7 +4,7 @@ import {StyleSheet, View, TouchableOpacity, ActivityIndicator} from "react-nativ
 import QueueList from './queue-list';
 import QueueMessages from './queue-messages'
 import LeaveModal from './leave-modal';
-import { default as theme } from "../custom-theme.json";
+import { default as theme } from "../../custom-theme.json";
 import Screen from "../components/screen";
 import {useNavigation} from '@react-navigation/native';
 import { Queue, Party } from '../util/queue';

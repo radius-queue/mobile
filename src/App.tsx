@@ -1,13 +1,11 @@
-import React, { useEffect, useState, useRef, Dispatch, SetStateAction, MutableRefObject } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { StyleSheet, Platform } from "react-native";
-
-import Me from "./profile/Me";
-import QueuePage from "./queue-view/queue-page";
-import ProfilePage from "./profile/profile-page";
-import { BusinessListScreen } from "./feed/feed";
-import { BusinessLocation, copyBusLoc } from "./util/business";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import * as Permissions from "expo-permissions";
+import * as Notifications from "expo-notifications";
+import Constants from "expo-constants";
+
 import {
   ApplicationProvider,
   BottomNavigation,
@@ -15,17 +13,24 @@ import {
   Icon,
   IconRegistry,
 } from "@ui-kitten/components";
+import { default as theme } from "../custom-theme.json";
 import * as eva from "@eva-design/eva";
-import { default as theme } from "./custom-theme.json";
 import { EvaIconsPack } from "@ui-kitten/eva-icons";
+
+
+import QueuePage from "./queue-view/queue-page";
+import { BusinessListScreen } from "./feed/feed";
+import { BusinessLocation } from "./util/business";
 import { Customer } from "./util/customer"
-import { getCustomer, getAllBusinessLocations, getBusinessLocationsFromArray, postCustomer, getQueue, newCustomer } from "./util/api-functions";
+import { 
+  getCustomer,
+  getAllBusinessLocations,
+  postCustomer,
+  newCustomer
+} from "./util/api-functions";
 import { auth } from './firebase';
-import { Queue } from "./util/queue";
 import { getBusPic } from "./util/storage-func";
-import * as Permissions from "expo-permissions";
-import * as Notifications from "expo-notifications";
-import Constants from "expo-constants";
+
 
 const Tab = createBottomTabNavigator();
 
@@ -98,9 +103,6 @@ const TabNavigator = ({
         businessMap={businessMap}
       />}
     </Tab.Screen>
-    {/*<Tab.Screen name="Me">
-      {() => <ProfileWrapper setUser={setUser} currUser={currUser} />}
-      </Tab.Screen>*/}
     <Tab.Screen name="Queue">
       {() => <QueuePage
         queueId={queueId}
@@ -121,10 +123,6 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
-
-// const ProfileWrapper = ({ setUser, currUser }: RenderProps) => (
-//   currUser.uid.length > 0 ? <ProfilePage setUser={setUser} currUser={currUser} /> : <Me setUser={setUser} currUser={currUser} />
-// );
 
 export default function App() {
 

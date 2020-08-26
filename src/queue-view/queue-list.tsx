@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FlatList, StyleSheet, Text, View } from "react-native";
-import { default as theme } from "../custom-theme.json";
+import { default as theme } from "../../custom-theme.json";
 import {Party} from '../util/queue';
 
 interface ListProps {

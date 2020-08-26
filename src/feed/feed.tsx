@@ -3,7 +3,7 @@ import { ListRenderItemInfo, StyleSheet, View } from 'react-native';
 import { List, Text } from '@ui-kitten/components';
 import { BusinessCard } from './business-overview-card';
 import Screen from '../components/screen';
-import { default as theme } from "../custom-theme.json";
+import { default as theme } from "../../custom-theme.json";
 import { BusinessLocation } from '../util/business';
 import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
 import { Customer } from '../util/customer';

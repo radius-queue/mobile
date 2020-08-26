@@ -14,7 +14,7 @@ import MapView, { Marker, Circle } from "react-native-maps";
 import { dateToOperationHours, parsePhoneNum } from "../util/util-functions";
 import defaultStyles from "../config/styles";
 import { Fontisto, SimpleLineIcons, Ionicons } from '@expo/vector-icons';
-import { default as theme } from "../custom-theme.json";
+import { default as theme } from "../../custom-theme.json";
 import { BusinessLocation } from "../util/business";
 import { Customer } from "../util/customer";
 import { QueueInfo } from '../util/queue';

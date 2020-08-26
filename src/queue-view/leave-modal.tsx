@@ -2,7 +2,7 @@ import React from 'react';
 import Modal from 'react-native-modal';
 import { Button, Text } from '@ui-kitten/components';
 import {StyleSheet, View} from 'react-native';
-import { default as theme } from "../custom-theme.json";
+import { default as theme } from "../../custom-theme.json";
 import { AntDesign } from '@expo/vector-icons';
 
 interface LeaveModalProps {
