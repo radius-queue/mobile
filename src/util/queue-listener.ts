@@ -32,7 +32,6 @@ export class QueueListener {
    * frees listener to reduce server traffic
    */
   free(): void {
-    console.log('free');
     this.listener();
   }
 }
