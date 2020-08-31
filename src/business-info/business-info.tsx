@@ -133,10 +133,10 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
       currentQueue: newQueue.uid
     };
 
-    setQueue(newQueue.uid);
+    setUser(newUser);
     setQueueBusiness(business);
     recentsHandler(business.uid);
-    setUser(newUser);
+    setQueue(newQueue.uid);
     navigation.navigate("Queue");
   };
 

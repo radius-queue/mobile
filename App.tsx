@@ -264,7 +264,7 @@ export default function App() {
     }
   }, [recents, currUser]);
 
-
+  
   useEffect(() => {
     if (currUser.uid.length !== 0) {
       postCustomer(currUser);
