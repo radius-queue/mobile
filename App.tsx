@@ -13,23 +13,23 @@ import {
   Icon,
   IconRegistry,
 } from "@ui-kitten/components";
-import { default as theme } from "../custom-theme.json";
+import { default as theme } from "./custom-theme.json";
 import * as eva from "@eva-design/eva";
 import { EvaIconsPack } from "@ui-kitten/eva-icons";
 
 
-import QueuePage from "./queue-view/queue-page";
-import { BusinessListScreen } from "./feed/feed";
-import { BusinessLocation } from "./util/business";
-import { Customer } from "./util/customer"
+import QueuePage from "./src/queue-view/queue-page";
+import { BusinessListScreen } from "./src/feed/feed";
+import { BusinessLocation } from "./src/util/business";
+import { Customer } from "./src/util/customer"
 import { 
   getCustomer,
   getAllBusinessLocations,
   postCustomer,
   newCustomer
-} from "./util/api-functions";
-import { auth } from './firebase';
-import { getBusPic } from "./util/storage-func";
+} from "./src/util/api-functions";
+import { auth } from './src/firebase';
+import { getBusPic } from "./src/util/storage-func";
 
 
 const Tab = createBottomTabNavigator();

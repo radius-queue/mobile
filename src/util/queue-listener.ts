@@ -21,7 +21,7 @@ export class QueueListener {
             queue.uid = uid;
             kickback(queue);
           } else {
-            console.log('No such document!');
+            console.log('No such document! for uid: ' + doc.id);
           }
         }, function(error) {
           console.log('Error getting document:', error);

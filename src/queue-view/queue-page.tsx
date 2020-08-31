@@ -106,7 +106,7 @@ const QueuePage = ({queueId, setQueueId, currUser, setUser, setQueueBusiness, bu
         <View style={[styles.card, styles.messagesCard]}>
           <Text style={styles.cardHeader}>💬 Messages</Text> 
           <View style={styles.messagesCardContent}>
-            <QueueMessages messages={queueInfo.queue.parties[queueInfo.inLine].messages.reverse()}/>
+            <QueueMessages messages={queueInfo.queue.parties[queueInfo.inLine].messages}/>
           </View>
         </View>
         <LeaveModal

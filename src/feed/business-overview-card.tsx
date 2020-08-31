@@ -9,7 +9,7 @@ export interface BusinessCardProps extends Omit<CardProps, 'children'> {
   assetsMap: Map<string, string>;
 }
 
-const image = require('../assets/landing.jpg');
+const image = require('../../assets/landing.jpg');
 
 export type BusinessCardElement = React.ReactElement<BusinessCardProps>;
 
