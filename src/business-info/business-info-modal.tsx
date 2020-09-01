@@ -67,6 +67,7 @@ const BusinessModal = ({show, addToQ, hide, user, coords, radius} : ModalProps) 
           longitude: location.coords.longitude,
         }, 'm'
       );
+      
       if(distance <= radius + RADIUS_BUFFER_METERS) {
         return [distance, true];
       } else {
@@ -251,7 +252,7 @@ const BusinessModal = ({show, addToQ, hide, user, coords, radius} : ModalProps) 
             />
           </View>
           <View style={styles.buttonContainer}>
-            <Button style={styles.button} onPress={onSubmit}>Join</Button>
+            <Button style={styles.button} disabled={submitted} onPress={onSubmit}>Join</Button>
           </View>
         </View>
       </KeyboardAvoidingView>
