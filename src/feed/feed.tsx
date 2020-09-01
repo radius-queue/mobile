@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { ListRenderItemInfo, StyleSheet, View } from 'react-native';
+import { ListRenderItemInfo, StyleSheet, ActivityIndicator } from 'react-native';
 import { List, Text } from '@ui-kitten/components';
 import { BusinessCard } from './business-overview-card';
 import Screen from '../components/screen';
 import { default as theme } from "../../custom-theme.json";
 import { BusinessLocation } from '../util/business';
-import { TouchableHighlight, TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 import { Customer } from '../util/customer';
 import BusinessInfoScreen from '../business-info/business-info';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -22,6 +22,7 @@ interface FeedProps {
   setRecents: (b: string[]) => void,
   assetsMap: Map<string, string>,
   businessMap: Map<string, BusinessLocation>,
+  queueBusiness : BusinessLocation | undefined,
 }
 
 export const BusinessListScreen = ({
@@ -35,9 +36,17 @@ export const BusinessListScreen = ({
   setRecents,
   assetsMap,
   businessMap,
+  queueBusiness,
 }: FeedProps): React.ReactElement => {
   const [feedcnt, setCnt] = useState<number>(0);
+  const [business, setBusiness] = useState<BusinessLocation | undefined>();
+
   const navigation = useNavigation(); 
+
+  const onSelect = (biz : BusinessLocation) => {
+    setBusiness(biz);
+    navigation.navigate("Chosen Business");
+  }
 
   const renderHeader = (): React.ReactElement => (
     <React.Fragment>
@@ -121,7 +130,7 @@ export const BusinessListScreen = ({
     <Screen style={styles.container}>
       <React.Fragment>
         <List
-          contentContainerStyle={styles.list}
+          contentContainerStyle={{}}
           data={feedList[2]}
           renderItem={renderVerticalTrainingItem}
           ListHeaderComponent={renderHeader}
@@ -132,7 +141,7 @@ export const BusinessListScreen = ({
 
 
   const renderHorizontalTrainingItem = (info: ListRenderItemInfo<BusinessLocation>): React.ReactElement => (
-    <TouchableOpacity activeOpacity={.6} onPress={() => navigation.navigate(info.item.uid)}>
+    <TouchableOpacity activeOpacity={.6} onPress={() => onSelect(info.item)}>
       <BusinessCard
         style={styles.horizontalItem}
         business={info.item}
@@ -142,7 +151,7 @@ export const BusinessListScreen = ({
   );
 
   const renderVerticalTrainingItem = (info: ListRenderItemInfo<BusinessLocation>): React.ReactElement => (
-    <TouchableOpacity activeOpacity={.6} onPress={() => navigation.navigate(info.item.uid)}>
+    <TouchableOpacity activeOpacity={.6} onPress={() => onSelect(info.item)}>
       <BusinessCard
         style={styles.verticalItem}
         business={info.item}
@@ -153,8 +162,8 @@ export const BusinessListScreen = ({
 
   const Stack = createStackNavigator();
 
-  const BusinessScreen = (chosenBusiness: BusinessLocation) => {
-    return(
+  const BusinessScreen = (chosenBusiness: BusinessLocation | undefined) => {
+    return( chosenBusiness ?
       <Screen style={styles.container}>
         <BusinessInfoScreen
           user={currUser}
@@ -169,6 +178,9 @@ export const BusinessListScreen = ({
           recentsHandler={recentsHandler}
         /> 
       </Screen>
+      : (<Screen style={[styles.container, {justifyContent: 'center'}]}>
+      <ActivityIndicator/>
+    </Screen>)
     );
   }
 
@@ -177,15 +189,20 @@ export const BusinessListScreen = ({
   return (
     <Stack.Navigator>
       <Stack.Screen name='Feed' options={{ headerShown: false }} component={renderAll} />
-      {feedList[2].map((business) => (
         <Stack.Screen
-          key={business.uid}
-          name={business.uid}
+          key={"Chosen Business"}
+          name={"Chosen Business"}
           options={{ headerShown: false }}
         >
           {() => BusinessScreen(business)}
         </Stack.Screen>
-      ))}
+        <Stack.Screen
+          key={"Queue Business"}
+          name={"Queue Business"}
+          options={{headerShown: false}}
+        >
+          {() => BusinessScreen(queueBusiness)}
+        </Stack.Screen>
     </Stack.Navigator>
   );
 };
@@ -193,9 +210,6 @@ export const BusinessListScreen = ({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: theme['color-basic-900'],
-  },
-  list: {
-
   },
   headerTitle: {
     marginHorizontal: 16,

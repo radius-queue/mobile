@@ -65,6 +65,8 @@ export const getBusinessLocation = async (uid: string) : Promise<BusinessLocatio
 
   const value = await response.json();
   value.hours = value.hours.map((val: [string | null, string | null]) => hoursFromAPI(val));
+  value.uid = uid;
+  
   return value;
 }
 

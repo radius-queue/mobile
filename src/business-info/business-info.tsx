@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import call from "react-native-phone-call";
-import { Card, Layout, Button, ButtonGroup } from "@ui-kitten/components";
+import { Card, Layout, Button } from "@ui-kitten/components";
 import { useNavigation } from "@react-navigation/native";
 import BusinessModal from "./business-info-modal";
 import MapView, { Marker, Circle } from "react-native-maps";
@@ -18,7 +18,7 @@ import { default as theme } from "../../custom-theme.json";
 import { BusinessLocation } from "../util/business";
 import { Customer } from "../util/customer";
 import { QueueInfo } from '../util/queue';
-import { getQueueInfo, addToQueue } from "../util/api-functions";
+import { getQueueInfo, addToQueue, getBusinessLocation } from "../util/api-functions";
 
 interface BusinessInfoProps {
   business: BusinessLocation,
@@ -54,6 +54,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
   const [isFav, setIsFav] = useState<boolean>(isFavorite);
   const [queueInfo, setQueueInfo] = useState<QueueInfo | undefined>();
   const [scrollAmount, setScrollAmount] = useState<number>(0);
+  const [updatedBusiness, setUpdatedBusiness] = useState<BusinessLocation>(business);
 
   const scrollA = useRef(new Animated.Value(0)).current;
   scrollA.addListener((newScroll) => setScrollAmount(newScroll.value));
@@ -76,17 +77,22 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
 
   useEffect(() => {
     const getQueue = async () => {
-      setQueueInfo(await getQueueInfo(business.queues[0]));
+      setQueueInfo(await getQueueInfo(updatedBusiness.queues[0]));
+    }
+
+    const getBusiness = async () => {
+      setUpdatedBusiness(await getBusinessLocation(business.uid));
     }
 
     getQueue();
+    getBusiness();
   }, []);
 
   const onStarPress = () => {
     if (isFav) {
-      removeFav(business.uid);
+      removeFav(updatedBusiness.uid);
     } else {
-      addFav(business.uid);
+      addFav(updatedBusiness.uid);
     }
     setIsFav(!isFav);
   }
@@ -101,7 +107,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
 
   const callHandler = () => {
     const args = {
-      number: business.phoneNumber,
+      number: updatedBusiness.phoneNumber,
       prompt: true,
     };
 
@@ -114,7 +120,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
     phoneNumber: string,
     size: number,
   ) => {
-    const newQueue = await addToQueue(business.queues[0], {
+    const newQueue = await addToQueue(updatedBusiness.queues[0], {
       firstName,
       lastName,
       phoneNumber,
@@ -133,9 +139,13 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
       currentQueue: newQueue.uid
     };
 
+    console.log("New User: ", newUser);
+    console.log("Queue Business: ", updatedBusiness);
+    console.log("New Queue: ", newQueue);
+    
     setUser(newUser);
-    setQueueBusiness(business);
-    recentsHandler(business.uid);
+    setQueueBusiness(updatedBusiness);
+    recentsHandler(updatedBusiness.uid);
     setQueue(newQueue.uid);
     navigation.navigate("Queue");
   };
@@ -151,7 +161,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
     <View>
       {/* Header bar with business name text display */}
       <Animated.View style={[styles.headerBar, {opacity: headerOpacity}]}>
-        <Text style={styles.headerName}>{business.name.length > 15 ? business.name.substring(0, 12) + '...' : business.name}</Text>
+        <Text style={styles.headerName}>{updatedBusiness.name.length > 15 ? updatedBusiness.name.substring(0, 12) + '...' : updatedBusiness.name}</Text>
       </Animated.View>
 
       {/* Back arrow and text in white for display when header bar is displayed */}
@@ -202,26 +212,26 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
         <Animated.View style={animatedStyles.mapContainer(scrollA)}>
           <MapView
             region={{
-              latitude: business.coordinates[0],
-              longitude: business.coordinates[1],
-              latitudeDelta: calculateDelta(business.geoFenceRadius),
-              longitudeDelta: calculateDelta(business.geoFenceRadius),
+              latitude: updatedBusiness.coordinates[0],
+              longitude: updatedBusiness.coordinates[1],
+              latitudeDelta: calculateDelta(updatedBusiness.geoFenceRadius),
+              longitudeDelta: calculateDelta(updatedBusiness.geoFenceRadius),
             }}
             style={styles.map}
           >
             <Marker
-              title={business.name}
+              title={updatedBusiness.name}
               coordinate={{
-                latitude: business.coordinates[0],
-                longitude: business.coordinates[1],
+                latitude: updatedBusiness.coordinates[0],
+                longitude: updatedBusiness.coordinates[1],
               }}
             />
             <Circle
               center={{
-                latitude: business.coordinates[0],
-                longitude: business.coordinates[1],
+                latitude: updatedBusiness.coordinates[0],
+                longitude: updatedBusiness.coordinates[1],
               }}
-              radius={business.geoFenceRadius}
+              radius={updatedBusiness.geoFenceRadius}
               strokeWidth={1}
               strokeColor={"#ff0000"}
               style={styles.circle}
@@ -234,7 +244,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
             <View>
               <View style={styles.businessNameContainer}>
                 <Text style={[defaultStyles.text, styles.name, styles.businessName]}>
-                  {business.name}
+                  {updatedBusiness.name}
                 </Text>
                 <TouchableOpacity onPress={onStarPress}>
                   {isFav
@@ -249,7 +259,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
               <TouchableOpacity onPress={callHandler}>
                 <Text></Text>
                 <Text style={[defaultStyles.text, styles.phone]}>
-                  {parsePhoneNum(business.phoneNumber)}
+                  {parsePhoneNum(updatedBusiness.phoneNumber)}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -293,7 +303,7 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
                 ))}
               </View>
               <View>
-                {business.hours.map((val, idx) => (
+                {updatedBusiness.hours.map((val, idx) => (
                   <Text key={idx} style={[defaultStyles.text, styles.dayText]}>
                     {val[0]
                       ? dateToOperationHours(val[0]) + ` - ` +
@@ -309,8 +319,8 @@ const BusinessInfoScreen: FunctionComponent<BusinessInfoProps> = ({
       <BusinessModal
         show={showJoin}
         addToQ={addToQ}
-        coords={business.coordinates}
-        radius={business.geoFenceRadius}
+        coords={updatedBusiness.coordinates}
+        radius={updatedBusiness.geoFenceRadius}
         hide={() => setJoin(false)}
         user={user}
       />

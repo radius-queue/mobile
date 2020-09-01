@@ -86,7 +86,7 @@ const TabNavigator = ({
   setQueueId,
   setRecents,
   assetsMap,
-  businessMap
+  businessMap,
 }: TabProps) => (
   <Tab.Navigator tabBar={(props) => <BottomTabBar {...props} />}>
     <Tab.Screen name="Feed">
@@ -101,6 +101,7 @@ const TabNavigator = ({
         setRecents={setRecents}
         assetsMap={assetsMap}
         businessMap={businessMap}
+        queueBusiness={business}
       />}
     </Tab.Screen>
     <Tab.Screen name="Queue">
@@ -289,6 +290,7 @@ export default function App() {
             setQueueId={setQueueId}
             assetsMap={assetsMap}
             businessMap={businessMap}
+            queueBusiness={business}
           />
         </NavigationContainer>
       </ApplicationProvider>
